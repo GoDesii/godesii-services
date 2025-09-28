@@ -1,0 +1,133 @@
+-- USERS TABLE
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    phone_number VARCHAR(15) UNIQUE NOT NULL,
+    email VARCHAR(100),
+    password VARCHAR(255),
+    role ENUM('USER', 'ADMIN', 'DELIVERY') DEFAULT 'USER',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- OTP VERIFICATION TABLE
+CREATE TABLE otp_verification (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    phone_number VARCHAR(15) NOT NULL,
+    otp_code VARCHAR(10) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    verified BOOLEAN DEFAULT FALSE
+);
+
+-- USER PROFILE TABLE
+CREATE TABLE user_profiles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    name VARCHAR(100),
+    profile_picture_url TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- ADDRESS BOOK TABLE
+CREATE TABLE addresses (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    label VARCHAR(50),
+    street VARCHAR(255),
+    city VARCHAR(100),
+    state VARCHAR(100),
+    pincode VARCHAR(10),
+    latitude DECIMAL(10,8),
+    longitude DECIMAL(11,8),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- RESTAURANTS TABLE
+CREATE TABLE restaurants (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    address VARCHAR(255),
+    cuisine VARCHAR(100),
+    rating DECIMAL(2,1),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- MENU ITEMS TABLE
+CREATE TABLE menu_items (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    restaurant_id BIGINT NOT NULL,
+    name VARCHAR(100),
+    description TEXT,
+    price DECIMAL(10,2),
+    image_url TEXT,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE
+);
+
+-- CART ITEMS TABLE
+CREATE TABLE cart_items (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    menu_item_id BIGINT NOT NULL,
+    quantity INT DEFAULT 1,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id) ON DELETE CASCADE
+);
+
+-- ORDERS TABLE
+CREATE TABLE orders (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    restaurant_id BIGINT NOT NULL,
+    address_id BIGINT NOT NULL,
+    total_amount DECIMAL(10,2),
+    payment_status ENUM('PENDING', 'PAID', 'FAILED') DEFAULT 'PENDING',
+    order_status ENUM('PLACED', 'PREPARING', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED') DEFAULT 'PLACED',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
+    FOREIGN KEY (address_id) REFERENCES addresses(id)
+);
+
+-- ORDER ITEMS TABLE
+CREATE TABLE order_items (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    menu_item_id BIGINT NOT NULL,
+    quantity INT DEFAULT 1,
+    price DECIMAL(10,2),
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (menu_item_id) REFERENCES menu_items(id)
+);
+
+-- PAYMENT TRANSACTIONS TABLE
+CREATE TABLE payments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    razorpay_order_id VARCHAR(100),
+    razorpay_payment_id VARCHAR(100),
+    amount DECIMAL(10,2),
+    status ENUM('SUCCESS', 'FAILED', 'PENDING') DEFAULT 'PENDING',
+    payment_time TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+-- DELIVERY TRACKING TABLE
+CREATE TABLE delivery_tracking (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id BIGINT NOT NULL,
+    delivery_person_id BIGINT,
+    current_status ENUM('ASSIGNED', 'PICKED_UP', 'ON_THE_WAY', 'DELIVERED') DEFAULT 'ASSIGNED',
+    current_latitude DECIMAL(10,8),
+    current_longitude DECIMAL(11,8),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (delivery_person_id) REFERENCES users(id)
+);
+
+-- NOTIFICATIONS TABLE
+CREATE TABLE notifications (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    message TEXT,
+    type ENUM('SMS', 'PUSH') DEFAULT 'SMS',
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);

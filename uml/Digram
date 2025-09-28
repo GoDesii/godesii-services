@@ -1,0 +1,165 @@
+@startuml ZomatoAppModules
+
+package "User Module" {
+  class User {
+    +id
+    +phoneNumber
+    +email
+    +password
+    +role
+  }
+
+  class OTPVerification {
+    +phoneNumber
+    +otpCode
+    +expiresAt
+    +verified
+  }
+
+  class UserProfile {
+    +name
+    +profilePictureUrl
+  }
+
+  class Address {
+    +label
+    +street
+    +city
+    +pincode
+    +latitude
+    +longitude
+  }
+
+  class OrderHistory {
+    +orderDate
+    +totalCost
+  }
+
+  User --> OTPVerification
+  User --> UserProfile
+  User --> Address
+  User --> OrderHistory
+}
+
+package "Order Module" {
+  class CartItem {
+    +quantity
+  }
+
+  class Checkout {
+    +summary
+    +paymentStatus
+  }
+
+  class Payment {
+    +razorpayOrderId
+    +status
+  }
+
+  class OrderTracking {
+    +status
+    +location
+  }
+
+  class Notification {
+    +type
+    +message
+  }
+
+  User --> CartItem
+  CartItem --> Checkout
+  Checkout --> Payment
+  Checkout --> OrderTracking
+  User --> Notification
+}
+
+package "Restaurant Module" {
+  class Restaurant {
+    +name
+    +cuisine
+    +rating
+  }
+
+  class MenuItem {
+    +name
+    +description
+    +price
+    +imageUrl
+  }
+
+  class Review {
+    +rating
+    +comment
+  }
+
+  Restaurant --> MenuItem
+  User --> Review
+  Review --> Restaurant
+}
+
+package "Delivery Module" {
+  class DeliveryPartner {
+    +id
+    +name
+    +status
+  }
+
+  class DeliveryDashboard {
+    +assignedOrders
+  }
+
+  class RouteOptimization {
+    +routeMap
+  }
+
+  class DeliveryStatus {
+    +status
+    +timestamp
+  }
+
+  DeliveryPartner --> DeliveryDashboard
+  DeliveryDashboard --> RouteOptimization
+  DeliveryDashboard --> DeliveryStatus
+}
+
+package "Admin Panel" {
+  class UserManagement {
+    +blockUser()
+    +editProfile()
+  }
+
+  class RestaurantManagement {
+    +verifyRestaurant()
+    +editRestaurant()
+  }
+
+  class OrderManagement {
+    +trackOrder()
+    +updateStatus()
+  }
+
+  class AnalyticsDashboard {
+    +orders
+    +revenue
+    +engagement
+  }
+
+  class Promotions {
+    +discountCode
+    +validity
+  }
+
+  class ContentModeration {
+    +reviewFlag
+    +actionTaken
+  }
+
+  Admin --> UserManagement
+  Admin --> RestaurantManagement
+  Admin --> OrderManagement
+  Admin --> AnalyticsDashboard
+  Admin --> Promotions
+  Admin --> ContentModeration
+}
+
+@enduml
