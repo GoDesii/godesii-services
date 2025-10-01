@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "user_address")
+@Table(name = "address")
 public class Address {
 
     private Long id;
@@ -16,7 +16,7 @@ public class Address {
     private String pinCode;
     private String country;
     private String addressType;
-//    private List<UserProfile> userProfiles;
+    private List<UserProfile> userProfiles;
 
     @Id
     @GeneratedValue(
@@ -78,16 +78,15 @@ public class Address {
         this.addressType = addressType;
     }
 
-//    @ManyToMany(fetch = FetchType.LAZY,
-//            cascade = CascadeType.ALL,
-//            mappedBy = "addresses"
-//    )
-//    @JsonIgnoreProperties(value = "addresses")
-//    public List<UserProfile> getUserProfiles() {
-//        return userProfiles;
-//    }
-//
-//    public void setUserProfiles(List<UserProfile> userProfiles) {
-//        this.userProfiles = userProfiles;
-//    }
+    @ManyToMany(
+            mappedBy = "addresses"
+    )
+    public List<UserProfile> getUserProfiles() {
+        return userProfiles;
+    }
+
+    public void setUserProfiles(List<UserProfile> userProfiles) {
+        this.userProfiles = userProfiles;
+    }
+
 }

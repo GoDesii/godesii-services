@@ -189,7 +189,6 @@ public class User {
         isCredentialsNonExpired = credentialsNonExpired;
     }
 
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     public UserProfile getUserProfile() {

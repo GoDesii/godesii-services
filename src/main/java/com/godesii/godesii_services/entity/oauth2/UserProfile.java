@@ -1,6 +1,9 @@
 package com.godesii.godesii_services.entity.oauth2;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "user_profile")
@@ -12,6 +15,7 @@ public class UserProfile {
     private String lastName;
     private Gender gender;
     private User user;
+    private List<Address> addresses;
 
     @Id
     @GeneratedValue(
@@ -70,27 +74,18 @@ public class UserProfile {
         this.user = user;
     }
 
-    //    @ManyToMany(
-//            fetch = FetchType.EAGER,
-//            cascade = {
-//                    CascadeType.ALL
-//            })
-//    @JoinTable(
-//            name = "user_address",
-//            joinColumns = {
-//                    @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
-//            },
-//            inverseJoinColumns = {
-//                    @JoinColumn(name = "address_id", referencedColumnName = "id")
-//            }
-//    )
-//    @JsonIgnoreProperties(value = "userProfiles")
-//    public List<Address> getAddresses() {
-//        return addresses;
-//    }
-//
-//    public void setAddresses(List<Address> addresses) {
-//        this.addresses = addresses;
-//    }
+    @ManyToMany
+    @JoinTable(
+            name = "user_address",
+            joinColumns = @JoinColumn(name = "user_profile_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id", referencedColumnName = "id")
+    )
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
 
 }
