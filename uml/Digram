@@ -3,31 +3,50 @@
 package "User Module" {
   class User {
     +id
-    +phoneNumber
-    +email
+    +createdAt
+    +updatedAt
+    +lastLoggedIn
+    +username
     +password
+    +emailId
     +role
+    +countryCode
+    +mobileNo
+    +isMobileNoVerified
+    +authProvider
+    +isEmailVerified
+    +isPhoneNoVerified
+    +isAccountNonLocked
+    +isAccountNonExpired
+    +isCredentialsNonExpired
+    +UserProfile userProfile
   }
 
   class OTPVerification {
-    +phoneNumber
     +otpCode
     +expiresAt
     +verified
   }
 
   class UserProfile {
-    +name
-    +profilePictureUrl
+        +Long id
+        +firstName
+        +middleName
+        +lastName
+        +gender
+        +user
+        +Address addresses
   }
 
   class Address {
-    +label
-    +street
-    +city
-    +pincode
-    +latitude
-    +longitude
+     +id
+     +street
+     +city
+     +state
+     +pinCode
+     +country
+     +addressType
+     +userProfiles
   }
 
   class OrderHistory {
@@ -75,26 +94,50 @@ package "Order Module" {
 
 package "Restaurant Module" {
   class Restaurant {
-    +name
-    +cuisine
-    +rating
+    +id
+    +restaurantName
+    +address
+    +latitude
+    +longitude
+    +openingHours
+    +closingHours
+    +description
+    +mealType
+    +isVerified
+    +menuItemList
   }
 
   class MenuItem {
-    +name
-    +description
-    +price
-    +imageUrl
+   +id
+   +menuName
+   +cuisine
+   +price
+   +imageUrl
+   +isAvailable
+   +Description
+   +ingredients
+   +menuType
+   +restaurant
   }
 
   class Review {
-    +rating
-    +comment
+    +id;
+    +rating;
+    +comment;
+    +restaurant;
+  }
+  class FoodCertificate{
+     +id;
+     +certificateUrl;
+     +certificateType;
+     +issuedDate;
+     +expireDate;
   }
 
   Restaurant --> MenuItem
   User --> Review
   Review --> Restaurant
+  FoodCertificate --> Restaurant
 }
 
 package "Delivery Module" {
