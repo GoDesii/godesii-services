@@ -94,7 +94,7 @@ package "Order Module" {
 
 package "Restaurant Module" {
   class Restaurant {
-    +id
+    +restaurant_id
     +restaurantName
     +address
     +latitude
@@ -108,7 +108,7 @@ package "Restaurant Module" {
   }
 
   class MenuItem {
-   +id
+   +menuItemId
    +menuName
    +cuisine
    +price
@@ -121,17 +121,18 @@ package "Restaurant Module" {
   }
 
   class Review {
-    +id;
+    +reviewId;
     +rating;
     +comment;
     +restaurant;
   }
   class FoodCertificate{
-     +id;
-     +certificateUrl;
-     +certificateType;
-     +issuedDate;
-     +expireDate;
+     +foodCertificateId
+     +certificateUrl
+     +certificateType
+     +issuedDate
+     +expireDate
+     +isCertficateExpired
   }
 
   Restaurant --> MenuItem
