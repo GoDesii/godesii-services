@@ -5,6 +5,7 @@ import com.godesii.godesii_services.repository.restaurant.ReviewRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReviewService {
@@ -29,10 +30,13 @@ public class ReviewService {
 
     public Review update(Long id, Review review) {
         Review existing = getById(id);
-        existing.setRating(review.getRating());
-        existing.setComment(review.getComment());
+
+        Optional.ofNullable(review.getRating()).ifPresent(existing::setRating);
+        Optional.ofNullable(review.getComment()).ifPresent(existing::setComment);
+
         return repo.save(existing);
     }
+
 
     public void delete(Long id) {
         repo.deleteById(id);

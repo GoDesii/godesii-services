@@ -5,6 +5,7 @@ import com.godesii.godesii_services.repository.restaurant.MenuItemRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MenuItemService {
@@ -29,16 +30,21 @@ public class MenuItemService {
 
     public MenuItem update(Long id, MenuItem item) {
         MenuItem existing = getById(id);
-        existing.setMenuName(item.getMenuName());
-        existing.setCuisine(item.getCuisine());
-        existing.setPrice(item.getPrice());
-        existing.setImageUrl(item.getImageUrl());
+
+        Optional.ofNullable(item.getMenuName()).ifPresent(existing::setMenuName);
+        Optional.ofNullable(item.getCuisine()).ifPresent(existing::setCuisine);
+        Optional.ofNullable(item.getPrice()).ifPresent(existing::setPrice);
+        Optional.ofNullable(item.getImageUrl()).ifPresent(existing::setImageUrl);
+        Optional.ofNullable(item.getDescription()).ifPresent(existing::setDescription);
+        Optional.ofNullable(item.getIngredients()).ifPresent(existing::setIngredients);
+        Optional.ofNullable(item.getMenuType()).ifPresent(existing::setMenuType);
+
+        // boolean must be handled separately (since primitive can't be null)
         existing.setAvailable(item.isAvailable());
-        existing.setDescription(item.getDescription());
-        existing.setIngredients(item.getIngredients());
-        existing.setMenuType(item.getMenuType());
+
         return repo.save(existing);
     }
+
 
     public void delete(Long id) {
         repo.deleteById(id);

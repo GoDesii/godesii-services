@@ -5,6 +5,7 @@ import com.godesii.godesii_services.repository.restaurant.FoodCertificateRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FoodCertificateService {
@@ -29,13 +30,18 @@ public class FoodCertificateService {
 
     public FoodCertificate update(Long id, FoodCertificate cert) {
         FoodCertificate existing = getById(id);
-        existing.setCertificateUrl(cert.getCertificateUrl());
-        existing.setCertificateType(cert.getCertificateType());
-        existing.setIssuedDate(cert.getIssuedDate());
-        existing.setExpireDate(cert.getExpireDate());
+
+        Optional.ofNullable(cert.getCertificateUrl()).ifPresent(existing::setCertificateUrl);
+        Optional.ofNullable(cert.getCertificateType()).ifPresent(existing::setCertificateType);
+        Optional.ofNullable(cert.getIssuedDate()).ifPresent(existing::setIssuedDate);
+        Optional.ofNullable(cert.getExpireDate()).ifPresent(existing::setExpireDate);
+
+        // boolean primitive cannot be null, so handle carefully:
         existing.setCertificateExpired(cert.isCertificateExpired());
+
         return repo.save(existing);
     }
+
 
     public void delete(Long id) {
         repo.deleteById(id);
