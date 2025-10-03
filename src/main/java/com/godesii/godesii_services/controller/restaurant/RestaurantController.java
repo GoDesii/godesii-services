@@ -2,6 +2,10 @@ package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.service.RestaurantService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,15 +26,17 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public List<Restaurant> getAll() {
-        return service.getAll();
+    public Page<Restaurant> getAll(@RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "2") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return service.getAll(pageable);
     }
 
+    // GET restaurant by ID (without menu list)
     @GetMapping("/{id}")
     public Restaurant getById(@PathVariable Long id) {
         return service.getById(id);
     }
-
     @PutMapping("/{id}")
     public Restaurant update(@PathVariable Long id, @RequestBody Restaurant restaurant) {
         return service.update(id, restaurant);

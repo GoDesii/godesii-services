@@ -2,6 +2,8 @@ package com.godesii.godesii_services.service;
 
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +22,12 @@ public class RestaurantService {
         return repo.save(restaurant);
     }
 
-    public List<Restaurant> getAll() {
-        return repo.findAll();
+    public Page<Restaurant> getAll(Pageable pageable) {
+        return repo.findAll(pageable);
     }
 
     public Restaurant getById(Long id) {
-        return repo.findById(id).orElseThrow();
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
     }
 
     public Restaurant update(Long id, Restaurant restaurant) {

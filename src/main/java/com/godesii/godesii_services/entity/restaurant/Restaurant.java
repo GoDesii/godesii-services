@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.entity.restaurant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -27,17 +28,17 @@ public class Restaurant {
 
     // One restaurant → many menu items
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     private List<MenuItem> menuItemList;
 
     // One restaurant → many reviews
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     private List<Review> reviews;
 
     // One restaurant → many food certificates
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     private List<FoodCertificate> certificates;
 
     public Long getId() {

@@ -7,6 +7,11 @@ import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import java.util.*;
 import static org.mockito.Mockito.*;
 
@@ -39,10 +44,15 @@ class RestaurantServiceTest {
     }
 
     @Test
-    void testGetAllRestaurants() {
-        when(repository.findAll()).thenReturn(List.of(restaurant));
-        List<Restaurant> list = service.getAll();
-        assertEquals(1, list.size());
+    void testGetAllWithPagination() {
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<Restaurant> page = new PageImpl<>(List.of(restaurant), pageable, 1);
+
+        when(repository.findAll(pageable)).thenReturn(page);
+
+        Page<Restaurant> result = service.getAll(pageable);
+        assertEquals(1, result.getContent().size());
+        assertEquals("Pizza Palace", result.getContent().get(0).getRestaurantName());
     }
 
     @Test

@@ -2,6 +2,8 @@ package com.godesii.godesii_services.service;
 
 import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.repository.restaurant.MenuItemRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,16 +22,19 @@ public class MenuItemService {
         return repo.save(item);
     }
 
-    public List<MenuItem> getAll() {
-        return repo.findAll();
+    public MenuItem getByMenuId(Long id){
+        return repo.findById(id).orElseThrow(()-> new RuntimeException("MenuItem not found by this id"));
+    }
+    public Page<MenuItem> getAll(Pageable pageable) {
+        return repo.findAll(pageable);
     }
 
-    public MenuItem getById(Long id) {
-        return repo.findById(id).orElseThrow();
+    public Page<MenuItem> getByRestaurantId(Long restaurantId, Pageable pageable) {
+        return repo.findByRestaurantId(restaurantId, pageable);
     }
-
     public MenuItem update(Long id, MenuItem item) {
-        MenuItem existing = getById(id);
+        MenuItem existing = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("MenuItem not found"));
 
         Optional.ofNullable(item.getMenuName()).ifPresent(existing::setMenuName);
         Optional.ofNullable(item.getCuisine()).ifPresent(existing::setCuisine);

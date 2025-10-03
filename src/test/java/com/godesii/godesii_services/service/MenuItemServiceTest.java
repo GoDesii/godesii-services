@@ -7,6 +7,10 @@ import com.godesii.godesii_services.repository.restaurant.MenuItemRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,18 +43,29 @@ class MenuItemServiceTest {
     }
 
     @Test
-    void testGetAllMenuItems() {
-        when(repository.findAll()).thenReturn(List.of(menuItem));
-        List<MenuItem> list = service.getAll();
-        assertEquals(1, list.size());
+    void testGetAllWithPagination() {
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<MenuItem> page = new PageImpl<>(List.of(menuItem), pageable, 1);
+
+        when(repository.findAll(pageable)).thenReturn(page);
+
+        Page<MenuItem> result = service.getAll(pageable);
+        assertEquals(1, result.getContent().size());
+        assertEquals("Margherita Pizza", result.getContent().get(0).getMenuName());
     }
 
     @Test
-    void testGetById() {
-        when(repository.findById(2L)).thenReturn(Optional.of(menuItem));
-        MenuItem found = service.getById(2L);
-        assertEquals("Margherita Pizza", found.getMenuName());
+    void testGetByRestaurantIdWithPagination() {
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<MenuItem> page = new PageImpl<>(List.of(menuItem), pageable, 1);
+
+        when(repository.findByRestaurantId(1L, pageable)).thenReturn(page);
+
+        Page<MenuItem> result = service.getByRestaurantId(1L, pageable);
+        assertEquals(1, result.getContent().size());
+        assertEquals("Margherita Pizza", result.getContent().get(0).getMenuName());
     }
+
 
     @Test
     void testUpdateMenuItem() {
