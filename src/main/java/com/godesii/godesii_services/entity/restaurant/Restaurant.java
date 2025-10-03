@@ -1,7 +1,6 @@
 package com.godesii.godesii_services.entity.restaurant;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 
