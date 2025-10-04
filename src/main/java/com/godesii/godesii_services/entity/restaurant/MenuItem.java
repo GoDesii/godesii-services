@@ -110,4 +110,19 @@ public class MenuItem {
         this.restaurant = restaurant;
     }
 
+    @Override
+    public String toString() {
+        return "MenuItem{" +
+                "id=" + id +
+                ", menuName='" + menuName + '\'' +
+                ", cuisine='" + cuisine + '\'' +
+                ", price='" + price + '\'' +
+                ", imageUrl=" + imageUrl +
+                ", isAvailable=" + isAvailable +
+                ", description='" + description + '\'' +
+                ", ingredients='" + ingredients + '\'' +
+                ", menuType='" + menuType + '\'' +
+                ", restaurant=" + restaurant +
+                '}';
+    }
 }

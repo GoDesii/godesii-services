@@ -1,16 +1,16 @@
 package com.godesii.godesii_services.service;
 
+
 import com.godesii.godesii_services.entity.restaurant.FoodCertificate;
 import com.godesii.godesii_services.repository.restaurant.FoodCertificateRepo;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
 public class FoodCertificateService {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FoodCertificateService.class);
 
     private final FoodCertificateRepo repo;
 

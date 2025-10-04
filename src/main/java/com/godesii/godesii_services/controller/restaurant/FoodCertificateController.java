@@ -2,15 +2,15 @@ package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.entity.restaurant.FoodCertificate;
 import com.godesii.godesii_services.service.FoodCertificateService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/certificates")
 public class FoodCertificateController {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FoodCertificateController.class);
+
 
     private final FoodCertificateService service;
 

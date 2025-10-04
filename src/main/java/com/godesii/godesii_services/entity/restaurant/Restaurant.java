@@ -143,5 +143,24 @@ public class Restaurant {
     public void setCertificates(List<FoodCertificate> certificates) {
         this.certificates = certificates;
     }
+
+    @Override
+    public String toString() {
+        return "Restaurant{" +
+                "id=" + id +
+                ", restaurantName='" + restaurantName + '\'' +
+                ", address='" + address + '\'' +
+                ", latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", openingHours='" + openingHours + '\'' +
+                ", closingHours='" + closingHours + '\'' +
+                ", description='" + description + '\'' +
+                ", mealType='" + mealType + '\'' +
+                ", isVerified=" + isVerified +
+                ", menuItemList=" + menuItemList +
+                ", reviews=" + reviews +
+                ", certificates=" + certificates +
+                '}';
+    }
 }
 

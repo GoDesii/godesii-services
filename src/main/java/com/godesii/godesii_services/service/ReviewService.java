@@ -2,15 +2,14 @@ package com.godesii.godesii_services.service;
 
 import com.godesii.godesii_services.entity.restaurant.Review;
 import com.godesii.godesii_services.repository.restaurant.ReviewRepo;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
 public class ReviewService {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ReviewService.class);
 
     private final ReviewRepo repo;
 

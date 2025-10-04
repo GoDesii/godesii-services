@@ -51,5 +51,15 @@ public class Review {
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
     }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", rating='" + rating + '\'' +
+                ", comment='" + comment + '\'' +
+                ", restaurant=" + restaurant +
+                '}';
+    }
 }
 

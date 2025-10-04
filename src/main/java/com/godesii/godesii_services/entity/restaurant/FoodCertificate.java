@@ -85,4 +85,16 @@ public class FoodCertificate {
         this.restaurant = restaurant;
     }
 
+    @Override
+    public String toString() {
+        return "FoodCertificate{" +
+                "id=" + id +
+                ", certificateUrl='" + certificateUrl + '\'' +
+                ", certificateType='" + certificateType + '\'' +
+                ", issuedDate=" + issuedDate +
+                ", expireDate=" + expireDate +
+                ", isCertificateExpired=" + isCertificateExpired +
+                ", restaurant=" + restaurant +
+                '}';
+    }
 }

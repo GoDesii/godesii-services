@@ -1,20 +1,19 @@
 package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.entity.restaurant.MenuItem;
+import com.godesii.godesii_services.service.FoodCertificateService;
 import com.godesii.godesii_services.service.MenuItemService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/menu-items")
 public class MenuItemController {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MenuItemController.class);
 
     private final MenuItemService service;
 

@@ -2,16 +2,17 @@ package com.godesii.godesii_services.controller.restaurant;
 
 
 import com.godesii.godesii_services.entity.restaurant.Review;
+import com.godesii.godesii_services.service.FoodCertificateService;
 import com.godesii.godesii_services.service.ReviewService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
+
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ReviewController.class);
 
     private final ReviewService service;
 

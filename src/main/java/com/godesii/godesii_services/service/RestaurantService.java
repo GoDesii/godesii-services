@@ -2,17 +2,16 @@ package com.godesii.godesii_services.service;
 
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
-@Slf4j
+
 @Service
 public class RestaurantService {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RestaurantService.class);
 
     private final RestaurantRepo repo;
 

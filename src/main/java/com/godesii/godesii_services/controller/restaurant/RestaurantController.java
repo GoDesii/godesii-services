@@ -1,18 +1,18 @@
 package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
+import com.godesii.godesii_services.service.FoodCertificateService;
 import com.godesii.godesii_services.service.RestaurantService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RestController
 @RequestMapping("/restaurants")
 public class RestaurantController {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RestaurantController.class);
 
     private final RestaurantService service;
 
