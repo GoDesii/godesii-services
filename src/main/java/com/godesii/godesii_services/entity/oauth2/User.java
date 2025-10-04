@@ -70,7 +70,7 @@ public class User {
         this.lastLoggedIn = lastLoggedIn;
     }
 
-    @Column(name = "user_name", length = 50)
+    @Column(name = "user_name", length = 50, unique = true)
     public String getUsername() {
         return username;
     }
