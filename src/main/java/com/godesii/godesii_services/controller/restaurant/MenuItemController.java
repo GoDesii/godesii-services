@@ -2,6 +2,7 @@ package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.service.MenuItemService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/menu-items")
 public class MenuItemController {
@@ -22,6 +24,7 @@ public class MenuItemController {
 
     @PostMapping
     public MenuItem create(@RequestBody MenuItem menuItem) {
+        log.info("MenuItem req {}",menuItem);
         return service.create(menuItem);
     }
 

@@ -2,11 +2,13 @@ package com.godesii.godesii_services.service;
 
 import com.godesii.godesii_services.entity.restaurant.Review;
 import com.godesii.godesii_services.repository.restaurant.ReviewRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ReviewService {
 
@@ -34,6 +36,7 @@ public class ReviewService {
         Optional.ofNullable(review.getRating()).ifPresent(existing::setRating);
         Optional.ofNullable(review.getComment()).ifPresent(existing::setComment);
 
+        log.info("updated Review {}",existing);
         return repo.save(existing);
     }
 

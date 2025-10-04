@@ -3,10 +3,12 @@ package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.entity.restaurant.Review;
 import com.godesii.godesii_services.service.ReviewService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
@@ -19,6 +21,7 @@ public class ReviewController {
 
     @PostMapping
     public Review create(@RequestBody Review review) {
+        log.info("Review req {}",review);
         return service.create(review);
     }
 

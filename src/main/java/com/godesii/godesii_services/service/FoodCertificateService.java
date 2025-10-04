@@ -2,11 +2,13 @@ package com.godesii.godesii_services.service;
 
 import com.godesii.godesii_services.entity.restaurant.FoodCertificate;
 import com.godesii.godesii_services.repository.restaurant.FoodCertificateRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class FoodCertificateService {
 
@@ -36,9 +38,8 @@ public class FoodCertificateService {
         Optional.ofNullable(cert.getIssuedDate()).ifPresent(existing::setIssuedDate);
         Optional.ofNullable(cert.getExpireDate()).ifPresent(existing::setExpireDate);
 
-        // boolean primitive cannot be null, so handle carefully:
         existing.setCertificateExpired(cert.isCertificateExpired());
-
+        log.info("Updated FoodCertificate req {}",existing);
         return repo.save(existing);
     }
 
