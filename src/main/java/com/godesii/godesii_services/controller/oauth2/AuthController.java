@@ -10,4 +10,6 @@ public class AuthController {
     public String getLogin(){
         return "login";
     }
+
+
 }

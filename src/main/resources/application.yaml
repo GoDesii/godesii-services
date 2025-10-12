@@ -3,4 +3,19 @@ server:
 
 spring:
   application:
-    name=godesii-services
+    name:godesii-services
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+app:
+  twilio:
+    sid: AC113f85df01c5d6965cd1ed5e739797e6
+    token: 9d6b7594eac2c3c1956db43df8685e68
+    phoneNo: +17176708304
+
+  jwt:
+    encryptor:
+      password: password
+      salt: 626F6F746966756C

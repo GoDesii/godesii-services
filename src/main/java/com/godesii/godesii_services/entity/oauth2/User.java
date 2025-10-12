@@ -116,7 +116,7 @@ public class User {
         this.countryCode = countryCode;
     }
 
-    @Column(name = "mobile_no", length = 10)
+    @Column(name = "mobile_no", length = 10, unique = true)
     public String getMobileNo() {
         return mobileNo;
     }
