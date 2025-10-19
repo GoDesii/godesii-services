@@ -220,7 +220,7 @@ public class UserPrincipal implements UserDetails {
             principal.mfaBackupKey = this.mfaBackupKey;
             principal.roles = roles;
             principal.authorities = this.authorities;
-            check(principal);
+//            check(principal);
             return principal;
         }
 

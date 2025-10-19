@@ -235,8 +235,7 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         LOGGER.debug("got usernamePasswordAuthenticationToken=" + usernamePasswordAuthenticationToken);
 
-        Authentication usernamePasswordAuthentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        return usernamePasswordAuthentication;
+        return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
     }
 
     private OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(Authentication authentication) {

@@ -15,6 +15,7 @@ public class User {
     private Date lastLoggedIn;
     private String username;
     private String password;
+    private String loginOtp;
     private String emailId;
     private String role;
     private String countryCode;
@@ -199,4 +200,12 @@ public class User {
         this.userProfile = userProfile;
     }
 
+    @Column(name = "login_otp")
+    public String getLoginOtp() {
+        return loginOtp;
+    }
+
+    public void setLoginOtp(String loginOtp) {
+        this.loginOtp = loginOtp;
+    }
 }

@@ -15,7 +15,7 @@ public class SecureToken {
     private String id;
     private Instant issuedAt;
     private Instant expiredAt;
-    private String usernameOrMobileNo;
+    private String identifier;
     private String token;
 
     @Id
@@ -47,13 +47,13 @@ public class SecureToken {
         this.expiredAt = expiredAt;
     }
 
-    @Column(name = "username_or_mobile_no")
-    public String getUsernameOrMobileNo() {
-        return usernameOrMobileNo;
+    @Column(name = "identifier")
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setUsernameOrMobileNo(String usernameOrMobileNo) {
-        this.usernameOrMobileNo = usernameOrMobileNo;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     @Column(name = "token", unique = true, updatable = false)

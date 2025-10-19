@@ -1,11 +1,16 @@
 package com.godesii.godesii_services.security;
 
+import com.godesii.godesii_services.security.services.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -76,14 +81,7 @@ public class SecurityConfig {
 
     @Bean // <3>
     public UserDetailsService userDetailsService() {
-        // @formatter:off
-        UserDetails userDetails = User.builder()
-                .username("user")
-                .password(passwordEncoder.encode("pass"))
-                .roles("USER")
-                .build();
-        // @formatter:on
-        return new InMemoryUserDetailsManager(userDetails);
+        return new UserDetailServiceImpl();
     }
 
     @Bean
@@ -104,4 +102,26 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+    @Bean
+    @SuppressWarnings("all")
+    public DaoAuthenticationProvider daoAuthenticationProvider(){
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder);
+        provider.setUserDetailsService(userDetailsService());
+        return provider;
+    }
+
+    @Bean
+    public ProviderManager providerManager(){
+        ProviderManager providerManager = new ProviderManager(daoAuthenticationProvider());
+        providerManager.setAuthenticationEventPublisher(authenticationEventPublisher());
+        return providerManager;
+    }
+
+    @Bean
+    public AuthenticationEventPublisher authenticationEventPublisher(){
+        return new DefaultAuthenticationEventPublisher();
+    }
+
 }

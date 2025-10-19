@@ -2,7 +2,8 @@ package com.godesii.godesii_services.security;
 
 import com.godesii.godesii_services.repository.oauth2.AuthorizationConsentRepository;
 import com.godesii.godesii_services.repository.oauth2.AuthorizationRepository;
-import com.godesii.godesii_services.repository.oauth2.UserRepository;
+import com.godesii.godesii_services.security.authentication.OAuth2PasswordAuthenticationConverter;
+import com.godesii.godesii_services.security.authentication.OAuth2PasswordAuthenticationProvider;
 import com.godesii.godesii_services.security.services.JpaOAuth2AuthorizationConsentService;
 import com.godesii.godesii_services.security.services.JpaOAuth2AuthorizationService;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -11,8 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -32,14 +34,13 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 import javax.sql.DataSource;
-import java.util.UUID;
 
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
@@ -60,7 +61,8 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain authorizationFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain authorizationFilterChain(HttpSecurity http, ProviderManager manager, OAuth2TokenGenerator<OAuth2Token> tokenGenerator) throws Exception{
+
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
         http
@@ -69,6 +71,15 @@ public class AuthorizationServerConfig {
                 .with(authorizationServerConfigurer, (authorizationServer) ->
                         authorizationServer
                                 .oidc(Customizer.withDefaults())// Enable OpenID Connect 1.0
+                                .tokenEndpoint(token -> {
+                                    token.accessTokenRequestConverter(new OAuth2PasswordAuthenticationConverter());
+                                    token.authenticationProvider(new OAuth2PasswordAuthenticationProvider(
+                                           manager,
+                                           oAuth2AuthorizationService(),
+                                            tokenGenerator
+
+                                    ));
+                                })
                 )
                 .authorizeHttpRequests((authorize) ->
                         authorize
@@ -83,14 +94,15 @@ public class AuthorizationServerConfig {
     }
 
     @Bean // <4>
+    @SuppressWarnings("all")
     public RegisteredClientRepository registeredClientRepository() {
         // @formatter:off
         RegisteredClient oidcClient = RegisteredClient.withId("oidc-client")
                 .clientId("oidc-client")
                 .clientSecret(passwordEncoder().encode("secret"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.PASSWORD)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri("http://127.0.0.1:8080/login/oauth2/code/oidc-client")
                 .postLogoutRedirectUri("http://127.0.0.1:8080/")
                 .scope(OidcScopes.OPENID)
@@ -130,10 +142,10 @@ public class AuthorizationServerConfig {
         return new JpaOAuth2AuthorizationService(authorizationRepository, registeredClientRepository());
     }
 //
-//    @Bean
-//    public OAuth2AuthorizationConsentService oAuth2AuthorizationConsentService(){
-//        return new JpaOAuth2AuthorizationConsentService(authorizationConsentRepository, registeredClientRepository());
-//    }
+    @Bean
+    public OAuth2AuthorizationConsentService oAuth2AuthorizationConsentService(){
+        return new JpaOAuth2AuthorizationConsentService(authorizationConsentRepository, registeredClientRepository());
+    }
 
     @Bean // <8>
     public AuthorizationServerSettings authorizationServerSettings() {
@@ -142,7 +154,7 @@ public class AuthorizationServerConfig {
                 .build();
     }
 
-        @Bean
+    @Bean
     public PasswordEncoder passwordEncoder(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }

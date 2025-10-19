@@ -3,9 +3,9 @@ server:
 
 spring:
   application:
-    name:godesii-services
+    name: godesii-services
 
-logging:
+logging:      
   level:
     org.springframework.security: DEBUG
 

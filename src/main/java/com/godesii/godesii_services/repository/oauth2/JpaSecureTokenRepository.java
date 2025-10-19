@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JpaSecureTokenRepository extends JpaRepository<SecureToken, String> {
+
+    SecureToken findByIdentifierAndToken(String identifier, String token);
 }
