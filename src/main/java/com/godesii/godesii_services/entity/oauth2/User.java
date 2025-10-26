@@ -15,6 +15,7 @@ public class User {
     private Date lastLoggedIn;
     private String username;
     private String password;
+    private String loginOtp;
     private String emailId;
     private String role;
     private String countryCode;
@@ -70,7 +71,7 @@ public class User {
         this.lastLoggedIn = lastLoggedIn;
     }
 
-    @Column(name = "user_name", length = 50)
+    @Column(name = "user_name", length = 50, unique = true)
     public String getUsername() {
         return username;
     }
@@ -116,7 +117,7 @@ public class User {
         this.countryCode = countryCode;
     }
 
-    @Column(name = "mobile_no", length = 10)
+    @Column(name = "mobile_no", length = 10, unique = true)
     public String getMobileNo() {
         return mobileNo;
     }
@@ -199,4 +200,12 @@ public class User {
         this.userProfile = userProfile;
     }
 
+    @Column(name = "login_otp")
+    public String getLoginOtp() {
+        return loginOtp;
+    }
+
+    public void setLoginOtp(String loginOtp) {
+        this.loginOtp = loginOtp;
+    }
 }
