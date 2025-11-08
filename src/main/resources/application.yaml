@@ -15,7 +15,12 @@ app:
     token: 9d6b7594eac2c3c1956db43df8685e68
     phoneNo: +17176708304
 
+
   jwt:
+    secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    expiration: 46000
+    refresh-token:
+      expiration: 46000
     encryptor:
       password: password
       salt: 626F6F746966756C

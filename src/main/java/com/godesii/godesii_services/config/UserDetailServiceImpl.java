@@ -1,10 +1,8 @@
-package com.godesii.godesii_services.security.services;
+package com.godesii.godesii_services.config;
 
 import com.godesii.godesii_services.entity.oauth2.User;
 import com.godesii.godesii_services.repository.oauth2.JpaSecureTokenRepository;
 import com.godesii.godesii_services.repository.oauth2.UserRepository;
-import com.godesii.godesii_services.security.UserPrincipal;
-import com.godesii.godesii_services.service.oauth2.SecureTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

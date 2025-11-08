@@ -27,7 +27,7 @@ public class FoodCertificateService {
     }
 
     public FoodCertificate getById(Long id) {
-        return repo.findById(id).orElseThrow();
+        return repo.findById(id).orElseThrow(()-> new IllegalStateException("FoodCertificate not found"));
     }
 
     public FoodCertificate update(Long id, FoodCertificate cert) {

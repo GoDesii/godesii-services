@@ -38,6 +38,7 @@ public class RestaurantController {
     public Restaurant getById(@PathVariable Long id) {
         return service.getById(id);
     }
+
     @PutMapping("/{id}")
     public Restaurant update(@PathVariable Long id, @RequestBody Restaurant restaurant) {
         return service.update(id, restaurant);
