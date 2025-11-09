@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.controller.restaurant;
 
+import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.service.FoodCertificateService;
 import com.godesii.godesii_services.service.MenuItemService;
@@ -11,9 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/menu-items")
+@RequestMapping(MenuItemController.ENDPOINT)
 public class MenuItemController {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MenuItemController.class);
+
+    public static final String ENDPOINT = GoDesiiConstant.API_VERSION + "/menu-items";
 
     private final MenuItemService service;
 
@@ -23,7 +25,6 @@ public class MenuItemController {
 
     @PostMapping
     public MenuItem create(@RequestBody MenuItem menuItem) {
-        log.info("MenuItem req {}",menuItem);
         return service.create(menuItem);
     }
 

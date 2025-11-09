@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.config;
 
+import com.godesii.godesii_services.service.auth.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,14 +13,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -44,8 +41,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->  session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         request-> {
-                            request.requestMatchers("/api/user/**","/auth/**","/certificates/**").permitAll();
-                            request.anyRequest().authenticated();
+                            request.requestMatchers("/api/**","/auth/**").permitAll();
                         }
                 )
                 .csrf(AbstractHttpConfigurer::disable)
@@ -74,15 +70,8 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(){
-        UserDetails userDetails = User.builder()
-                .username("user")
-                .password(passwordEncoder().encode("pass"))
-                .roles("USER")
-                .build();
         return new UserDetailServiceImpl();
     }
-
-
 
 
 }

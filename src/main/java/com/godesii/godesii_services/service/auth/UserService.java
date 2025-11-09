@@ -1,22 +1,19 @@
-package com.godesii.godesii_services.service.oauth2;
+package com.godesii.godesii_services.service.auth;
 
 import com.godesii.godesii_services.config.twilio.SmsRequest;
 import com.godesii.godesii_services.config.twilio.TwilioSmsSenderService;
 import com.godesii.godesii_services.dto.UserCreationRequest;
-import com.godesii.godesii_services.entity.oauth2.SecureToken;
 import com.godesii.godesii_services.entity.oauth2.User;
 import com.godesii.godesii_services.repository.oauth2.UserRepository;
 import com.godesii.godesii_services.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-import java.time.Instant;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

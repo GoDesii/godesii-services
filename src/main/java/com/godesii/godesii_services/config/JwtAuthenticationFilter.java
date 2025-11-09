@@ -1,5 +1,7 @@
 package com.godesii.godesii_services.config;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,6 +41,12 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         String token = header.substring(7);
+        Claims claims = Jwts.parser().verifyWith(jwtProvider.getPublicKey()).build().parseSignedClaims(token).getPayload();
+        String claimType = claims.get("claim_type",String.class);
+        if("refresh_token".equals(claimType)){
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
         String username = jwtProvider.getUsername(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken authentication =

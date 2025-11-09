@@ -1,7 +1,7 @@
-package com.godesii.godesii_services.config;
+package com.godesii.godesii_services.service.auth;
 
+import com.godesii.godesii_services.config.UserPrincipal;
 import com.godesii.godesii_services.entity.oauth2.User;
-import com.godesii.godesii_services.repository.oauth2.JpaSecureTokenRepository;
 import com.godesii.godesii_services.repository.oauth2.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +16,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    private JpaSecureTokenRepository tokenRepository;
+//    private JpaSecureTokenRepository tokenRepository;
 
     @Override
     public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {

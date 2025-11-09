@@ -1,10 +1,10 @@
-package com.godesii.godesii_services.controller.oauth2;
+package com.godesii.godesii_services.controller.auth;
 
 import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.dto.UserCreationRequest;
 import com.godesii.godesii_services.entity.oauth2.User;
-import com.godesii.godesii_services.service.oauth2.UserService;
+import com.godesii.godesii_services.service.auth.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(UserController.ENDPOINT)
 public class UserController {
 
-    public static final String ENDPOINT = "/api/user";
+    public static final String ENDPOINT = GoDesiiConstant.API_VERSION + "/users";
 
     private APIResponse<User> apiResponse;
 

@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.controller.restaurant;
 
+import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.entity.restaurant.FoodCertificate;
 import com.godesii.godesii_services.service.FoodCertificateService;
 import org.springframework.web.bind.annotation.*;
@@ -7,10 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/certificates")
+@RequestMapping(FoodCertificateController.ENDPOINT)
 public class FoodCertificateController {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FoodCertificateController.class);
 
+    public static final String ENDPOINT = GoDesiiConstant.API_VERSION + "/certificates";
 
     private final FoodCertificateService service;
 
@@ -20,7 +21,6 @@ public class FoodCertificateController {
 
     @PostMapping
     public FoodCertificate create(@RequestBody FoodCertificate cert) {
-        log.info("FoodCertificate request {}",cert);
         return service.create(cert);
     }
 
@@ -31,13 +31,11 @@ public class FoodCertificateController {
 
     @GetMapping("/{id}")
     public FoodCertificate getById(@PathVariable Long id) {
-        log.info("getById {}",id);
         return service.getById(id);
     }
 
     @PutMapping("/{id}")
     public FoodCertificate update(@PathVariable Long id, @RequestBody FoodCertificate cert) {
-        log.info("FoodCertificate request {}, Id {}",cert,id);
         return service.update(id, cert);
     }
 

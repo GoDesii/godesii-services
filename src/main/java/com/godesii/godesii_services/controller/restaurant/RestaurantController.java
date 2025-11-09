@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.controller.restaurant;
 
+import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.service.FoodCertificateService;
 import com.godesii.godesii_services.service.RestaurantService;
@@ -10,9 +11,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/restaurants")
+@RequestMapping(RestaurantController.ENDPOINT)
 public class RestaurantController {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RestaurantController.class);
+
+    public static final String ENDPOINT = GoDesiiConstant.API_VERSION + "/restaurants";
 
     private final RestaurantService service;
 
@@ -22,7 +24,6 @@ public class RestaurantController {
 
     @PostMapping("/create")
     public Restaurant create(@RequestBody Restaurant restaurant) {
-        log.info("Restaurant req {}",restaurant);
         return service.create(restaurant);
     }
 

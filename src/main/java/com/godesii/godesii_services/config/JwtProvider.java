@@ -4,41 +4,64 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.*;
+import java.security.interfaces.RSAKey;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtProvider {
 
 
-    private String jwtSecret = generateSecretKey();
-    private long jwtExpirationDate = 3600000; //1h = 3600s and 3600*1000 = 3600000 milliseconds
+    @Value("${app.jwt.access-token.expiration}")
+    private String accessTokenExpiryTime;
 
-    KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.ES256);
-    PrivateKey privateKey = keyPair.getPrivate();
-    PublicKey publicKey = keyPair.getPublic();
+    @Value("${app.jwt.refresh-token.expiration}")
+    private String refreshTokenExpiryTime;
 
-    private Key key(){
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
-    }
-
+    private final KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
+    private final PrivateKey privateKey = keyPair.getPrivate();
+    private final PublicKey publicKey = keyPair.getPublic();
 
     @SuppressWarnings("all")
-    public String generateToken(Authentication authentication) {
-
+    public String generateAccessToken(Authentication authentication) {
+        Map<String, String> claims = new HashMap<>();
+        claims.put("claim_type", "access_token");
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date expiryDate = new Date(currentDate.getTime() + 3600 * 1000);
+        Date accessTokenExpiryDate = new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
+
         return Jwts
                 .builder()
+                .setClaims(claims)
                 .subject(username)
                 .issuedAt(currentDate)
-                .expiration(expiryDate)
-                .signWith(privateKey, SignatureAlgorithm.ES256)
+                .expiration(accessTokenExpiryDate)
+                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .compact();
+    }
+
+    @SuppressWarnings("all")
+    public String generateRefreshToken(Authentication authentication) {
+        Map<String, String> claims = new HashMap<>();
+        claims.put("claim_type", "refresh_token");
+        String username = authentication.getName();
+        Date currentDate = new Date();
+        Date refreshTokenExpiryDate = new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
+
+        return Jwts
+                .builder()
+                .setClaims(claims)
+                .subject(username)
+                .issuedAt(currentDate)
+                .expiration(refreshTokenExpiryDate)
+                .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
     }
 
@@ -50,6 +73,22 @@ public class JwtProvider {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public String getAccessTokenExpiryTime(){
+        return accessTokenExpiryTime;
+    }
+
+    public String getRefreshTokenExpiryTime(){
+        return refreshTokenExpiryTime;
+    }
+
+    public PublicKey getPublicKey(){
+        return this.publicKey;
+    }
+
+    public PrivateKey getPrivateKey(){
+        return this.privateKey;
     }
 
     public String generateSecretKey() {

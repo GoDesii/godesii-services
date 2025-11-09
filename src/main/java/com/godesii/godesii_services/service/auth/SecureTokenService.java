@@ -1,4 +1,4 @@
-package com.godesii.godesii_services.service.oauth2;
+package com.godesii.godesii_services.service.auth;
 
 import com.godesii.godesii_services.entity.oauth2.SecureToken;
 import com.godesii.godesii_services.repository.oauth2.JpaSecureTokenRepository;
