@@ -1,6 +1,6 @@
 package com.godesii.godesii_services.controller;
 
-import com.godesii.godesii_services.config.JwtProvider;
+import com.godesii.godesii_services.security.JwtProvider;
 import com.godesii.godesii_services.dto.LoginPayload;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
