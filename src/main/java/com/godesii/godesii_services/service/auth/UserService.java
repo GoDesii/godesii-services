@@ -2,7 +2,7 @@ package com.godesii.godesii_services.service.auth;
 
 import com.godesii.godesii_services.config.twilio.SmsRequest;
 import com.godesii.godesii_services.config.twilio.TwilioSmsSenderService;
-import com.godesii.godesii_services.dto.UserCreationRequest;
+import com.godesii.godesii_services.dto.MobileUserCreationRequest;
 import com.godesii.godesii_services.entity.auth.AuthProvider;
 import com.godesii.godesii_services.entity.auth.User;
 import com.godesii.godesii_services.repository.auth.UserRepository;
@@ -38,12 +38,12 @@ public class UserService  {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(UserCreationRequest request){
+    public User createUser(MobileUserCreationRequest request){
         this.userRepository.findByUsername("");
         return null;
     }
 
-    public User registerMobileUser(String mobileNo){
+    public String registerMobileUser(String mobileNo){
         if(!isMobileNumber(mobileNo)) {
             throw new IllegalArgumentException("");
         }
@@ -57,17 +57,20 @@ public class UserService  {
             existingUser.setAccountNonExpired(true);
             existingUser.setAccountNonLocked(true);
             existingUser.setCredentialsNonExpired(true);
-            return userRepository.save(existingUser);
+            userRepository.saveAndFlush(existingUser);
+            return generatedOTP;
         }
         User user = new User();
         user.setMobileNo(mobileNo);
-        user.setAuthProvider(AuthProvider.MOBILE_OTP);
+//        user.setAuthProvider(AuthProvider.MOBILE_OTP);
         user.setMobileNoVerified(false);
         user.setLoginOtp(passwordEncoder.encode(generatedOTP));
         user.setAccountNonExpired(true);
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
-        return this.userRepository.save(user);
+        this.userRepository.save(user);
+
+        return generatedOTP;
     }
 
     public User checkIfUserExist(String username){
