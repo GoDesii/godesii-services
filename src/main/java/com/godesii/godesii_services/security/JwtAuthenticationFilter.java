@@ -1,4 +1,4 @@
-package com.godesii.godesii_services.config;
+package com.godesii.godesii_services.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

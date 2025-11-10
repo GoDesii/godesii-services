@@ -1,6 +1,6 @@
 package com.godesii.godesii_services.service.auth;
 
-import com.godesii.godesii_services.config.UserPrincipal;
+import com.godesii.godesii_services.security.UserPrincipal;
 import com.godesii.godesii_services.entity.auth.User;
 import com.godesii.godesii_services.repository.auth.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

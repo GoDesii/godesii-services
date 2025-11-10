@@ -1,9 +1,9 @@
-package com.godesii.godesii_services.config;
+package com.godesii.godesii_services.security;
 
 import com.godesii.godesii_services.entity.auth.RSAKeys;
 import com.godesii.godesii_services.repository.auth.JpaRSAKeysRepository;
-import com.godesii.godesii_services.config.management.rotation_key.RSAPrivateKeyConverter;
-import com.godesii.godesii_services.config.management.rotation_key.RSAPublicKeyConverter;
+import com.godesii.godesii_services.security.management.rotation_key.RSAPrivateKeyConverter;
+import com.godesii.godesii_services.security.management.rotation_key.RSAPublicKeyConverter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;

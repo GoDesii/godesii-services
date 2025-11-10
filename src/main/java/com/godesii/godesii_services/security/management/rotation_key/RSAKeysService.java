@@ -1,4 +1,4 @@
-package com.godesii.godesii_services.config.management.rotation_key;
+package com.godesii.godesii_services.security.management.rotation_key;
 
 import com.godesii.godesii_services.entity.auth.RSAKeys;
 import com.godesii.godesii_services.repository.auth.JpaRSAKeysRepository;

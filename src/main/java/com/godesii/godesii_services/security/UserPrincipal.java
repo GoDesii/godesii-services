@@ -1,4 +1,4 @@
-package com.godesii.godesii_services.config;
+package com.godesii.godesii_services.security;
 
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.CredentialsExpiredException;

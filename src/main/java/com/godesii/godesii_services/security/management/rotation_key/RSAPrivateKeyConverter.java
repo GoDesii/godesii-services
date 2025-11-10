@@ -1,4 +1,4 @@
-package com.godesii.godesii_services.config.management.rotation_key;
+package com.godesii.godesii_services.security.management.rotation_key;
 
 import org.springframework.core.serializer.Deserializer;
 import org.springframework.core.serializer.Serializer;

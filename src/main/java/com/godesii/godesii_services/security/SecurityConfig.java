@@ -1,8 +1,8 @@
-package com.godesii.godesii_services.config;
+package com.godesii.godesii_services.security;
 
 import com.godesii.godesii_services.repository.auth.JpaRSAKeysRepository;
-import com.godesii.godesii_services.config.management.rotation_key.RSAPrivateKeyConverter;
-import com.godesii.godesii_services.config.management.rotation_key.RSAPublicKeyConverter;
+import com.godesii.godesii_services.security.management.rotation_key.RSAPrivateKeyConverter;
+import com.godesii.godesii_services.security.management.rotation_key.RSAPublicKeyConverter;
 import com.godesii.godesii_services.service.auth.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

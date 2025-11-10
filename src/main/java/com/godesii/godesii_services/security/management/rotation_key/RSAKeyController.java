@@ -1,9 +1,8 @@
-package com.godesii.godesii_services.config.management.rotation_key;
+package com.godesii.godesii_services.security.management.rotation_key;
 
 import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.repository.auth.JpaRSAKeysRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
