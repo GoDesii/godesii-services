@@ -1,8 +1,8 @@
 package com.godesii.godesii_services.service.auth;
 
 import com.godesii.godesii_services.config.UserPrincipal;
-import com.godesii.godesii_services.entity.oauth2.User;
-import com.godesii.godesii_services.repository.oauth2.UserRepository;
+import com.godesii.godesii_services.entity.auth.User;
+import com.godesii.godesii_services.repository.auth.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

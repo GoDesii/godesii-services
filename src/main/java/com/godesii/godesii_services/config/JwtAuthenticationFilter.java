@@ -22,7 +22,6 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-
     private final UserDetailsService userDetailsService;
     private final JwtProvider jwtProvider;
 
@@ -40,14 +39,26 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
         String token = header.substring(7);
-        Claims claims = Jwts.parser().verifyWith(jwtProvider.getPublicKey()).build().parseSignedClaims(token).getPayload();
+        Claims claims = Jwts
+                .parser()
+                .verifyWith(jwtProvider.getRSAKeys().publicKey())
+                .build()
+                .parseSignedClaims(token).getPayload();
         String claimType = claims.get("claim_type",String.class);
+
         if("refresh_token".equals(claimType)){
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
+
         String username = jwtProvider.getUsername(token);
+        if(!jwtProvider.validateToken(token, username)){
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

@@ -1,23 +1,28 @@
 package com.godesii.godesii_services.config;
 
+import com.godesii.godesii_services.entity.auth.RSAKeys;
+import com.godesii.godesii_services.repository.auth.JpaRSAKeysRepository;
+import com.godesii.godesii_services.config.management.rotation_key.RSAPrivateKeyConverter;
+import com.godesii.godesii_services.config.management.rotation_key.RSAPublicKeyConverter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
-
+import java.io.IOException;
 import java.security.*;
-import java.security.interfaces.RSAKey;
-import java.util.Base64;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
-public class JwtProvider {
 
+public final class JwtProvider {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(JwtProvider.class);;
 
     @Value("${app.jwt.access-token.expiration}")
     private String accessTokenExpiryTime;
@@ -25,9 +30,17 @@ public class JwtProvider {
     @Value("${app.jwt.refresh-token.expiration}")
     private String refreshTokenExpiryTime;
 
-    private final KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
-    private final PrivateKey privateKey = keyPair.getPrivate();
-    private final PublicKey publicKey = keyPair.getPublic();
+    private final JpaRSAKeysRepository jpaRSAKeysRepository;
+    private final RSAPublicKeyConverter rsaPublicKeyConverter;
+    private final RSAPrivateKeyConverter rsaPrivateKeyConverter;
+
+    public JwtProvider(JpaRSAKeysRepository jpaRSAKeysRepository,
+                       RSAPublicKeyConverter rsaPublicKeyConverter,
+                       RSAPrivateKeyConverter rsaPrivateKeyConverter) {
+        this.jpaRSAKeysRepository = jpaRSAKeysRepository;
+        this.rsaPublicKeyConverter = rsaPublicKeyConverter;
+        this.rsaPrivateKeyConverter = rsaPrivateKeyConverter;
+    }
 
     @SuppressWarnings("all")
     public String generateAccessToken(Authentication authentication) {
@@ -35,7 +48,8 @@ public class JwtProvider {
         claims.put("claim_type", "access_token");
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date accessTokenExpiryDate = new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
+        Date accessTokenExpiryDate =
+                new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
 
         return Jwts
                 .builder()
@@ -43,7 +57,7 @@ public class JwtProvider {
                 .subject(username)
                 .issuedAt(currentDate)
                 .expiration(accessTokenExpiryDate)
-                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .signWith(this.getRSAKeys().privateKey(), SignatureAlgorithm.RS256)
                 .compact();
     }
 
@@ -53,7 +67,8 @@ public class JwtProvider {
         claims.put("claim_type", "refresh_token");
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date refreshTokenExpiryDate = new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
+        Date refreshTokenExpiryDate =
+                new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
 
         return Jwts
                 .builder()
@@ -61,18 +76,53 @@ public class JwtProvider {
                 .subject(username)
                 .issuedAt(currentDate)
                 .expiration(refreshTokenExpiryDate)
-                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .signWith(this.getRSAKeys().privateKey(), SignatureAlgorithm.RS256)
                 .compact();
     }
 
 
     public String getUsername(String token) {
         return Jwts.parser()
-                .verifyWith(publicKey)
+                .verifyWith(this.getRSAKeys().publicKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public boolean validateToken(String token, String username) {
+        String subject = getUsername(token);
+        return (subject.equals(username) && !isTokenExpired(token, this.getRSAKeys().publicKey())) ;
+    }
+
+    public boolean isTokenExpired(String token, PublicKey publicKey) {
+        Date expiration = Jwts.parser()
+                .verifyWith(publicKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload().getExpiration();
+        return expiration.before(new Date());
+    }
+
+    public JpaRSAKeysRepository.RsaKeyPair getRSAKeys()  {
+        try{
+            RSAKeys rsaKeys = this.jpaRSAKeysRepository
+                    .findAll(Sort.by(Sort.Direction.DESC, "createdAt")).get(0);
+            RSAPublicKey publicKey = this.rsaPublicKeyConverter
+                    .deserializeFromByteArray(rsaKeys.getPublicKey().getBytes());
+            RSAPrivateKey privateKey = this.rsaPrivateKeyConverter
+                    .deserializeFromByteArray(rsaKeys.getPrivateKey().getBytes());
+            return new JpaRSAKeysRepository.RsaKeyPair(
+                    rsaKeys.getId(),
+                    rsaKeys.getCreatedAt(),
+                    publicKey,
+                    privateKey
+            );
+        }
+        catch (IOException ex){
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        return null;
     }
 
     public String getAccessTokenExpiryTime(){
@@ -83,28 +133,4 @@ public class JwtProvider {
         return refreshTokenExpiryTime;
     }
 
-    public PublicKey getPublicKey(){
-        return this.publicKey;
-    }
-
-    public PrivateKey getPrivateKey(){
-        return this.privateKey;
-    }
-
-    public String generateSecretKey() {
-        // length means (32 bytes are required for 256-bit key)
-        int length = 32;
-
-        // Create a secure random generator
-        SecureRandom secureRandom = new SecureRandom();
-
-        // Create a byte array to hold the random bytes
-        byte[] keyBytes = new byte[length];
-
-        // Generate the random bytes
-        secureRandom.nextBytes(keyBytes);
-
-        // Encode the key in Base64 format for easier storage and usage
-        return Base64.getEncoder().encodeToString(keyBytes);
-    }
 }

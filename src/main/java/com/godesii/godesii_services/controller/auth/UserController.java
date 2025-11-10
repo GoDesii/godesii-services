@@ -3,7 +3,7 @@ package com.godesii.godesii_services.controller.auth;
 import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.dto.UserCreationRequest;
-import com.godesii.godesii_services.entity.oauth2.User;
+import com.godesii.godesii_services.entity.auth.User;
 import com.godesii.godesii_services.service.auth.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

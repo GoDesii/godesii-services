@@ -1,7 +1,11 @@
 package com.godesii.godesii_services.config;
 
+import com.godesii.godesii_services.repository.auth.JpaRSAKeysRepository;
+import com.godesii.godesii_services.config.management.rotation_key.RSAPrivateKeyConverter;
+import com.godesii.godesii_services.config.management.rotation_key.RSAPublicKeyConverter;
 import com.godesii.godesii_services.service.auth.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -14,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,11 +29,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-
-
     @Autowired
-    private JwtProvider jwtProvider;
+    private JpaRSAKeysRepository jpaRSAKeysRepository;
 
+    @Value("${app.jwt.encryptor.password}")
+    private String password;
+    @Value("${app.jwt.encryptor.salt}")
+    private String salt;
+
+    @Bean
+    public RSAPublicKeyConverter publicKeyConverter() {
+        return new RSAPublicKeyConverter(textEncryptor());
+    }
+
+    @Bean
+    public RSAPrivateKeyConverter privateKeyConverter() {
+        return new RSAPrivateKeyConverter(textEncryptor());
+    }
+
+    @Bean
+    public JwtProvider jwtProvider() {
+        return new JwtProvider(jpaRSAKeysRepository, publicKeyConverter(), privateKeyConverter());
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -53,7 +76,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception{
-        return new JwtAuthenticationFilter(jwtProvider, userDetailsService());
+        return new JwtAuthenticationFilter(jwtProvider(), userDetailsService());
     }
 
     @Bean
@@ -73,5 +96,9 @@ public class SecurityConfig {
         return new UserDetailServiceImpl();
     }
 
+    @Bean
+    public TextEncryptor textEncryptor(){
+        return Encryptors.text(password, salt);
+    }
 
 }

@@ -3,8 +3,9 @@ package com.godesii.godesii_services.service.auth;
 import com.godesii.godesii_services.config.twilio.SmsRequest;
 import com.godesii.godesii_services.config.twilio.TwilioSmsSenderService;
 import com.godesii.godesii_services.dto.UserCreationRequest;
-import com.godesii.godesii_services.entity.oauth2.User;
-import com.godesii.godesii_services.repository.oauth2.UserRepository;
+import com.godesii.godesii_services.entity.auth.AuthProvider;
+import com.godesii.godesii_services.entity.auth.User;
+import com.godesii.godesii_services.repository.auth.UserRepository;
 import com.godesii.godesii_services.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,7 @@ public class UserService  {
         }
         User user = new User();
         user.setMobileNo(mobileNo);
+        user.setAuthProvider(AuthProvider.MOBILE_OTP);
         user.setMobileNoVerified(false);
         user.setLoginOtp(passwordEncoder.encode(generatedOTP));
         user.setAccountNonExpired(true);

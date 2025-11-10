@@ -1,7 +1,7 @@
 package com.godesii.godesii_services.service.auth;
 
-import com.godesii.godesii_services.entity.oauth2.SecureToken;
-import com.godesii.godesii_services.repository.oauth2.JpaSecureTokenRepository;
+import com.godesii.godesii_services.entity.auth.SecureToken;
+import com.godesii.godesii_services.repository.auth.JpaSecureTokenRepository;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
