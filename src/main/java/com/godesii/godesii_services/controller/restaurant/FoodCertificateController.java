@@ -2,7 +2,9 @@ package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.entity.restaurant.FoodCertificate;
-import com.godesii.godesii_services.service.FoodCertificateService;
+import com.godesii.godesii_services.service.restaurant.FoodCertificateService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,27 +22,32 @@ public class FoodCertificateController {
     }
 
     @PostMapping
-    public FoodCertificate create(@RequestBody FoodCertificate cert) {
-        return service.create(cert);
+    public ResponseEntity<FoodCertificate> create(@RequestBody FoodCertificate cert) {
+        FoodCertificate created = service.create(cert);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping
-    public List<FoodCertificate> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<FoodCertificate>> getAll() {
+        List<FoodCertificate> certificates = service.getAll();
+        return ResponseEntity.ok(certificates);
     }
 
     @GetMapping("/{id}")
-    public FoodCertificate getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ResponseEntity<FoodCertificate> getById(@PathVariable Long id) {
+        FoodCertificate cert = service.getById(id);
+        return cert != null ? ResponseEntity.ok(cert) : ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
-    public FoodCertificate update(@PathVariable Long id, @RequestBody FoodCertificate cert) {
-        return service.update(id, cert);
+    public ResponseEntity<FoodCertificate> update(@PathVariable Long id, @RequestBody FoodCertificate cert) {
+        FoodCertificate updated = service.update(id, cert);
+        return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

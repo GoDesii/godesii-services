@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.godesii.godesii_services.entity.restaurant.Review;
 import com.godesii.godesii_services.repository.restaurant.ReviewRepo;
+import com.godesii.godesii_services.service.restaurant.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;

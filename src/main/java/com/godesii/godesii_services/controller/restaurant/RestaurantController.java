@@ -2,12 +2,13 @@ package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
-import com.godesii.godesii_services.service.FoodCertificateService;
-import com.godesii.godesii_services.service.RestaurantService;
+import com.godesii.godesii_services.service.restaurant.RestaurantService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,30 +24,34 @@ public class RestaurantController {
     }
 
     @PostMapping("/create")
-    public Restaurant create(@RequestBody Restaurant restaurant) {
-        return service.create(restaurant);
+    public ResponseEntity<Restaurant> create(@RequestBody Restaurant restaurant) {
+        Restaurant created = service.create(restaurant);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping
-    public Page<Restaurant> getAll(@RequestParam(defaultValue = "0") int page,
-                                   @RequestParam(defaultValue = "2") int size) {
+    public ResponseEntity<Page<Restaurant>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "2") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        return service.getAll(pageable);
+        Page<Restaurant> restaurants = service.getAll(pageable);
+        return ResponseEntity.ok(restaurants);
     }
 
-    // GET restaurant by ID (without menu list)
     @GetMapping("/{id}")
-    public Restaurant getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ResponseEntity<Restaurant> getById(@PathVariable Long id) {
+        Restaurant restaurant = service.getById(id);
+        return restaurant != null ? ResponseEntity.ok(restaurant) : ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
-    public Restaurant update(@PathVariable Long id, @RequestBody Restaurant restaurant) {
-        return service.update(id, restaurant);
+    public ResponseEntity<Restaurant> update(@PathVariable Long id, @RequestBody Restaurant restaurant) {
+        Restaurant updated = service.update(id, restaurant);
+        return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

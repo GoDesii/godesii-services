@@ -1,4 +1,4 @@
-package com.godesii.godesii_services.controller;
+package com.godesii.godesii_services.service.auth;
 
 import com.godesii.godesii_services.security.JwtProvider;
 import com.godesii.godesii_services.dto.LoginPayload;

@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<APIResponse<User>> registerUser(@RequestBody MobileUserCreationRequest request){
+    public ResponseEntity<APIResponse<User>> registerUser(@RequestBody MobileUserCreationRequest request) {
         this.apiResponse = new APIResponse<>(
                 HttpStatus.CREATED,
                 userService.createUser(request),
@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @PostMapping("/mobile/register")
-    public ResponseEntity<Object> register(@RequestBody MobileUserCreationRequest mobileNo){
+    public ResponseEntity<Object> register(@RequestBody MobileUserCreationRequest mobileNo) {
         APIResponse<String> apiResponses = new APIResponse<>(
                 HttpStatus.CREATED,
                 userService.registerMobileUser(mobileNo.getMobile()),
