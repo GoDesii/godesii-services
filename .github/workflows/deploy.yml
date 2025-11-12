@@ -51,6 +51,11 @@ jobs:
           target: "/home/ubuntu/app/build/libs/"
           overwrite: true
 
+      - name: 🔍 Show Gradle build output
+        run: |
+          echo "---- build directory ----"
+          ls -R build || true
+
       # -------------------------------
       # 6️⃣ Restart Spring Boot service via systemd
       # -------------------------------
