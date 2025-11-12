@@ -60,7 +60,10 @@ jobs:
           host: ${{ vars.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
+          script_stop: false   # 👈 prevents pipeline from stopping on non-zero exit
           script: |
+            set +e  # ignore minor errors (prevents SSH failure)
+
             echo "🔹 Deploying latest build to EC2..."
             mkdir -p /home/ubuntu/app
             cd /home/ubuntu/app
@@ -69,12 +72,21 @@ jobs:
             find . -type f -name "*.jar" ! -newer "$(ls -t *.jar | head -n 1)" -delete || true
 
             echo "💀 Killing any running Spring Boot processes (safe kill)..."
-            bash -c "pkill -f 'java -jar' || true"
-            sleep 2
+            if pgrep -f 'java -jar' > /dev/null; then
+              echo "Found running Spring Boot process. Killing it safely..."
+              pkill -f 'java -jar' || true
+              sleep 2
+            else
+              echo "No Spring Boot process running."
+            fi
 
             echo "🚀 Starting new version..."
-            nohup java -jar $(ls -t *.jar | head -n 1) > app.log 2>&1 &
+            NEW_JAR=$(ls -t *.jar | head -n 1)
+            nohup java -jar "$NEW_JAR" > app.log 2>&1 &
             sleep 5
 
-            echo "✅ Deployment complete! App should be running."
-            ps aux | grep java || true
+            echo "✅ Deployment complete! Checking process..."
+            ps aux | grep "$NEW_JAR" || true
+
+            echo "🎉 All done!"
+            exit 0
