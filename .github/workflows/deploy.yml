@@ -50,7 +50,6 @@ jobs:
           source: "build/libs/*.jar"
           target: "/home/ubuntu/app/"
           overwrite: true
-          strip_components: 3
 
       # -------------------------------
       # 6️⃣ Restart Spring Boot service via systemd
