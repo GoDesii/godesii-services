@@ -73,6 +73,7 @@ jobs:
 
             echo "🆕 Updating systemd service JAR..."
             LATEST_JAR=$(ls -t *.jar | head -n 1)
+            echo "🆕 Updating systemd service JAR... $LATEST_JAR"
             sudo cp "$LATEST_JAR" /home/ubuntu/app/app.jar
 
             echo "💀 Restarting Spring Boot service..."
