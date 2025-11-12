@@ -65,7 +65,7 @@ jobs:
 
             echo "🔹 Deploying latest build to EC2..."
             mkdir -p /home/ubuntu/app
-            cd /home/ubuntu/app
+            cd /home/ubuntu/app/build/libs
 
             echo "🧹 Cleaning old JARs..."
             find . -type f -name "*.jar" ! -newer "$(ls -t *.jar | head -n 1)" -delete || true
