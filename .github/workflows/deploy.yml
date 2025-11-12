@@ -65,24 +65,30 @@ jobs:
             set -e
       
             echo "🔹 Deploying latest build to EC2..."
-            mkdir -p /home/ubuntu/app/build/libs
-            cd /home/ubuntu/app/build/libs || { echo "❌ Directory not found!"; exit 1; }
+            mkdir -p /home/ubuntu/app
+            cd /home/ubuntu/app || { echo "❌ Directory not found!"; exit 1; }
       
-            echo "📄 Listing JAR files before cleanup..."
-            ls -lh *.jar || echo "⚠️ No JAR files found yet."
+            echo "📦 Listing JAR files before cleanup..."
+            ls -lh *.jar 2>/dev/null || echo "⚠️ No existing JARs found."
       
-            echo "🧾 Detecting latest runnable JAR..."
-            # ✅ Pick only executable (non-plain) JARs
+            echo "🧾 Detecting latest runnable JAR (excluding -plain)..."
             LATEST_JAR=$(ls -t *-SNAPSHOT.jar 2>/dev/null | grep -v "plain" | head -n 1 || true)
+      
             if [ -z "$LATEST_JAR" ]; then
-              echo "❌ No valid (non-plain) JAR found! Exiting..."
+              echo "❌ No valid JAR found! Exiting..."
               exit 1
             fi
       
-            echo "✅ Found JAR to deploy: $LATEST_JAR"
+            echo "✅ Found latest JAR: $LATEST_JAR"
       
-            echo "🧹 Cleaning old JARs (keeping latest)..."
-            find . -type f -name "*.jar" ! -newer "$LATEST_JAR" -delete || true
+            echo "🧹 Cleaning up older JARs (keeping latest)..."
+            # Only delete if more than one JAR exists
+            COUNT=$(ls -1 *.jar 2>/dev/null | wc -l || true)
+            if [ "$COUNT" -gt 1 ]; then
+              find . -type f -name "*.jar" ! -name "$LATEST_JAR" -delete || true
+            else
+              echo "⚠️ Only one JAR found — skipping cleanup."
+            fi
       
             echo "🆕 Copying $LATEST_JAR to /home/ubuntu/app/app.jar"
             sudo cp "$LATEST_JAR" /home/ubuntu/app/app.jar
@@ -93,7 +99,7 @@ jobs:
             sleep 2
             sudo systemctl start springboot
       
-            echo "✅ Checking service status..."
+            echo "✅ Checking Spring Boot service status..."
             sudo systemctl status springboot --no-pager || true
       
             echo "🎯 Deployment complete!"
