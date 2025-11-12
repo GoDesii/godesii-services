@@ -52,17 +52,17 @@ jobs:
           strip_components: 2
 
       # -------------------------------
-      # 6️⃣ SSH into EC2 and deploy app
+      # 6️⃣ Restart Spring Boot service via systemd
       # -------------------------------
-      - name: Restart Spring Boot app on EC2
+      - name: Restart Spring Boot service on EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ vars.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
-          script_stop: false   # 👈 prevents pipeline from stopping on non-zero exit
+          script_stop: false
           script: |
-            set +e  # ignore minor errors (prevents SSH failure)
+            set +e
 
             echo "🔹 Deploying latest build to EC2..."
             mkdir -p /home/ubuntu/app
@@ -71,22 +71,18 @@ jobs:
             echo "🧹 Cleaning old JARs..."
             find . -type f -name "*.jar" ! -newer "$(ls -t *.jar | head -n 1)" -delete || true
 
-            echo "💀 Killing any running Spring Boot processes (safe kill)..."
-            if pgrep -f 'java -jar' > /dev/null; then
-              echo "Found running Spring Boot process. Killing it safely..."
-              pkill -f 'java -jar' || true
-              sleep 2
-            else
-              echo "No Spring Boot process running."
-            fi
+            echo "🆕 Updating systemd service JAR..."
+            LATEST_JAR=$(ls -t *.jar | head -n 1)
+            sudo cp "$LATEST_JAR" /home/ubuntu/app/app.jar
 
-            echo "🚀 Starting new version..."
-            NEW_JAR=$(ls -t *.jar | head -n 1)
-            nohup java -jar "$NEW_JAR" > app.log 2>&1 &
-            sleep 5
+            echo "💀 Restarting Spring Boot service..."
+            sudo systemctl daemon-reload
+            sudo systemctl stop springboot || true
+            sleep 2
+            sudo systemctl start springboot
 
-            echo "✅ Deployment complete! Checking process..."
-            ps aux | grep "$NEW_JAR" || true
+            echo "✅ Checking service status..."
+            sudo systemctl status springboot --no-pager || true
 
-            echo "🎉 All done!"
+            echo "🎯 Deployment complete!"
             exit 0
