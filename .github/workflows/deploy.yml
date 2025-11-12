@@ -63,49 +63,38 @@ jobs:
           script_stop: false
           script: |
             set -e
-
+      
             echo "🔹 Deploying latest build to EC2..."
-            mkdir -p /home/ubuntu/app
-            cd /home/ubuntu/app || { echo "❌ App directory missing"; exit 1; }
-
-            echo "📦 Listing all JARs before cleanup..."
-            ls -lh *.jar 2>/dev/null || echo "⚠️ No existing JARs found."
-
-            echo "🧾 Detecting latest JAR before cleanup..."
-            LATEST_JAR_BEFORE=$(ls -t *.jar 2>/dev/null | head -n 1 || true)
-            if [ -z "$LATEST_JAR_BEFORE" ]; then
-              echo "⚠️ No previous JARs detected (probably a fresh deploy)."
-            else
-              echo "✅ Latest JAR before cleanup: $LATEST_JAR_BEFORE"
-            fi
-
-            echo "🧹 Cleaning old JARs (keeping latest)..."
-            if ls *.jar 1> /dev/null 2>&1; then
-              find . -type f -name "*.jar" ! -newer "$(ls -t *.jar | head -n 1)" -delete
-            else
-              echo "⚠️ No JARs found to clean."
-            fi
-
-            echo "📁 Files after cleanup:"
-            ls -lh *.jar 2>/dev/null || echo "⚠️ No JAR files remain."
-
-            echo "🆕 Updating systemd service JAR..."
-            LATEST_JAR=$(ls -t *.jar 2>/dev/null | head -n 1)
+            mkdir -p /home/ubuntu/app/build/libs
+            cd /home/ubuntu/app/build/libs || { echo "❌ Directory not found!"; exit 1; }
+      
+            echo "📄 Listing JAR files before cleanup..."
+            ls -lh *.jar || echo "⚠️ No JAR files found yet."
+      
+            echo "🧾 Detecting latest runnable JAR..."
+            # ✅ Pick only executable (non-plain) JARs
+            LATEST_JAR=$(ls -t *-SNAPSHOT.jar 2>/dev/null | grep -v "plain" | head -n 1 || true)
             if [ -z "$LATEST_JAR" ]; then
-              echo "❌ No new JAR found! Deployment aborted."
+              echo "❌ No valid (non-plain) JAR found! Exiting..."
               exit 1
             fi
-
-            echo "✅ Using $LATEST_JAR as the new deployment JAR"
+      
+            echo "✅ Found JAR to deploy: $LATEST_JAR"
+      
+            echo "🧹 Cleaning old JARs (keeping latest)..."
+            find . -type f -name "*.jar" ! -newer "$LATEST_JAR" -delete || true
+      
+            echo "🆕 Copying $LATEST_JAR to /home/ubuntu/app/app.jar"
             sudo cp "$LATEST_JAR" /home/ubuntu/app/app.jar
-
+      
             echo "💀 Restarting Spring Boot service..."
             sudo systemctl daemon-reload
             sudo systemctl stop springboot || true
             sleep 2
             sudo systemctl start springboot
-
-            echo "✅ Checking Spring Boot service status..."
+      
+            echo "✅ Checking service status..."
             sudo systemctl status springboot --no-pager || true
-
-            echo "🎯 Deployment complete successfully!"
+      
+            echo "🎯 Deployment complete!"
+      
