@@ -47,7 +47,7 @@ jobs:
           host: ${{ vars.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
-          source: "godesii-services/build/libs/*.jar"
+          source: "build/libs/*.jar"
           target: "/home/ubuntu/app/"
 
       # -------------------------------
