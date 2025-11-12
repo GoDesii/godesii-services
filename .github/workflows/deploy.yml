@@ -41,20 +41,15 @@ jobs:
       # -------------------------------
       # 5️⃣ Copy built JAR to AWS EC2
       # -------------------------------
-      - name: Upload built JAR to EC2
+      - name: Upload JAR to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ vars.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           source: "build/libs/*.jar"
-          target: "/home/ubuntu/app/build/libs/"
-          overwrite: true
-
-      - name: 🔍 Show Gradle build output
-        run: |
-          echo "---- build directory ----"
-          ls -R build || true
+          target: "/home/ubuntu/app/"
+          strip_components: 2
 
       # -------------------------------
       # 6️⃣ Restart Spring Boot service via systemd
@@ -68,24 +63,17 @@ jobs:
           script_stop: false
           script: |
             set +e
+
             echo "🔹 Deploying latest build to EC2..."
-            mkdir -p /home/ubuntu/app/build/libs
-            cd /home/ubuntu/app/build/libs
+            mkdir -p /home/ubuntu/app
+            cd /home/ubuntu/app
 
             echo "🧹 Cleaning old JARs..."
             find . -type f -name "*.jar" ! -newer "$(ls -t *.jar | head -n 1)" -delete || true
 
-            echo "🆕 Preparing latest JAR..."
+            echo "🆕 Updating systemd service JAR..."
             LATEST_JAR=$(ls -t *.jar | head -n 1)
-            echo "➡️ Latest JAR: $LATEST_JAR"
-
-            if [ -f "$LATEST_JAR" ]; then
-              echo "📦 Copying $LATEST_JAR to /home/ubuntu/app/app.jar"
-              sudo cp "$LATEST_JAR" /home/ubuntu/app/app.jar
-            else
-              echo "❌ No JAR found in /home/ubuntu/app/build/libs!"
-              exit 1
-            fi
+            sudo cp "$LATEST_JAR" /home/ubuntu/app/app.jar
 
             echo "💀 Restarting Spring Boot service..."
             sudo systemctl daemon-reload
