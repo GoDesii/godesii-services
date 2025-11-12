@@ -49,7 +49,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           source: "build/libs/*.jar"
           target: "/home/ubuntu/app/"
-
+          strip_components: 2
       # -------------------------------
       # 6️⃣ SSH into EC2 and deploy app
       # -------------------------------
