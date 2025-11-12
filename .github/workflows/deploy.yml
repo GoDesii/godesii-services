@@ -27,7 +27,7 @@ jobs:
           cache: 'gradle'
 
       # -------------------------------
-      # 3️⃣ Grant permission to Gradle wrapper (important)
+      # 3️⃣ Grant permission to Gradle wrapper
       # -------------------------------
       - name: Make gradlew executable
         run: chmod +x gradlew
@@ -39,7 +39,7 @@ jobs:
         run: ./gradlew clean build -x test
 
       # -------------------------------
-      # 5️⃣ Copy built JAR to AWS EC2
+      # 5️⃣ Upload built JAR to AWS EC2
       # -------------------------------
       - name: Upload JAR to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -47,6 +47,7 @@ jobs:
           host: ${{ vars.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
+          # 👇 Update this path if your JAR is under a subfolder like APP_name/build/libs/
           source: "build/libs/*.jar"
           target: "/home/ubuntu/app/"
 
@@ -61,17 +62,41 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script_stop: false
           script: |
-            set +e
+            set -e
 
             echo "🔹 Deploying latest build to EC2..."
             mkdir -p /home/ubuntu/app
-            cd /home/ubuntu/app
+            cd /home/ubuntu/app || { echo "❌ App directory missing"; exit 1; }
 
-            echo "🧹 Cleaning old JARs..."
-            find . -type f -name "*.jar" ! -newer "$(ls -t *.jar | head -n 1)" -delete || true
+            echo "📦 Listing all JARs before cleanup..."
+            ls -lh *.jar 2>/dev/null || echo "⚠️ No existing JARs found."
+
+            echo "🧾 Detecting latest JAR before cleanup..."
+            LATEST_JAR_BEFORE=$(ls -t *.jar 2>/dev/null | head -n 1 || true)
+            if [ -z "$LATEST_JAR_BEFORE" ]; then
+              echo "⚠️ No previous JARs detected (probably a fresh deploy)."
+            else
+              echo "✅ Latest JAR before cleanup: $LATEST_JAR_BEFORE"
+            fi
+
+            echo "🧹 Cleaning old JARs (keeping latest)..."
+            if ls *.jar 1> /dev/null 2>&1; then
+              find . -type f -name "*.jar" ! -newer "$(ls -t *.jar | head -n 1)" -delete
+            else
+              echo "⚠️ No JARs found to clean."
+            fi
+
+            echo "📁 Files after cleanup:"
+            ls -lh *.jar 2>/dev/null || echo "⚠️ No JAR files remain."
 
             echo "🆕 Updating systemd service JAR..."
-            LATEST_JAR=$(ls -t *.jar | head -n 1)
+            LATEST_JAR=$(ls -t *.jar 2>/dev/null | head -n 1)
+            if [ -z "$LATEST_JAR" ]; then
+              echo "❌ No new JAR found! Deployment aborted."
+              exit 1
+            fi
+
+            echo "✅ Using $LATEST_JAR as the new deployment JAR"
             sudo cp "$LATEST_JAR" /home/ubuntu/app/app.jar
 
             echo "💀 Restarting Spring Boot service..."
@@ -80,8 +105,7 @@ jobs:
             sleep 2
             sudo systemctl start springboot
 
-            echo "✅ Checking service status..."
+            echo "✅ Checking Spring Boot service status..."
             sudo systemctl status springboot --no-pager || true
 
-            echo "🎯 Deployment complete!"
-            exit 0
+            echo "🎯 Deployment complete successfully!"
