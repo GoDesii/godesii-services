@@ -50,6 +50,7 @@ jobs:
           source: "build/libs/*.jar"
           target: "/home/ubuntu/app/"
           strip_components: 2
+
       # -------------------------------
       # 6️⃣ SSH into EC2 and deploy app
       # -------------------------------
@@ -61,13 +62,14 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             echo "🔹 Deploying latest build to EC2..."
+            mkdir -p /home/ubuntu/app
             cd /home/ubuntu/app
 
             echo "🧹 Cleaning old JARs..."
             find . -type f -name "*.jar" ! -newer "$(ls -t *.jar | head -n 1)" -delete || true
 
-            echo "💀 Killing any running Spring Boot processes..."
-            pkill -f 'java -jar' || true
+            echo "💀 Killing any running Spring Boot processes (safe kill)..."
+            bash -c "pkill -f 'java -jar' || true"
             sleep 2
 
             echo "🚀 Starting new version..."
@@ -75,4 +77,4 @@ jobs:
             sleep 5
 
             echo "✅ Deployment complete! App should be running."
-            ps aux | grep java
+            ps aux | grep java || true
