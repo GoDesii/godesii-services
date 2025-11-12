@@ -1,42 +1,78 @@
-name: Deploy to AWS EC2
+name: 🚀 Deploy Spring Boot App to AWS EC2
 
 on:
   push:
     branches:
-      - feature/GODESI-1
+      - feature/GODESI-1  
 
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # -------------------------------
+      # 1️⃣ Checkout source code
+      # -------------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # -------------------------------
+      # 2️⃣ Set up Java environment
+      # -------------------------------
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
-      - name: Build with Gradle
+      # -------------------------------
+      # 3️⃣ Grant permission to Gradle wrapper (important)
+      # -------------------------------
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      # -------------------------------
+      # 4️⃣ Build project with Gradle
+      # -------------------------------
+      - name: Build JAR
         run: ./gradlew clean build -x test
 
-      - name: Copy JAR to EC2
+      # -------------------------------
+      # 5️⃣ Copy built JAR to AWS EC2
+      # -------------------------------
+      - name: Upload JAR to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ vars.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           source: "build/libs/*.jar"
-          target: "/home/ubuntu/"
+          target: "/home/ubuntu/app/"
 
-      - name: Run App on EC2
+      # -------------------------------
+      # 6️⃣ SSH into EC2 and deploy app
+      # -------------------------------
+      - name: Restart Spring Boot app on EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ vars.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           script: |
+            echo "🔹 Deploying latest build to EC2..."
+            cd /home/ubuntu/app
+
+            echo "🧹 Cleaning old JARs..."
+            find . -type f -name "*.jar" ! -newer "$(ls -t *.jar | head -n 1)" -delete || true
+
+            echo "💀 Killing any running Spring Boot processes..."
             pkill -f 'java -jar' || true
-            nohup java -jar /home/ubuntu/build/libs/*.jar > /home/ubuntu/app.log 2>&1 &
+            sleep 2
+
+            echo "🚀 Starting new version..."
+            nohup java -jar $(ls -t *.jar | head -n 1) > app.log 2>&1 &
+            sleep 5
+
+            echo "✅ Deployment complete! App should be running."
+            ps aux | grep java
