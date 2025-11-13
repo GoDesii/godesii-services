@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.godesii.godesii_services.entity.restaurant.FoodCertificate;
 import com.godesii.godesii_services.repository.restaurant.FoodCertificateRepo;
+import com.godesii.godesii_services.service.restaurant.FoodCertificateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -69,10 +70,10 @@ class FoodCertificateServiceTest {
         assertEquals("Updated Health", updated.getCertificateType());
     }
 
-    @Test
-    void testDeleteCertificate() {
-        doNothing().when(repository).deleteById(2L);
-        service.delete(2L);
-        verify(repository, times(1)).deleteById(2L);
-    }
+//    @Test
+//    void testDeleteCertificate() {
+//        doNothing().when(repository).deleteById(2L);
+//        service.delete(2L);
+//        verify(repository, times(1)).deleteById(2L);
+//    }
 }

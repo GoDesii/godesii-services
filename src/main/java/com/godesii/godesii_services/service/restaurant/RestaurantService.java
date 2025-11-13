@@ -1,7 +1,8 @@
-package com.godesii.godesii_services.service;
+package com.godesii.godesii_services.service.restaurant;
 
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -12,8 +13,8 @@ import java.util.Optional;
 
 
 @Service
+@Slf4j
 public class RestaurantService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestaurantService.class);
 
     private final RestaurantRepo repo;
 
@@ -46,7 +47,7 @@ public class RestaurantService {
             Optional.ofNullable(restaurant.getDescription()).ifPresent(existing::setDescription);
             Optional.ofNullable(restaurant.getMealType()).ifPresent(existing::setMealType);
 
-            LOGGER.info("updated Restaurant {}",existing);
+            log.info("updated Restaurant {}", existing);
             existing.setVerified(restaurant.isVerified());
         }
 

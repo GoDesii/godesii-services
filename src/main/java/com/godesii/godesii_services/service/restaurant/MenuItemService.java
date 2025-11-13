@@ -1,17 +1,19 @@
-package com.godesii.godesii_services.service;
+package com.godesii.godesii_services.service.restaurant;
 
 import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.repository.restaurant.MenuItemRepo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
 @Service
+@Slf4j
 public class MenuItemService {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MenuItemService.class);
 
     private final MenuItemRepo repo;
 
@@ -23,9 +25,10 @@ public class MenuItemService {
         return repo.save(item);
     }
 
-    public MenuItem getByMenuId(Long id){
-        return repo.findById(id).orElseThrow(()-> new RuntimeException("MenuItem not found by this id"));
+    public MenuItem getByMenuId(Long id) {
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("MenuItem not found by this id"));
     }
+
     public Page<MenuItem> getAll(Pageable pageable) {
         return repo.findAll(pageable);
     }
@@ -33,6 +36,7 @@ public class MenuItemService {
     public Page<MenuItem> getByRestaurantId(Long restaurantId, Pageable pageable) {
         return repo.findByRestaurantId(restaurantId, pageable);
     }
+
     public MenuItem update(Long id, MenuItem item) {
         MenuItem existing = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("MenuItem not found"));
@@ -47,12 +51,27 @@ public class MenuItemService {
 
         // boolean must be handled separately (since primitive can't be null)
         existing.setAvailable(item.isAvailable());
-        log.info("updated MenuItem {}",existing);
+        log.info("updated MenuItem {}", existing);
         return repo.save(existing);
     }
 
-
     public void delete(Long id) {
         repo.deleteById(id);
+    }
+
+    public List<MenuItem> getMenus(String restaurantName, String menuName) {
+        if (restaurantName != null && menuName != null) {
+            // Both provided
+            return repo.findByRestaurant_RestaurantNameAndMenuName(restaurantName, menuName);
+        } else if (restaurantName != null) {
+            // Only restaurantName provided
+            return repo.findByRestaurant_RestaurantName(restaurantName);
+        } else if (menuName != null) {
+            // Only menuName provided
+            return repo.findByMenuName(menuName);
+        } else {
+            // Neither provided → return all
+            return repo.findAll();
+        }
     }
 }

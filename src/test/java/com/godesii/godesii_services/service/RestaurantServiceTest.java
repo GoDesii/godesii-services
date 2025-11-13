@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
+import com.godesii.godesii_services.service.restaurant.RestaurantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;

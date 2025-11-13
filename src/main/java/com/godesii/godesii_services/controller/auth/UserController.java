@@ -43,7 +43,6 @@ public class UserController {
         return ResponseEntity
                 .status(apiResponses.getStatus())
                 .body(apiResponses);
-
     }
 
 }
