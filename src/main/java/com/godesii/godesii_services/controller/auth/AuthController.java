@@ -1,7 +1,7 @@
 package com.godesii.godesii_services.controller.auth;
 
-import com.godesii.godesii_services.service.auth.AuthService;
 import com.godesii.godesii_services.dto.LoginPayload;
+import com.godesii.godesii_services.service.auth.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

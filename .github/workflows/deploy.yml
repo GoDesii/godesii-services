@@ -52,7 +52,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           source: "build/libs/*.jar"
           target: "/home/ubuntu/app/"
-          strip_components: 2  # ✅ Removes 'build/libs' from path, so no nested folder created
+          strip_components: 2  # Removes 'build/libs' from path, so no nested folder created
 
       # -------------------------------
       # 6️⃣ Restart Spring Boot service via systemd

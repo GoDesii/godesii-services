@@ -38,4 +38,5 @@ out/
 
 /logs/
 .DS_Store
+LOG_FILE_IS_UNDEFINED
 
