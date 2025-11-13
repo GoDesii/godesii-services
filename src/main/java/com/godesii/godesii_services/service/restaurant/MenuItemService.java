@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -54,8 +55,23 @@ public class MenuItemService {
         return repo.save(existing);
     }
 
-
     public void delete(Long id) {
         repo.deleteById(id);
+    }
+
+    public List<MenuItem> getMenus(String restaurantName, String menuName) {
+        if (restaurantName != null && menuName != null) {
+            // Both provided
+            return repo.findByRestaurant_RestaurantNameAndMenuName(restaurantName, menuName);
+        } else if (restaurantName != null) {
+            // Only restaurantName provided
+            return repo.findByRestaurant_RestaurantName(restaurantName);
+        } else if (menuName != null) {
+            // Only menuName provided
+            return repo.findByMenuName(menuName);
+        } else {
+            // Neither provided → return all
+            return repo.findAll();
+        }
     }
 }

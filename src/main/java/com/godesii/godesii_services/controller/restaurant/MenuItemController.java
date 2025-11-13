@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping(MenuItemController.ENDPOINT)
@@ -63,5 +65,18 @@ public class MenuItemController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MenuItem>> searchMenus(
+            @RequestParam(required = false) String restaurantName,
+            @RequestParam(required = false) String menuName) {
+
+        List<MenuItem> menus = service.getMenus(restaurantName, menuName);
+
+        if (menus.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(menus);
     }
 }
