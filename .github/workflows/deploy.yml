@@ -3,7 +3,10 @@ name: 🚀 Deploy Spring Boot App to AWS EC2
 on:
   push:
     branches:
-      - feature/GODESI-1  
+      - master
+  pull_request:
+        branches:
+          - master
 
 jobs:
   build-deploy:
