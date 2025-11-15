@@ -1,13 +1,18 @@
 package com.godesii.godesii_services.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.godesii.godesii_services.common.APIError;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +21,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public final class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -41,13 +48,28 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
-        Claims claims = Jwts
-                .parser()
-                .verifyWith(jwtProvider.getRSAKeys().publicKey())
-                .build()
-                .parseSignedClaims(token).getPayload();
-        String claimType = claims.get("claim_type",String.class);
+        Claims claims = null;
+        try{
+            claims = Jwts
+                    .parser()
+                    .verifyWith(jwtProvider.getRSAKeys().publicKey())
+                    .build()
+                    .parseSignedClaims(token).getPayload();
+        }
+        catch (SignatureException e){
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            APIError apiError = new APIError(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid JWT signature:" + e.getMessage(),
+                    e.getStackTrace(), request);
+            new ObjectMapper().writeValue(response.getWriter(), apiError);
+        }catch (NullPointerException e){
+            throw e;
+        }
 
+        String claimType = claims != null ?
+                claims.get("claim_type",String.class) : null;
         if("refresh_token".equals(claimType)){
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
