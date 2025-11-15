@@ -64,7 +64,8 @@ public class UserProfile {
         this.gender = gender;
     }
 
-    @OneToOne(mappedBy = "userProfile")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     public User getUser() {
         return user;
     }

@@ -17,7 +17,7 @@ public class User {
     private String password;
     private String loginOtp;
     private String emailId;
-    private String role;
+    private Role role;
     private String countryCode;
     private String mobileNo;
     private Boolean isMobileNoVerified;
@@ -100,11 +100,12 @@ public class User {
     }
 
     @Column(name = "role")
-    public String getRole() {
+    @Enumerated(EnumType.STRING)
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -190,13 +191,20 @@ public class User {
         isCredentialsNonExpired = credentialsNonExpired;
     }
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "profile_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
+//    @JoinColumn(name = "profile_id", referencedColumnName = "id")
     public UserProfile getUserProfile() {
         return userProfile;
     }
 
     public void setUserProfile(UserProfile userProfile) {
+        if(userProfile == null){
+            if(this.userProfile != null){
+                this.userProfile.setUser(null);
+            }
+        }else{
+            userProfile.setUser(this);
+        }
         this.userProfile = userProfile;
     }
 

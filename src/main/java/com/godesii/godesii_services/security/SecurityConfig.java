@@ -1,10 +1,12 @@
 package com.godesii.godesii_services.security;
 
 import com.godesii.godesii_services.repository.auth.JpaRSAKeysRepository;
+import com.godesii.godesii_services.repository.auth.UserRepository;
 import com.godesii.godesii_services.security.management.rotation_key.RSAPrivateKeyConverter;
 import com.godesii.godesii_services.security.management.rotation_key.RSAPublicKeyConverter;
 import com.godesii.godesii_services.service.auth.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,20 +24,31 @@ import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.NoOpAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JpaRSAKeysRepository jpaRSAKeysRepository;
+    private final JpaRSAKeysRepository jpaRSAKeysRepository;
+    private final UserRepository userRepository;
+    private final HandlerExceptionResolver exceptionResolver;
+
 
     @Value("${app.jwt.encryptor.password}")
     private String password;
     @Value("${app.jwt.encryptor.salt}")
     private String salt;
+
+    public SecurityConfig(JpaRSAKeysRepository jpaRSAKeysRepository, UserRepository userRepository, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
+        this.jpaRSAKeysRepository = jpaRSAKeysRepository;
+        this.userRepository = userRepository;
+        this.exceptionResolver = exceptionResolver;
+    }
 
     @Bean
     public RSAPublicKeyConverter publicKeyConverter() {
@@ -61,16 +74,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
         http
-                .sessionManagement(session ->  session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         request-> {
-                            request.requestMatchers("/api/**","/auth/**").permitAll();
+                            request.requestMatchers("/api/**","/error","/auth/**").permitAll();
                         }
                 )
-                .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
-                .exceptionHandling(ex-> ex.accessDeniedHandler(((request, response, accessDeniedException) -> HttpStatus.UNAUTHORIZED.toString())))
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(new NoOpAuthenticationEntryPoint()))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
 
@@ -93,7 +107,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(){
-        return new UserDetailServiceImpl();
+        return new UserDetailServiceImpl(userRepository);
     }
 
     @Bean
@@ -101,4 +115,8 @@ public class SecurityConfig {
         return Encryptors.text(password, salt);
     }
 
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint(){
+        return new CustomAuthenticationEntryPoint(exceptionResolver);
+    }
 }
