@@ -1,13 +1,25 @@
 package com.godesii.godesii_services.dto;
 
-import com.godesii.godesii_services.entity.auth.UserProfile;
+
+import com.godesii.godesii_services.entity.auth.User;
+
+import java.util.List;
 
 public class UserProfileCreateResponse {
 
+    private String id;
     private String firstName;
     private String lastName;
     private String middleName;
     private String gender;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -41,15 +53,12 @@ public class UserProfileCreateResponse {
         this.middleName = middleName;
     }
 
-    public static UserProfileCreateResponse mapToResponse(UserProfile userProfile) {
-        if(userProfile == null) {
-            throw new IllegalArgumentException("UserProfile cannot be null");
-        }
-        UserProfileCreateResponse userProfileCreateResponse = new UserProfileCreateResponse();
-        userProfileCreateResponse.setFirstName(userProfile.getFirstName());
-        userProfileCreateResponse.setLastName(userProfile.getLastName());
-        userProfileCreateResponse.setMiddleName(userProfile.getMiddleName());
-        userProfileCreateResponse.setGender(userProfile.getGender().toString());
-        return userProfileCreateResponse;
+    public static UserProfileCreateResponse mapToUserProfileCreateResponse(User user){
+        UserProfileCreateResponse  response = new UserProfileCreateResponse();
+        response.setFirstName(user.getFirstName());
+        response.setMiddleName(user.getMiddleName());
+        response.setLastName(user.getLastName());
+        response.setGender(user.getGender().getValue());
+        return response;
     }
 }

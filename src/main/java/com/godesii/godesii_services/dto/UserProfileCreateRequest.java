@@ -6,8 +6,8 @@ public class UserProfileCreateRequest {
     private String firstName;
     private String lastName;
     private String middleName;
+    private Long userId;
     private String gender;
-    private String userId;
 
     public String getFirstName() {
         return firstName;
@@ -33,20 +33,20 @@ public class UserProfileCreateRequest {
         this.lastName = lastName;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public String getMiddleName() {
         return middleName;
     }
 
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
 
