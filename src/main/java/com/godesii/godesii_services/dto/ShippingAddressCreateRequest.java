@@ -105,6 +105,7 @@ public class ShippingAddressCreateRequest {
         address.setCity(addressRequest.getCity());
         address.setState(addressRequest.getState());
         address.setCountry(addressRequest.getCountry());
+        address.setPinCode(addressRequest.getPinCode());
         address.setAddressType(addressRequest.getAddressType());
         return address;
     }

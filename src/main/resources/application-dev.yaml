@@ -1,0 +1,54 @@
+
+# Datasource config
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/godesii_dev?createDatabaseIfNotExist=true
+    username: root
+    password: sjain@123
+    driver-class-name: org.hibernate.dialect.MySQL8Dialect
+    initialization-mode: always
+    continue-on-error: false
+    hikari:
+      minimumIdle: 2
+      maximumIdle: 10
+      idleTimeout: 120000
+      connectionTimeout: 300000
+      leakDetectionThreshold: 300000
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+# Logging
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type: TRACE
+    org.springframework.security: DEBUG
+
+
+#Swagger/OpenAPI config
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    api-docs:
+      path: /v3/api-docs
+
+
+# App Config
+app:
+
+  twilio:
+    sid: AC113f85df01c5d6965cd1ed5e739797e6
+    token: 9d6b7594eac2c3c1956db43df8685e68
+    phoneNo: +17176708304
+
+
+  jwt:
+    access-token:
+      expiration: 360000
+    refresh-token:
+      expiration: 360000
+    encryptor:
+      password: password
+      salt: 626F6F746966756C
