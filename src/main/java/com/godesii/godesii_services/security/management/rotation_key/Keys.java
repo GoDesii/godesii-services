@@ -12,7 +12,6 @@ import java.util.UUID;
 
 import static com.godesii.godesii_services.repository.auth.JpaRSAKeysRepository.*;
 
-
 @Component
 public class Keys {
 

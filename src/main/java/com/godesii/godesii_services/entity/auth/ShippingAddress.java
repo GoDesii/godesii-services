@@ -1,21 +1,26 @@
 package com.godesii.godesii_services.entity.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
-@Table(name = "address")
-public class Address {
+@Table(name = "shipping_address")
+public class ShippingAddress {
 
     private Long id;
+    private Long userId;
+    private String latitude;
+    private String longitude;
+    private String houseNumber;
     private String street;
     private String city;
     private String state;
     private String pinCode;
     private String country;
     private String addressType;
-    private List<UserProfile> userProfiles;
 
     @Id
     @GeneratedValue(
@@ -27,6 +32,40 @@ public class Address {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId){
+        this.userId = userId;
+    }
+
+    @Column(name = "latitude")
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    @Column(name = "lognitude")
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public String getHouseNumber() {
+        return houseNumber;
+    }
+
+    public void setHouseNumber(String houseNumber) {
+        this.houseNumber = houseNumber;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     public String getStreet() {
@@ -77,15 +116,16 @@ public class Address {
         this.addressType = addressType;
     }
 
-    @ManyToMany(
-            mappedBy = "addresses"
-    )
-    public List<UserProfile> getUserProfiles() {
-        return userProfiles;
-    }
-
-    public void setUserProfiles(List<UserProfile> userProfiles) {
-        this.userProfiles = userProfiles;
-    }
+//    @ManyToMany(
+//            mappedBy = "addresses"
+//    )
+//    @JsonIgnoreProperties(value = {"addresses","userProfiles"})
+//    public List<UserProfile> getUserProfiles() {
+//        return userProfiles;
+//    }
+//
+//    public void setUserProfiles(List<UserProfile> userProfiles) {
+//        this.userProfiles = userProfiles;
+//    }
 
 }

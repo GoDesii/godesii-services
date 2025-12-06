@@ -3,8 +3,13 @@ package com.godesii.godesii_services.service.auth;
 import com.godesii.godesii_services.config.twilio.SmsRequest;
 import com.godesii.godesii_services.config.twilio.TwilioSmsSenderService;
 import com.godesii.godesii_services.dto.MobileUserCreationRequest;
+import com.godesii.godesii_services.dto.UserProfileCreateRequest;
+import com.godesii.godesii_services.dto.UserProfileCreateResponse;
 import com.godesii.godesii_services.entity.auth.AuthProvider;
+import com.godesii.godesii_services.entity.auth.Gender;
+import com.godesii.godesii_services.entity.auth.Role;
 import com.godesii.godesii_services.entity.auth.User;
+import com.godesii.godesii_services.exception.ResourceNotFoundException;
 import com.godesii.godesii_services.repository.auth.UserRepository;
 import com.godesii.godesii_services.security.SecurityUtils;
 import org.slf4j.Logger;
@@ -13,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 
 import java.util.regex.Matcher;
@@ -63,6 +69,7 @@ public class UserService  {
         User user = new User();
         user.setMobileNo(mobileNo);
 //        user.setAuthProvider(AuthProvider.MOBILE_OTP);
+        user.setRole(Role.CUSTOMER);
         user.setMobileNoVerified(false);
         user.setLoginOtp(passwordEncoder.encode(generatedOTP));
         user.setAccountNonExpired(true);
@@ -93,8 +100,22 @@ public class UserService  {
         return !isMobileNumber(username);
     }
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("Hey");
-        return null;
+    public UserProfileCreateResponse updateProfile(UserProfileCreateRequest request){
+        User existingUser = this.userRepository.findById(request.getUserId())
+                .orElseThrow(()-> new ResourceNotFoundException("User does not exist with id " + request.getUserId()));
+        if(StringUtils.hasText(request.getFirstName())){
+            existingUser.setFirstName(request.getFirstName());
+        }
+        if(StringUtils.hasText(request.getMiddleName())){
+            existingUser.setMiddleName(request.getMiddleName());
+        }
+        if(StringUtils.hasText(request.getLastName())){
+            existingUser.setLastName(request.getLastName());
+        }
+        if(StringUtils.hasText(request.getGender())){
+            existingUser.setGender(Gender.MALE);
+        }
+        return UserProfileCreateResponse.mapToUserProfileCreateResponse(this.userRepository.save(existingUser));
     }
+
 }

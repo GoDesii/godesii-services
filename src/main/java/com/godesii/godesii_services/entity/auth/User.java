@@ -1,6 +1,7 @@
 package com.godesii.godesii_services.entity.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -17,7 +18,11 @@ public class User {
     private String password;
     private String loginOtp;
     private String emailId;
-    private String role;
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private Gender gender;
+    private Role role;
     private String countryCode;
     private String mobileNo;
     private Boolean isMobileNoVerified;
@@ -27,7 +32,6 @@ public class User {
     private Boolean isAccountNonLocked = false;
     private Boolean isAccountNonExpired = false;
     private Boolean isCredentialsNonExpired = false;
-    private UserProfile userProfile;
 
     @Id
     @GeneratedValue(
@@ -99,12 +103,45 @@ public class User {
         this.emailId = emailId;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
     @Column(name = "role")
-    public String getRole() {
+    @Enumerated(EnumType.STRING)
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
@@ -190,17 +227,8 @@ public class User {
         isCredentialsNonExpired = credentialsNonExpired;
     }
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "profile_id", referencedColumnName = "id")
-    public UserProfile getUserProfile() {
-        return userProfile;
-    }
-
-    public void setUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
-    }
-
     @Column(name = "login_otp")
+    @JsonIgnore
     public String getLoginOtp() {
         return loginOtp;
     }

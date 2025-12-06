@@ -3,43 +3,41 @@ package com.godesii.godesii_services.service.auth;
 import com.godesii.godesii_services.security.UserPrincipal;
 import com.godesii.godesii_services.entity.auth.User;
 import com.godesii.godesii_services.repository.auth.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
-@Service
-public class UserDetailServiceImpl implements UserDetailsService {
+import java.util.Set;
 
-
-    @Autowired
-    private UserRepository userRepository;
-
-//    private JpaSecureTokenRepository tokenRepository;
+public record UserDetailServiceImpl(UserRepository userRepository) implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
 
-        User userByUsername =  userRepository.findByUsername(identifier).orElse(null);
-        if(userByUsername != null){
-            return null;
+        User userByUsername = this.userRepository.findByUsername(identifier).orElse(null);
+        if (userByUsername != null) {
+            return buildUserPrincipal(userByUsername);
         }
 
-        User userByMobileNo = userRepository.findByMobileNo(identifier).orElse(null);
-
-        if(userByMobileNo != null){
-            return UserPrincipal.buildWithId(userByMobileNo.getId().toString())
-                    .username(userByMobileNo.getMobileNo())
-                    .password(userByMobileNo.getLoginOtp())
-                    .accountNonExpired(true)
-                    .accountNonLocked(true)
-                    .credentialsNonExpired(true)
-                    .enabled(true)
-                    .build();
+        User userByMobileNo = this.userRepository.findByMobileNo(identifier).orElse(null);
+        if (userByMobileNo != null) {
+            return buildUserPrincipal(userByMobileNo);
         }
 
         throw new UsernameNotFoundException("User not found with identifier:" + identifier);
+    }
+
+    private static UserPrincipal buildUserPrincipal(User user) {
+
+        return UserPrincipal.buildWithId(user.getId().toString())
+                .username(user.getMobileNo())
+                .password(user.getLoginOtp())
+                .roles(Set.of(user.getRole().name()))
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .credentialsNonExpired(true)
+                .enabled(true)
+                .build();
     }
 
 }
