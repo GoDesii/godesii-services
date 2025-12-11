@@ -2,8 +2,8 @@ package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
-import com.godesii.godesii_services.entity.restaurant.Review;
-import com.godesii.godesii_services.service.restaurant.ReviewService;
+import com.godesii.godesii_services.entity.restaurant.Category;
+import com.godesii.godesii_services.service.restaurant.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -13,23 +13,24 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(ReviewController.ENDPOINT)
-@Tag(name = "Review API", description = "Manage restaurant reviews")
-public class ReviewController {
+@RequestMapping(CategoryController.ENDPOINT)
+@Tag(name = "Category API", description = "Manage menu categories")
+public class CategoryController {
 
-    public static final String ENDPOINT = GoDesiiConstant.API_VERSION + "/reviews";
-    private final ReviewService service;
+    public static final String ENDPOINT = GoDesiiConstant.API_VERSION + "/categories";
 
-    public ReviewController(ReviewService service) {
+    private final CategoryService service;
+
+    public CategoryController(CategoryService service) {
         this.service = service;
     }
 
     @PostMapping
-    @Operation(summary = "Create a new review")
-    public ResponseEntity<APIResponse<Review>> create(@RequestBody Review review) {
-        Review created = service.create(review);
+    @Operation(summary = "Create a new category")
+    public ResponseEntity<APIResponse<Category>> create(@RequestBody Category category) {
+        Category created = service.create(category);
 
-        APIResponse<Review> apiResponse = new APIResponse<>(
+        APIResponse<Category> apiResponse = new APIResponse<>(
                 HttpStatus.CREATED,
                 created,
                 GoDesiiConstant.SUCCESSFULLY_CREATED
@@ -39,13 +40,13 @@ public class ReviewController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all reviews")
-    public ResponseEntity<APIResponse<List<Review>>> getAll() {
-        List<Review> reviews = service.getAll();
+    @Operation(summary = "Get all categories")
+    public ResponseEntity<APIResponse<List<Category>>> getAll() {
+        List<Category> categories = service.getAll();
 
-        APIResponse<List<Review>> apiResponse = new APIResponse<>(
+        APIResponse<List<Category>> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
-                reviews,
+                categories,
                 GoDesiiConstant.SUCCESSFULLY_FETCHED
         );
 
@@ -53,12 +54,12 @@ public class ReviewController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get review by ID")
-    public ResponseEntity<APIResponse<Review>> getById(@PathVariable Long id) {
-        Review review = service.getById(id);
+    @Operation(summary = "Get category by ID")
+    public ResponseEntity<APIResponse<Category>> getById(@PathVariable Long id) {
+        Category category = service.getById(id);
 
-        if (review == null) {
-            APIResponse<Review> apiResponse = new APIResponse<>(
+        if (category == null) {
+            APIResponse<Category> apiResponse = new APIResponse<>(
                     HttpStatus.NOT_FOUND,
                     null,
                     GoDesiiConstant.NOT_FOUND
@@ -66,9 +67,9 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         }
 
-        APIResponse<Review> apiResponse = new APIResponse<>(
+        APIResponse<Category> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
-                review,
+                category,
                 GoDesiiConstant.SUCCESSFULLY_FETCHED
         );
 
@@ -76,12 +77,12 @@ public class ReviewController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update a review")
-    public ResponseEntity<APIResponse<Review>> update(@PathVariable Long id, @RequestBody Review review) {
-        Review updated = service.update(id, review);
+    @Operation(summary = "Update category")
+    public ResponseEntity<APIResponse<Category>> update(@PathVariable Long id, @RequestBody Category category) {
+        Category updated = service.update(id, category);
 
         if (updated == null) {
-            APIResponse<Review> apiResponse = new APIResponse<>(
+            APIResponse<Category> apiResponse = new APIResponse<>(
                     HttpStatus.NOT_FOUND,
                     null,
                     GoDesiiConstant.NOT_FOUND
@@ -89,7 +90,7 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         }
 
-        APIResponse<Review> apiResponse = new APIResponse<>(
+        APIResponse<Category> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 updated,
                 GoDesiiConstant.SUCCESSFULLY_UPDATED
@@ -99,7 +100,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a review")
+    @Operation(summary = "Delete category")
     public ResponseEntity<APIResponse<Void>> delete(@PathVariable Long id) {
         service.delete(id);
 
