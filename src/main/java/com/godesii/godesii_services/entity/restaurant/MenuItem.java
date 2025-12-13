@@ -30,6 +30,19 @@ public class MenuItem {
     @JsonBackReference
     private Restaurant restaurant;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -123,6 +136,7 @@ public class MenuItem {
                 ", ingredients='" + ingredients + '\'' +
                 ", menuType='" + menuType + '\'' +
                 ", restaurant=" + restaurant +
+                ", category=" + category +
                 '}';
     }
 }

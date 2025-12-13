@@ -1,15 +1,14 @@
 package com.godesii.godesii_services.service.restaurant;
 
-
 import com.godesii.godesii_services.entity.restaurant.FoodCertificate;
+import com.godesii.godesii_services.exception.ResourceNotFoundException;
 import com.godesii.godesii_services.repository.restaurant.FoodCertificateRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.util.StringUtils;
 
 @Service
 @Slf4j
@@ -38,7 +37,7 @@ public class FoodCertificateService {
         return repo.findById(id)
                 .orElseThrow(() -> {
                     log.warn("FoodCertificate with ID {} not found", id);
-                    return new IllegalArgumentException("FoodCertificate not found with ID: " + id);
+                    return new ResourceNotFoundException("FoodCertificate not found with ID: " + id);
                 });
     }
 
@@ -51,6 +50,7 @@ public class FoodCertificateService {
         if (StringUtils.hasText(cert.getCertificateType())) {
             existing.setCertificateType(cert.getCertificateType());
         }
+
         Optional.ofNullable(cert.getIssuedDate()).ifPresent(existing::setIssuedDate);
         Optional.ofNullable(cert.getExpireDate()).ifPresent(existing::setExpireDate);
 
@@ -62,11 +62,8 @@ public class FoodCertificateService {
     }
 
     public void delete(Long id) {
-        if (!repo.existsById(id)) {
-            log.warn("Attempted to delete non-existent FoodCertificate with ID {}", id);
-            throw new IllegalArgumentException("FoodCertificate not found with ID: " + id);
-        }
-        repo.deleteById(id);
+        FoodCertificate existing = getById(id);
+        repo.delete(existing);
         log.info("Deleted FoodCertificate with ID {}", id);
     }
 
@@ -75,6 +72,7 @@ public class FoodCertificateService {
                 !StringUtils.hasText(cert.getCertificateType()) ||
                 cert.getIssuedDate() == null ||
                 cert.getExpireDate() == null) {
+
             log.error("Invalid FoodCertificate data: {}", cert);
             throw new IllegalArgumentException("Missing required fields in FoodCertificate");
         }
