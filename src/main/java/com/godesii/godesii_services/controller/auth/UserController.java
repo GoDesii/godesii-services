@@ -44,13 +44,13 @@ public class UserController {
                 .body(apiResponse);
     }
 
-    @PutMapping("/profile/create")
+    @PutMapping("/profile/edit")
     public ResponseEntity<APIResponse<UserProfileCreateResponse>> updateProfile(UserProfileCreateRequest request){
         APIResponse<UserProfileCreateResponse> apiResponse =
                 new APIResponse<>(
-                        HttpStatus.CREATED,
+                        HttpStatus.OK,
                         this.userService.updateProfile(request),
-                        GoDesiiConstant.SUCCESSFULLY_CREATED
+                        GoDesiiConstant.SUCCESSFULLY_UPDATED
                 );
         return ResponseEntity
                 .status(apiResponse.getStatus())

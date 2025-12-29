@@ -3,8 +3,9 @@ package com.godesii.godesii_services.dto;
 import com.godesii.godesii_services.entity.auth.ShippingAddress;
 import jakarta.validation.constraints.NotBlank;
 
-public class ShippingAddressCreateRequest {
+public class ShippingAddressRequest {
 
+    private Long id;
     private String latitude;
     private String longitude;
     private String houseNumber;
@@ -14,6 +15,14 @@ public class ShippingAddressCreateRequest {
     private String pinCode;
     private String country;
     private String addressType;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @NotBlank(message = "Address Type is required!")
     public String getAddressType() {
@@ -96,7 +105,7 @@ public class ShippingAddressCreateRequest {
         this.street = street;
     }
 
-    public static ShippingAddress mapToEntity(ShippingAddressCreateRequest addressRequest) {
+    public static ShippingAddress mapToEntity(ShippingAddressRequest addressRequest) {
         ShippingAddress address = new ShippingAddress();
         address.setLatitude(addressRequest.getLatitude());
         address.setLongitude(addressRequest.getLongitude());

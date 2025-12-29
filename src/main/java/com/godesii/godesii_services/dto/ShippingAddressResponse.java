@@ -5,7 +5,7 @@ import com.godesii.godesii_services.entity.auth.ShippingAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShippingAddressCreateResponse {
+public class ShippingAddressResponse {
 
     private String latitude;
     private String longitude;
@@ -89,8 +89,8 @@ public class ShippingAddressCreateResponse {
         this.street = street;
     }
 
-    public static ShippingAddressCreateResponse mapToUserAddressCreateResponse(ShippingAddress shippingAddress){
-        ShippingAddressCreateResponse response = new ShippingAddressCreateResponse();
+    public static ShippingAddressResponse mapToUserAddressCreateResponse(ShippingAddress shippingAddress){
+        ShippingAddressResponse response = new ShippingAddressResponse();
         response.setStreet(shippingAddress.getStreet());
         response.setHouseNumber(shippingAddress.getHouseNumber());
         response.setLatitude(shippingAddress.getLatitude());
@@ -103,8 +103,8 @@ public class ShippingAddressCreateResponse {
         return response;
     }
 
-    public static List<ShippingAddressCreateResponse> mapToUserAddressCreateResponses(List<ShippingAddress> shippingAddresses){
-        List<ShippingAddressCreateResponse> responses = new ArrayList<>(shippingAddresses.size());
+    public static List<ShippingAddressResponse> mapToUserAddressCreateResponses(List<ShippingAddress> shippingAddresses){
+        List<ShippingAddressResponse> responses = new ArrayList<>(shippingAddresses.size());
         for(ShippingAddress shippingAddress: shippingAddresses){
             responses.add(mapToUserAddressCreateResponse(shippingAddress));
         }
