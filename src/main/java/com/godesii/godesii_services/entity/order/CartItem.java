@@ -1,4 +1,4 @@
-package com.godesii.godesii_services.entity;
+package com.godesii.godesii_services.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -73,4 +73,5 @@ public class CartItem {
     public void setSpecialInstruction(String specialInstruction) {
         this.specialInstruction = specialInstruction;
     }
+
 }

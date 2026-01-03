@@ -1,10 +1,9 @@
-package com.godesii.godesii_services.entity;
+package com.godesii.godesii_services.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.time.Instant;
 import java.util.List;
 
 @Entity

@@ -1,8 +1,6 @@
-package com.godesii.godesii_services.entity;
+package com.godesii.godesii_services.entity.order;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
@@ -15,7 +13,7 @@ public class Cart {
     private String id;
     private Instant createAt;
     private Instant updatedAt;
-    private String userId;
+    private Long userId;
     private Long restaurantId;
     private List<CartItem> cartItems;
     private Long totalPrice;
@@ -52,7 +50,7 @@ public class Cart {
     }
 
     @Column(name = "user_id")
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
@@ -65,7 +63,7 @@ public class Cart {
         this.restaurantId = restaurantId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

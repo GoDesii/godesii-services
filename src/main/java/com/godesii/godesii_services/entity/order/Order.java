@@ -1,4 +1,4 @@
-package com.godesii.godesii_services.entity;
+package com.godesii.godesii_services.entity.order;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;

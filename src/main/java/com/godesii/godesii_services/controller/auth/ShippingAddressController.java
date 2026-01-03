@@ -51,9 +51,10 @@ public class ShippingAddressController {
     @PutMapping("/edit")
     public ResponseEntity<APIResponse<ShippingAddressResponse>> updateShippingAddress(@RequestBody ShippingAddressRequest request,
                                                                                       @RequestParam(name = "userId") Long userId){
+        ShippingAddress  shippingAddress = this.shippingAddressService.saveOrUpdateShippingAddress(request, userId);
         APIResponse<ShippingAddressResponse> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
-                null,
+                ShippingAddressResponse.mapToUserAddressCreateResponse(shippingAddress),
                 GoDesiiConstant.SUCCESSFULLY_UPDATED
         );
         return ResponseEntity

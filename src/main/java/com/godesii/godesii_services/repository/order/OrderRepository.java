@@ -1,6 +1,6 @@
-package com.godesii.godesii_services.repository.restaurant;
+package com.godesii.godesii_services.repository.order;
 
-import com.godesii.godesii_services.entity.Order;
+import com.godesii.godesii_services.entity.order.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
