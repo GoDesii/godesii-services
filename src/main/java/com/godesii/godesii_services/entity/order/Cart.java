@@ -76,18 +76,20 @@ public class Cart {
         this.totalPrice = totalPrice;
     }
 
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(
-            name = "cart_selections",
-            joinColumns = @JoinColumn(
-                    name = "cart_id",
-                    foreignKey = @ForeignKey(name = "FK_CART_ID")
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "cart_item_id",
-                    foreignKey = @ForeignKey(name = "FK_CART_ITEM_ID")
-            )
+        name = "cart_selection", // Specifies the name of the join table
+        joinColumns = @JoinColumn(
+                name = "cart_id_fk",
+                foreignKey = @ForeignKey(name = "CART_FK")
+        ), // Column in join table referring to Cart
+        inverseJoinColumns = @JoinColumn(
+                name = "cartitem_id_fk",
+                foreignKey = @ForeignKey(name = "CART_ITEM_FK")
+        )
+            // Column in join table referring to CartItem
     )
-    @ManyToMany(fetch = FetchType.LAZY)
     public List<CartItem> getCartItems() {
         return cartItems;
     }

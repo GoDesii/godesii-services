@@ -14,7 +14,7 @@ public class CartItem {
     private Long productId;
     private Integer quantity;
     private Long price;
-    private List<Cart> carts;
+    private Cart cart;
     private String specialInstruction;
 
     @Id
@@ -55,14 +55,14 @@ public class CartItem {
         this.price = price;
     }
 
-    @ManyToMany(mappedBy = "cartItems")
-    @JsonIgnore
-    public List<Cart> getCarts() {
-        return carts;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id", insertable = false, updatable = false) // Foreign key in CartItem table (though it's null when using JoinTable)
+    public Cart getCarts() {
+        return cart;
     }
 
-    public void setCarts(List<Cart> carts) {
-        this.carts = carts;
+    public void setCarts(Cart cart) {
+        this.cart = cart;
     }
 
     @Column(name = "special_instruction")
