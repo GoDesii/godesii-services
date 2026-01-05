@@ -24,8 +24,6 @@ spring:
 
 #Swagger/OpenAPI config
 springdoc:
-  api-docs:
-    enabled: false
   swagger-ui:
     path: /swagger-ui.html
     api-docs:
