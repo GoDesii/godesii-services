@@ -15,6 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping(ShippingAddressController.ENDPOINT)
 public class ShippingAddressController {
@@ -34,7 +37,7 @@ public class ShippingAddressController {
     )
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<APIResponse<ShippingAddressResponse>> createShippingAddress(@RequestBody ShippingAddressRequest request,
-                                                                                      @RequestParam(name = "userId") Long userId){
+                                                                                      @RequestParam(name = "userId") Long userId) {
 
         ShippingAddress shippingAddress = this.shippingAddressService.saveOrUpdateShippingAddress(request, userId);
         APIResponse<ShippingAddressResponse> apiResponse = new APIResponse<>(
@@ -50,8 +53,8 @@ public class ShippingAddressController {
 
     @PutMapping("/edit")
     public ResponseEntity<APIResponse<ShippingAddressResponse>> updateShippingAddress(@RequestBody ShippingAddressRequest request,
-                                                                                      @RequestParam(name = "userId") Long userId){
-        ShippingAddress  shippingAddress = this.shippingAddressService.saveOrUpdateShippingAddress(request, userId);
+                                                                                      @RequestParam(name = "userId") Long userId) {
+        ShippingAddress shippingAddress = this.shippingAddressService.saveOrUpdateShippingAddress(request, userId);
         APIResponse<ShippingAddressResponse> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 ShippingAddressResponse.mapToUserAddressCreateResponse(shippingAddress),
@@ -60,6 +63,28 @@ public class ShippingAddressController {
         return ResponseEntity
                 .status(apiResponse.getStatus())
                 .body(apiResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<APIResponse<ShippingAddressResponse>> getShippingAddressById(@PathVariable Long id) {
+        ShippingAddress shippingAddress = shippingAddressService.getShippingAddressById(id);
+        APIResponse<ShippingAddressResponse> apiResponse = new APIResponse<>(HttpStatus.OK, ShippingAddressResponse.mapToUserAddressCreateResponse(shippingAddress), GoDesiiConstant.SUCCESSFULLY_FETCHED);
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<APIResponse<List<ShippingAddressResponse>>> getAllShippingAddresses() {
+        List<ShippingAddress> addresses = shippingAddressService.getAllShippingAddresses();
+        List<ShippingAddressResponse> responseList = addresses.stream().map(ShippingAddressResponse::mapToUserAddressCreateResponse).collect(Collectors.toList());
+        APIResponse<List<ShippingAddressResponse>> apiResponse = new APIResponse<>(HttpStatus.OK, responseList, GoDesiiConstant.SUCCESSFULLY_FETCHED);
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<APIResponse<Void>> deleteShippingAddress(@PathVariable Long id) {
+        shippingAddressService.deleteShippingAddress(id);
+        APIResponse<Void> apiResponse = new APIResponse<>(HttpStatus.OK, null, GoDesiiConstant.SUCCESSFULLY_DELETED);
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
     }
 
 }
