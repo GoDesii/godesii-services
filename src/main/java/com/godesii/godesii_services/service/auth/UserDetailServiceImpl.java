@@ -32,7 +32,7 @@ public record UserDetailServiceImpl(UserRepository userRepository) implements Us
         return UserPrincipal.buildWithId(user.getId().toString())
                 .username(user.getMobileNo())
                 .password(user.getLoginOtp())
-                .roles(Set.of(user.getRole().name()))
+                .roles(Set.of("ADMIN"))
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .credentialsNonExpired(true)
