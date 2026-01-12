@@ -37,6 +37,7 @@ public class CartService {
             item.setQuantity(itemReq.getQuantity());
             item.setPrice(itemReq.getPrice());
             item.setSpecialInstruction(itemReq.getSpecialInstruction());
+            item.setCarts(cart);
             cart.getCartItems().add(item);
         }
 

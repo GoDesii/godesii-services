@@ -7,10 +7,7 @@ import com.godesii.godesii_services.entity.order.Cart;
 import com.godesii.godesii_services.service.order.CartService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(CartController.ENDPOINT)
@@ -26,13 +23,38 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<APIResponse<Cart>> createCart(@RequestBody CartRequest request){
         apiResponse = new APIResponse<>(
                 HttpStatus.CREATED,
                 this.cartService.addItemsToCart(request),
                 GoDesiiConstant.SUCCESSFULLY_CREATED);
         return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<APIResponse<Cart>> getCart(@PathVariable String userId){
+        apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                null,
+                GoDesiiConstant.SUCCESSFULLY_FETCHED
+        );
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    }
+
+    @DeleteMapping("/{cartId}/item/{itemId}")
+    public ResponseEntity<APIResponse<Cart>> removeItem(@PathVariable(name = "cartId") String cartId,
+                                                        @PathVariable(name = "itemId") String itemId){
+        apiResponse = new APIResponse<>(HttpStatus.OK, GoDesiiConstant.SUCCESSFULLY_DELETED);
+        return ResponseEntity
+                .status(apiResponse.getStatus()).body(apiResponse);
+    }
+
+    @DeleteMapping("/{cartId}/clear")
+    public ResponseEntity<APIResponse<Cart>> clearCart(@PathVariable(name = "cartId") String cartId){
+        apiResponse = new APIResponse<>(HttpStatus.OK, GoDesiiConstant.SUCCESSFULLY_DELETED);
+        return ResponseEntity
+                .status(apiResponse.getStatus()).body(apiResponse);
     }
 
 }
