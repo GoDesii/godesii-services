@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -34,7 +35,7 @@ public class GoDesiiResponseEntityExceptionHandler {
                 .body(apiError);
     }
 
-    @ExceptionHandler(value = { IllegalArgumentException.class, InvalidDataAccessApiUsageException.class })
+    @ExceptionHandler(value = { IllegalArgumentException.class, InvalidDataAccessApiUsageException.class,MethodArgumentNotValidException.class })
     public ResponseEntity<Object> handleBadRequestException(RuntimeException ex, WebRequest request) {
         LOGGER.error(ex.getMessage(), ex);
         APIError apiError = new APIError(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getStackTrace(), request);

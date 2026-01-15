@@ -5,14 +5,11 @@ import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.dto.ShippingAddressRequest;
 import com.godesii.godesii_services.dto.ShippingAddressResponse;
 import com.godesii.godesii_services.entity.auth.ShippingAddress;
-import com.godesii.godesii_services.security.UserPrincipal;
 import com.godesii.godesii_services.service.auth.ShippingAddressService;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

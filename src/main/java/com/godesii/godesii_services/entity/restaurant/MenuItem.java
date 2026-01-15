@@ -9,8 +9,6 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "menu_items")
-@Getter
-@Setter
 public class MenuItem {
     @Id
     @UuidGenerator
@@ -32,5 +30,75 @@ public class MenuItem {
     @OneToOne(mappedBy = "menuItem", cascade = CascadeType.ALL)
     private NutritionalInfo nutritionalInfo;
 
+    public String getItemId() {
+        return itemId;
+    }
 
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(BigDecimal basePrice) {
+        this.basePrice = basePrice;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
+    public String getDietaryType() {
+        return dietaryType;
+    }
+
+    public void setDietaryType(String dietaryType) {
+        this.dietaryType = dietaryType;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public NutritionalInfo getNutritionalInfo() {
+        return nutritionalInfo;
+    }
+
+    public void setNutritionalInfo(NutritionalInfo nutritionalInfo) {
+        this.nutritionalInfo = nutritionalInfo;
+    }
 }
