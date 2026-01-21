@@ -38,6 +38,12 @@ app:
     token: 9d6b7594eac2c3c1956db43df8685e68
     phoneNo: +17176708304
 
+  aws:
+    s3:
+      accessKey:
+      secretKey:
+      region:
+      bucketName:
 
   jwt:
     access-token:
