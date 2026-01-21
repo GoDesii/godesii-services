@@ -134,9 +134,9 @@ public class RestaurantRequest {
         private String state;
         private String postalCode;
         private String country;
-        @Pattern(regexp = "^[-+]?([1-8]?\\d(.\\d+)?)", message = "")
+        //@Pattern(regexp = "^[-+]?([1-8]?\\d(.\\d+)?)", message = "")
         private BigDecimal latitude;
-        @Pattern(regexp = "^[-+]?(180(.0+)?)", message = "")
+        //@Pattern(regexp = "^[-+]?(180(.0+)?)", message = "")
         private BigDecimal longitude;
 
         public String getAddressLine1() {
