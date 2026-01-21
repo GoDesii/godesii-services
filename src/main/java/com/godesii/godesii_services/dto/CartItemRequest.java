@@ -1,6 +1,7 @@
 package com.godesii.godesii_services.dto;
 
 import com.godesii.godesii_services.entity.order.CartItem;
+import jakarta.validation.constraints.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +9,21 @@ import java.util.List;
 public class CartItemRequest {
 
     private String cartItemId;
+
+    @NotNull(message = "Product ID is required")
+    @Positive(message = "Product ID must be positive")
     private Long productId;
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be at least 1")
+    @Max(value = 100, message = "Quantity cannot exceed 100")
     private Integer quantity;
+
+    @NotNull(message = "Price is required")
+    @Positive(message = "Price must be positive")
     private Long price;
+
+    @Size(max = 500, message = "Special instruction cannot exceed 500 characters")
     private String specialInstruction;
 
     public String getCartItemId() {
@@ -53,7 +66,7 @@ public class CartItemRequest {
         this.specialInstruction = specialInstruction;
     }
 
-    public static CartItem mapToEntity(CartItemRequest item){
+    public static CartItem mapToEntity(CartItemRequest item) {
         CartItem cartItem = new CartItem();
         cartItem.setProductId(item.getProductId());
         cartItem.setQuantity(item.getQuantity());
@@ -62,11 +75,29 @@ public class CartItemRequest {
         return cartItem;
     }
 
-    public static List<CartItem> mapToEntityList(List<CartItemRequest> items){
+    public static List<CartItem> mapToEntityList(List<CartItemRequest> items) {
         List<CartItem> cartItems = new ArrayList<>();
-        for(CartItemRequest item:items){
+        for (CartItemRequest item : items) {
             cartItems.add(mapToEntity(item));
         }
         return cartItems;
+    }
+
+    /**
+     * Updates existing CartItem entity with non-null values from request
+     */
+    public static void updateEntity(CartItem existing, CartItemRequest request) {
+        if (request.getProductId() != null) {
+            existing.setProductId(request.getProductId());
+        }
+        if (request.getQuantity() != null) {
+            existing.setQuantity(request.getQuantity());
+        }
+        if (request.getPrice() != null) {
+            existing.setPrice(request.getPrice());
+        }
+        if (request.getSpecialInstruction() != null) {
+            existing.setSpecialInstruction(request.getSpecialInstruction());
+        }
     }
 }
