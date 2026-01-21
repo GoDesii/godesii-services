@@ -2,23 +2,23 @@ package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
+import com.godesii.godesii_services.dto.MenuItemRequest;
 import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.service.restaurant.MenuItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(MenuItemController.ENDPOINT)
-@Tag(name = "Menu Item API", description = "Manage restaurant menu items")
+@Tag(name = "Menu Item API", description = "Manage menu items with full CRUD operations")
 public class MenuItemController {
 
     public static final String ENDPOINT = GoDesiiConstant.API_VERSION + "/menu-items";
@@ -29,10 +29,16 @@ public class MenuItemController {
         this.service = service;
     }
 
-    @PostMapping
-    @Operation(summary = "Create a new menu item")
-    public ResponseEntity<APIResponse<MenuItem>> create(@RequestBody MenuItem menuItem) {
-        MenuItem created = service.create(menuItem);
+    /**
+     * Create a new menu item
+     * 
+     * @param request Validated menu item creation request
+     * @return Created menu item with 201 status
+     */
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Create a new menu item", description = "Creates a new menu item with validated data")
+    public ResponseEntity<APIResponse<MenuItem>> create(@Valid @RequestBody MenuItemRequest request) {
+        MenuItem created = service.create(request);
 
         APIResponse<MenuItem> apiResponse = new APIResponse<>(
                 HttpStatus.CREATED,
@@ -43,79 +49,79 @@ public class MenuItemController {
         return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
     }
 
-    @GetMapping("/get/{id}")
-    @Operation(summary = "Get menu item by ID")
-    public ResponseEntity<APIResponse<MenuItem>> getByMenuId(@PathVariable Long id) {
-        MenuItem item = service.getByMenuId(id);
+    /**
+     * Get all menu items
+     * 
+     * @return List of all menu items
+     */
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get all menu items", description = "Retrieves all menu items")
+    public ResponseEntity<APIResponse<List<MenuItem>>> getAll() {
+        List<MenuItem> menuItems = service.getAll();
 
-        if (item == null) {
-            APIResponse<MenuItem> apiResponse = new APIResponse<>(
-                    HttpStatus.NOT_FOUND,
-                    null,
-                    GoDesiiConstant.NOT_FOUND
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
-        }
+        APIResponse<List<MenuItem>> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                menuItems,
+                GoDesiiConstant.SUCCESSFULLY_FETCHED
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Get menu item by ID
+     * 
+     * @param id Menu item ID (UUID)
+     * @return Menu item entity or 404 if not found
+     */
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get menu item by ID", description = "Retrieves a single menu item by its ID")
+    public ResponseEntity<APIResponse<MenuItem>> getById(@PathVariable @NonNull String id) {
+        MenuItem menuItem = service.getById(id);
 
         APIResponse<MenuItem> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
-                item,
+                menuItem,
                 GoDesiiConstant.SUCCESSFULLY_FETCHED
         );
 
         return ResponseEntity.ok(apiResponse);
     }
 
-    @GetMapping
-    @Operation(summary = "Get all menu items with pagination")
-    public ResponseEntity<APIResponse<Page<MenuItem>>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    /**
+     * Get menu items by category ID
+     * 
+     * @param categoryId Category ID
+     * @return List of menu items for the specified category
+     */
+    @GetMapping(value = "/category/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get menu items by category ID", description = "Retrieves all menu items for a specific category")
+    public ResponseEntity<APIResponse<List<MenuItem>>> getByCategoryId(@PathVariable @NonNull Long categoryId) {
+        List<MenuItem> menuItems = service.getByCategoryId(categoryId);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        Page<MenuItem> items = service.getAll(pageable);
-
-        APIResponse<Page<MenuItem>> apiResponse = new APIResponse<>(
+        APIResponse<List<MenuItem>> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
-                items,
+                menuItems,
                 GoDesiiConstant.SUCCESSFULLY_FETCHED
         );
 
         return ResponseEntity.ok(apiResponse);
     }
 
-    @GetMapping("/{restaurantId}")
-    @Operation(summary = "Get menu items by restaurant ID with pagination")
-    public ResponseEntity<APIResponse<Page<MenuItem>>> getByRestaurantId(
-            @PathVariable Long restaurantId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size) {
+    /**
+     * Update menu item details
+     * 
+     * @param id      Menu item ID (UUID)
+     * @param request Validated menu item update request
+     * @return Updated menu item or 404 if not found
+     */
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update menu item", description = "Updates an existing menu item's details")
+    public ResponseEntity<APIResponse<MenuItem>> update(
+            @PathVariable @NonNull String id,
+            @Valid @RequestBody MenuItemRequest request) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-        Page<MenuItem> items = service.getByRestaurantId(restaurantId, pageable);
-
-        APIResponse<Page<MenuItem>> apiResponse = new APIResponse<>(
-                HttpStatus.OK,
-                items,
-                GoDesiiConstant.SUCCESSFULLY_FETCHED
-        );
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @PutMapping("/{id}")
-    @Operation(summary = "Update a menu item")
-    public ResponseEntity<APIResponse<MenuItem>> update(@PathVariable Long id, @RequestBody MenuItem menuItem) {
-        MenuItem updated = service.update(id, menuItem);
-
-        if (updated == null) {
-            APIResponse<MenuItem> apiResponse = new APIResponse<>(
-                    HttpStatus.NOT_FOUND,
-                    null,
-                    GoDesiiConstant.NOT_FOUND
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
-        }
+        MenuItem updated = service.update(id, request);
 
         APIResponse<MenuItem> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
@@ -126,9 +132,15 @@ public class MenuItemController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a menu item")
-    public ResponseEntity<APIResponse<Void>> delete(@PathVariable Long id) {
+    /**
+     * Delete menu item by ID
+     * 
+     * @param id Menu item ID (UUID)
+     * @return 204 No Content on success
+     */
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Delete menu item", description = "Deletes a menu item by its ID")
+    public ResponseEntity<APIResponse<Void>> delete(@PathVariable @NonNull String id) {
         service.delete(id);
 
         APIResponse<Void> apiResponse = new APIResponse<>(
@@ -138,31 +150,5 @@ public class MenuItemController {
         );
 
         return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
-    }
-
-    @GetMapping("/search")
-    @Operation(summary = "Search menu items by restaurant name or menu name")
-    public ResponseEntity<APIResponse<List<MenuItem>>> searchMenus(
-            @RequestParam(required = false) String restaurantName,
-            @RequestParam(required = false) String menuName) {
-
-        List<MenuItem> menus = service.getMenus(restaurantName, menuName);
-
-        if (menus.isEmpty()) {
-            APIResponse<List<MenuItem>> apiResponse = new APIResponse<>(
-                    HttpStatus.NOT_FOUND,
-                    null,
-                    GoDesiiConstant.NOT_FOUND
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
-        }
-
-        APIResponse<List<MenuItem>> apiResponse = new APIResponse<>(
-                HttpStatus.OK,
-                menus,
-                GoDesiiConstant.SUCCESSFULLY_FETCHED
-        );
-
-        return ResponseEntity.ok(apiResponse);
     }
 }

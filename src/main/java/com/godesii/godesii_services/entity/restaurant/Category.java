@@ -1,6 +1,8 @@
 package com.godesii.godesii_services.entity.restaurant;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -10,14 +12,20 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
     private Long id;
-
     private String name;
-
     private String description;
+    private Integer displayOrder; // Controls the sorting sequence on the digital/print menu.
+    private String imageUrl;
+    private Boolean isPureVeg; // Optional filter for platforms like Swiggy to show purely vegetarian categories.
+
+    @ManyToOne
+    @JoinColumn(name = "menu_id")
+    private Menu menu;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private List<MenuItem> menuItems;
+    private List<MenuItem> items;
 
     public Long getId() {
         return id;
@@ -43,22 +51,44 @@ public class Category {
         this.description = description;
     }
 
-    public List<MenuItem> getMenuItems() {
-        return menuItems;
+    public Integer getDisplayOrder() {
+        return displayOrder;
     }
 
-    public void setMenuItems(List<MenuItem> menuItems) {
-        this.menuItems = menuItems;
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
     }
 
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", menuItems=" + menuItems +
-                '}';
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public Boolean getPureVeg() {
+        return isPureVeg;
+    }
+
+    public void setPureVeg(Boolean pureVeg) {
+        isPureVeg = pureVeg;
+    }
+
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public void setMenu(Menu menu) {
+        this.menu = menu;
+    }
+
+    public List<MenuItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<MenuItem> items) {
+        this.items = items;
     }
 }
 

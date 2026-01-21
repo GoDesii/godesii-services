@@ -1,85 +1,72 @@
 package com.godesii.godesii_services.entity.restaurant;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "menu_item")
+@Table(name = "menu_items")
 public class MenuItem {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String menuName;
-    private String cuisine;
-    private String price;
-
-    @ElementCollection // list of strings in separate table
-    private List<String> imageUrl;
-
-    private boolean isAvailable;
+    @UuidGenerator
+    @Column(name = "item_id")
+    private String itemId;
+    @Column(nullable = false)
+    private String name;
     private String description;
-    private String ingredients;
-    private String menuType;
-
-    // Many items → one restaurant
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    @JsonBackReference
-    private Restaurant restaurant;
-
+    @Column(precision = 10, scale = 2)
+    private BigDecimal basePrice;
+    private String imageUrl;
+    private boolean isAvailable = true;
+    // 2026 Industry Standard: Dietary Markers
+    private String dietaryType; // VEG, NON_VEG, EGG, VEGAN
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
-    public Category getCategory() {
-        return category;
+    @OneToOne(mappedBy = "menuItem", cascade = CascadeType.ALL)
+    private NutritionalInfo nutritionalInfo;
+
+    public String getItemId() {
+        return itemId;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
-
-    public Long getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getMenuName() {
-        return menuName;
+    public String getDescription() {
+        return description;
     }
 
-    public void setMenuName(String menuName) {
-        this.menuName = menuName;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getCuisine() {
-        return cuisine;
+    public BigDecimal getBasePrice() {
+        return basePrice;
     }
 
-    public void setCuisine(String cuisine) {
-        this.cuisine = cuisine;
+    public void setBasePrice(BigDecimal basePrice) {
+        this.basePrice = basePrice;
     }
 
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public List<String> getImageUrl() {
+    public String getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageUrl(List<String> imageUrl) {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
@@ -91,52 +78,27 @@ public class MenuItem {
         isAvailable = available;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDietaryType() {
+        return dietaryType;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDietaryType(String dietaryType) {
+        this.dietaryType = dietaryType;
     }
 
-    public String getIngredients() {
-        return ingredients;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setIngredients(String ingredients) {
-        this.ingredients = ingredients;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
-    public String getMenuType() {
-        return menuType;
+    public NutritionalInfo getNutritionalInfo() {
+        return nutritionalInfo;
     }
 
-    public void setMenuType(String menuType) {
-        this.menuType = menuType;
-    }
-
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
-    }
-
-    @Override
-    public String toString() {
-        return "MenuItem{" +
-                "id=" + id +
-                ", menuName='" + menuName + '\'' +
-                ", cuisine='" + cuisine + '\'' +
-                ", price='" + price + '\'' +
-                ", imageUrl=" + imageUrl +
-                ", isAvailable=" + isAvailable +
-                ", description='" + description + '\'' +
-                ", ingredients='" + ingredients + '\'' +
-                ", menuType='" + menuType + '\'' +
-                ", restaurant=" + restaurant +
-                ", category=" + category +
-                '}';
+    public void setNutritionalInfo(NutritionalInfo nutritionalInfo) {
+        this.nutritionalInfo = nutritionalInfo;
     }
 }

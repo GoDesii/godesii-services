@@ -1,11 +1,9 @@
 package com.godesii.godesii_services.entity.restaurant;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-
 import java.util.List;
-
 
 @Entity
 @Table(name = "restaurant")
@@ -14,31 +12,20 @@ public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String restaurantName;
-    private String address;
-    private String latitude;
-    private String longitude;
-    private String openingHours;
-    private String closingHours;
+    private String name;
+    private String phoneNo;
+    private String cuisineType;
     private String description;
-    private String mealType;
     private boolean isVerified;
+    private boolean isActive;
 
-    // One restaurant → many menu items
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<MenuItem> menuItemList;
+//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private List<OperationalHour> operatingHours;
 
-    // One restaurant → many reviews
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Review> reviews;
-
-    // One restaurant → many food certificates
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<FoodCertificate> certificates;
+    @Embedded
+    private RestaurantAddress address;
 
     public Long getId() {
         return id;
@@ -48,52 +35,28 @@ public class Restaurant {
         this.id = id;
     }
 
-    public String getRestaurantName() {
-        return restaurantName;
+    public String getName() {
+        return name;
     }
 
-    public void setRestaurantName(String restaurantName) {
-        this.restaurantName = restaurantName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getAddress() {
-        return address;
+    public String getPhoneNo() {
+        return phoneNo;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
     }
 
-    public String getLatitude() {
-        return latitude;
+    public String getCuisineType() {
+        return cuisineType;
     }
 
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(String longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getOpeningHours() {
-        return openingHours;
-    }
-
-    public void setOpeningHours(String openingHours) {
-        this.openingHours = openingHours;
-    }
-
-    public String getClosingHours() {
-        return closingHours;
-    }
-
-    public void setClosingHours(String closingHours) {
-        this.closingHours = closingHours;
+    public void setCuisineType(String cuisineType) {
+        this.cuisineType = cuisineType;
     }
 
     public String getDescription() {
@@ -104,14 +67,6 @@ public class Restaurant {
         this.description = description;
     }
 
-    public String getMealType() {
-        return mealType;
-    }
-
-    public void setMealType(String mealType) {
-        this.mealType = mealType;
-    }
-
     public boolean isVerified() {
         return isVerified;
     }
@@ -120,47 +75,27 @@ public class Restaurant {
         isVerified = verified;
     }
 
-    public List<MenuItem> getMenuItemList() {
-        return menuItemList;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setMenuItemList(List<MenuItem> menuItemList) {
-        this.menuItemList = menuItemList;
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
-    public List<Review> getReviews() {
-        return reviews;
+    public List<OperationalHour> getOperatingHours() {
+        return operatingHours;
     }
 
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
+    public void setOperatingHours(List<OperationalHour> operatingHours) {
+        this.operatingHours = operatingHours;
     }
 
-    public List<FoodCertificate> getCertificates() {
-        return certificates;
+    public RestaurantAddress getAddress() {
+        return address;
     }
 
-    public void setCertificates(List<FoodCertificate> certificates) {
-        this.certificates = certificates;
-    }
-
-    @Override
-    public String toString() {
-        return "Restaurant{" +
-                "id=" + id +
-                ", restaurantName='" + restaurantName + '\'' +
-                ", address='" + address + '\'' +
-                ", latitude='" + latitude + '\'' +
-                ", longitude='" + longitude + '\'' +
-                ", openingHours='" + openingHours + '\'' +
-                ", closingHours='" + closingHours + '\'' +
-                ", description='" + description + '\'' +
-                ", mealType='" + mealType + '\'' +
-                ", isVerified=" + isVerified +
-                ", menuItemList=" + menuItemList +
-                ", reviews=" + reviews +
-                ", certificates=" + certificates +
-                '}';
+    public void setAddress(RestaurantAddress address) {
+        this.address = address;
     }
 }
-
