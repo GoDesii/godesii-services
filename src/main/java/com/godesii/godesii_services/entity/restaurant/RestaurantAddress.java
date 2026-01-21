@@ -16,7 +16,7 @@ public class RestaurantAddress {
     private String city;
     private String state;
     private String postalCode;
-    private String countryCode;
+    private String country;
     private BigDecimal latitude;
     private BigDecimal longitude;
 
@@ -60,12 +60,12 @@ public class RestaurantAddress {
         this.postalCode = postalCode;
     }
 
-    public String getCountryCode() {
-        return countryCode;
+    public String getCountry() {
+        return country;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+    public void setCountry(String countryCode) {
+        this.country = countryCode;
     }
 
     public BigDecimal getLatitude() {

@@ -45,8 +45,8 @@ public class RestaurantService {
      */
     public Page<Restaurant> getAll(Pageable pageable) {
         Page<Restaurant> restaurants = repo.findAll(pageable);
-//        log.info("Fetched {} restaurants out of {} total",
-//                restaurants.getNumberOfElements(), restaurants.getTotalElements());
+        // log.info("Fetched {} restaurants out of {} total",
+        // restaurants.getNumberOfElements(), restaurants.getTotalElements());
         return restaurants;
     }
 
@@ -60,7 +60,7 @@ public class RestaurantService {
     public Restaurant getById(@NonNull Long id) {
         return repo.findById(id)
                 .orElseThrow(() -> {
-//                    log.warn("Restaurant not found with ID: {}", id);
+                    // log.warn("Restaurant not found with ID: {}", id);
                     return new ResourceNotFoundException("Restaurant not found with ID: " + id);
                 });
     }
@@ -81,7 +81,7 @@ public class RestaurantService {
         RestaurantRequest.updateEntity(existing, request);
 
         Restaurant updated = repo.save(existing);
-//        log.info("Updated Restaurant with ID: {}, Name: {}", id, updated.getName());
+        // log.info("Updated Restaurant with ID: {}, Name: {}", id, updated.getName());
         return updated;
     }
 
@@ -95,6 +95,6 @@ public class RestaurantService {
     public void delete(@NonNull Long id) {
         Restaurant existing = getById(id);
         repo.delete(existing);
-//        log.info("Deleted Restaurant with ID: {}, Name: {}", id, existing.getName());
+        // log.info("Deleted Restaurant with ID: {}, Name: {}", id, existing.getName());
     }
 }

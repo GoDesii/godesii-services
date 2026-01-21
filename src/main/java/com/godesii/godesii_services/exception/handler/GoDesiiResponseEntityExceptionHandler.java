@@ -27,7 +27,10 @@ public class GoDesiiResponseEntityExceptionHandler {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(GoDesiiResponseEntityExceptionHandler.class);
 
-    @ExceptionHandler(value = { IllegalStateException.class, ResourceNotFoundException.class })
+    @ExceptionHandler(value = {
+            IllegalStateException.class,
+            ResourceNotFoundException.class
+    })
     public ResponseEntity<Object> handleNotFoundException(RuntimeException ex, WebRequest request) {
         APIError apiError = new APIError(HttpStatus.NOT_FOUND, ex.getMessage(), ex.getStackTrace(), request);
         return ResponseEntity
@@ -35,7 +38,11 @@ public class GoDesiiResponseEntityExceptionHandler {
                 .body(apiError);
     }
 
-    @ExceptionHandler(value = { IllegalArgumentException.class, InvalidDataAccessApiUsageException.class,MethodArgumentNotValidException.class })
+    @ExceptionHandler(value = {
+            IllegalArgumentException.class,
+            InvalidDataAccessApiUsageException.class,
+            MethodArgumentNotValidException.class
+    })
     public ResponseEntity<Object> handleBadRequestException(RuntimeException ex, WebRequest request) {
         LOGGER.error(ex.getMessage(), ex);
         APIError apiError = new APIError(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getStackTrace(), request);
@@ -44,7 +51,10 @@ public class GoDesiiResponseEntityExceptionHandler {
                 .body(apiError);
     }
 
-    @ExceptionHandler(value = { AuthenticationException.class, InsufficientAuthenticationException.class })
+    @ExceptionHandler(value = {
+            AuthenticationException.class,
+            InsufficientAuthenticationException.class
+    })
     public ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
         APIError apiError = new APIError(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex.getStackTrace(), request);
         return ResponseEntity
@@ -52,7 +62,10 @@ public class GoDesiiResponseEntityExceptionHandler {
                 .body(apiError);
     }
 
-    @ExceptionHandler(value = { io.jsonwebtoken.SignatureException.class, SignatureException.class })
+    @ExceptionHandler(value = {
+            io.jsonwebtoken.SignatureException.class,
+            SignatureException.class
+    })
     public ResponseEntity<Object> handleAllSException(Exception ex, WebRequest request) {
         APIError apiError = new APIError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex.getStackTrace(),
                 request);

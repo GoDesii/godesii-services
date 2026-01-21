@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.entity.restaurant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +15,9 @@ public class OperationalHour {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "restaurant_id", nullable = false)
+//    private Restaurant restaurant;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "day_of_week")
@@ -35,13 +36,13 @@ public class OperationalHour {
         this.id = id;
     }
 
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
-    }
+//    public Restaurant getRestaurant() {
+//        return restaurant;
+//    }
+//
+//    public void setRestaurant(Restaurant restaurant) {
+//        this.restaurant = restaurant;
+//    }
 
     public DayOfWeek getDayOfWeek() {
         return dayOfWeek;

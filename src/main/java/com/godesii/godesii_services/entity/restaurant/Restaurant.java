@@ -2,13 +2,6 @@ package com.godesii.godesii_services.entity.restaurant;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -23,11 +16,12 @@ public class Restaurant {
     private String phoneNo;
     private String cuisineType;
     private String description;
-
     private boolean isVerified;
+    private boolean isActive;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    @JsonManagedReference
+//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "restaurant_id", nullable = false)
     private List<OperationalHour> operatingHours;
 
     @Embedded
@@ -79,6 +73,14 @@ public class Restaurant {
 
     public void setVerified(boolean verified) {
         isVerified = verified;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public List<OperationalHour> getOperatingHours() {

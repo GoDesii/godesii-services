@@ -1,6 +1,7 @@
 package com.godesii.godesii_services.entity.restaurant;
 
 public enum DayOfWeek {
+
     SUNDAY(0, "Sunday"),
     MONDAY(1, "Monday"),
     TUESDAY(2, "Tuesday"),

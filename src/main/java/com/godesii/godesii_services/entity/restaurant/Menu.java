@@ -16,7 +16,7 @@ public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "menu_id")
-    private String id;
+    private Long id;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
@@ -33,11 +33,11 @@ public class Menu {
     @OrderBy("displayOrder ASC")
     private List<Category> categories;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
