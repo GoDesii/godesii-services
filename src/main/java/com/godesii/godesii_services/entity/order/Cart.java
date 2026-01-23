@@ -19,12 +19,16 @@ public class Cart {
     private List<CartItem> cartItems;
     private Long totalPrice;
 
+    // Cart locking fields
+    private Boolean isLocked;
+    private Instant lockedAt;
+    private String lockedForOrderId;
+
     /**
      * Check if cart has expired
      * 
      * @return true if cart is expired
      */
-
 
     @Id
     @UuidGenerator()
@@ -109,5 +113,33 @@ public class Cart {
 
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
+    }
+
+    @Column(name = "is_locked")
+    public Boolean getIsLocked() {
+        return isLocked != null ? isLocked : false;
+    }
+
+    public void setIsLocked(Boolean isLocked) {
+        this.isLocked = isLocked;
+    }
+
+    @Column(name = "locked_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Instant getLockedAt() {
+        return lockedAt;
+    }
+
+    public void setLockedAt(Instant lockedAt) {
+        this.lockedAt = lockedAt;
+    }
+
+    @Column(name = "locked_for_order_id")
+    public String getLockedForOrderId() {
+        return lockedForOrderId;
+    }
+
+    public void setLockedForOrderId(String lockedForOrderId) {
+        this.lockedForOrderId = lockedForOrderId;
     }
 }

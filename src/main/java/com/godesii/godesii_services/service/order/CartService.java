@@ -133,6 +133,7 @@ public class CartService {
     public boolean isExpired(Instant expiresAt) {
         return expiresAt != null && Instant.now().isAfter(expiresAt);
     }
+
     /**
      * Update cart item quantity
      */
@@ -257,6 +258,21 @@ public class CartService {
         log.info("Clearing cart: {}", cartId);
         Cart cart = getById(cartId);
         cartRepo.delete(cart);
+    }
+
+    /**
+     * Clear cart by order ID (after successful order)
+     */
+    @Transactional
+    public void clearCartByOrderId(String orderId) {
+        log.info("Clearing cart for order: {}", orderId);
+        Optional<Cart> cartOpt = cartRepo.findByLockedForOrderId(orderId);
+        if (cartOpt.isPresent()) {
+            cartRepo.delete(cartOpt.get());
+            log.info("Cart cleared for order: {}", orderId);
+        } else {
+            log.warn("No cart found for order: {}", orderId);
+        }
     }
 
     /**
@@ -432,6 +448,75 @@ public class CartService {
         cartRepo.deleteAll(expiredCarts);
         log.info("Cleaned up {} expired carts", expiredCarts.size());
         return expiredCarts.size();
+    }
+
+    // ========== Cart Locking Methods ==========
+
+    /**
+     * Lock cart for checkout
+     */
+    @Transactional
+    public void lockCart(String cartId, String orderId) {
+        Cart cart = getById(cartId);
+
+        if (Boolean.TRUE.equals(cart.getIsLocked())) {
+            throw new CartLockedException("Cart is already locked for processing", cartId, cart.getLockedForOrderId());
+        }
+
+        cart.setIsLocked(true);
+        cart.setLockedAt(Instant.now());
+        cart.setLockedForOrderId(orderId);
+
+        cartRepo.save(cart);
+        log.info("Locked cart: {} for order: {}", cartId, orderId);
+    }
+
+    /**
+     * Unlock cart
+     */
+    @Transactional
+    public void unlockCart(String cartId) {
+        Cart cart = getById(cartId);
+        cart.setIsLocked(false);
+        cart.setLockedAt(null);
+        cart.setLockedForOrderId(null);
+        cartRepo.save(cart);
+        log.info("Unlocked cart: {}", cartId);
+    }
+
+    /**
+     * Get final price breakdown for order placement
+     * Recalculates prices and validates availability
+     */
+    @Transactional
+    public PriceBreakdown getFinalPriceBreakdown(String cartId) {
+        Cart cart = getById(cartId);
+
+        // Validate expiry
+        if (isExpired(cart.getExpiresAt())) {
+            throw new CartValidationException("Cart has expired. Please create a new cart.");
+        }
+
+        // Validate items and recalculate prices
+        for (CartItem item : cart.getCartItems()) {
+            MenuItem menuItem = validateItemAvailability(String.valueOf(item.getProductId()));
+
+            // Update price if changed
+            Long currentPrice = menuItem.getBasePrice().multiply(BigDecimal.valueOf(100)).longValue();
+            if (!currentPrice.equals(item.getPrice())) {
+                log.info("Price update during checkout for item: {}, old: {}, new: {}",
+                        item.getProductId(), item.getPrice(), currentPrice);
+                item.setPrice(currentPrice);
+            }
+        }
+
+        // Recalculate totals
+        PriceBreakdown breakdown = calculatePriceBreakdown(cart);
+        cart.setTotalPrice(breakdown.getTotalAmount());
+        cart.setUpdatedAt(Instant.now());
+        cartRepo.save(cart);
+
+        return breakdown;
     }
 
     // ========== Original CRUD Methods ==========

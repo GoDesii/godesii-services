@@ -29,4 +29,19 @@ public interface CartRepository extends JpaRepository<Cart, String> {
      * @return List of expired carts
      */
     List<Cart> findByExpiresAtBefore(Instant now);
+
+    /**
+     * Find active and unlocked cart
+     */
+    Optional<Cart> findByUserIdAndIsLockedFalseAndExpiresAtAfter(Long userId, Instant now);
+
+    /**
+     * Find locked cart by order ID
+     */
+    Optional<Cart> findByLockedForOrderId(String orderId);
+
+    /**
+     * Find stale locked carts for unlocking
+     */
+    List<Cart> findByIsLockedTrueAndLockedAtBefore(Instant timestamp);
 }

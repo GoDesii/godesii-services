@@ -38,6 +38,10 @@ app:
     token: 9d6b7594eac2c3c1956db43df8685e68
     phoneNo: +17176708304
 
+  razorpay:
+    enabled: true
+    key-id: your_key_id
+    key-secret: your_key_secret
 
   jwt:
     access-token:
