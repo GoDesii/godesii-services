@@ -2,7 +2,10 @@ package com.godesii.godesii_services.controller.order;
 
 import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
+import com.godesii.godesii_services.dto.AddToCartRequest;
 import com.godesii.godesii_services.dto.CartRequest;
+import com.godesii.godesii_services.dto.CartResponse;
+import com.godesii.godesii_services.dto.UpdateCartItemRequest;
 import com.godesii.godesii_services.entity.order.Cart;
 import com.godesii.godesii_services.service.order.CartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -141,6 +144,129 @@ public class CartController {
                 GoDesiiConstant.SUCCESSFULLY_UPDATED);
 
         return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Add item to cart
+     * 
+     * @param request Validated add to cart request
+     * @return Cart response with updated cart
+     */
+    @PostMapping(value = "/add-item", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Add item to cart", description = "Add a menu item to user's cart with validations")
+    public ResponseEntity<APIResponse<CartResponse>> addItemToCart(@Valid @RequestBody AddToCartRequest request) {
+        CartResponse cartResponse = service.addItemToCart(request);
+
+        APIResponse<CartResponse> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                cartResponse,
+                "Item added to cart successfully");
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Update cart item quantity
+     * 
+     * @param cartId     Cart ID
+     * @param cartItemId Cart item ID
+     * @param request    Update request with new quantity
+     * @return Updated cart response or 204 if cart deleted
+     */
+    @PutMapping(value = "/{cartId}/items/{cartItemId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update cart item", description = "Update quantity of cart item (0 removes item)")
+    public ResponseEntity<APIResponse<CartResponse>> updateCartItem(
+            @PathVariable @NonNull String cartId,
+            @PathVariable @NonNull String cartItemId,
+            @Valid @RequestBody UpdateCartItemRequest request) {
+
+        CartResponse cartResponse = service.updateCartItem(cartId, cartItemId, request);
+
+        if (cartResponse == null) {
+            // Cart was deleted because it became empty
+            APIResponse<CartResponse> apiResponse = new APIResponse<>(
+                    HttpStatus.NO_CONTENT,
+                    null,
+                    "Cart is now empty and has been deleted");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+        }
+
+        APIResponse<CartResponse> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                cartResponse,
+                "Cart item updated successfully");
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Remove item from cart
+     * 
+     * @param cartId     Cart ID
+     * @param cartItemId Cart item ID to remove
+     * @return Updated cart response or 204 if cart deleted
+     */
+    @DeleteMapping(value = "/{cartId}/items/{cartItemId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Remove cart item", description = "Remove a specific item from cart")
+    public ResponseEntity<APIResponse<CartResponse>> removeCartItem(
+            @PathVariable @NonNull String cartId,
+            @PathVariable @NonNull String cartItemId) {
+
+        CartResponse cartResponse = service.removeCartItem(cartId, cartItemId);
+
+        if (cartResponse == null) {
+            // Cart was deleted because it became empty
+            APIResponse<CartResponse> apiResponse = new APIResponse<>(
+                    HttpStatus.NO_CONTENT,
+                    null,
+                    "Cart is now empty and has been deleted");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+        }
+
+        APIResponse<CartResponse> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                cartResponse,
+                "Cart item removed successfully");
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Get active cart for user
+     * 
+     * @param userId User ID
+     * @return Active cart with full details
+     */
+    @GetMapping(value = "/active/user/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get active cart", description = "Get user's active (non-expired) cart with full details")
+    public ResponseEntity<APIResponse<CartResponse>> getActiveCart(@PathVariable @NonNull Long userId) {
+        CartResponse cartResponse = service.getActiveCart(userId);
+
+        APIResponse<CartResponse> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                cartResponse,
+                "Active cart retrieved successfully");
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Clear all items from cart
+     * 
+     * @param cartId Cart ID to clear
+     * @return 204 No Content
+     */
+    @DeleteMapping(value = "/{cartId}/clear", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Clear cart", description = "Remove all items and delete the cart")
+    public ResponseEntity<APIResponse<Void>> clearCart(@PathVariable @NonNull String cartId) {
+        service.clearCart(cartId);
+
+        APIResponse<Void> apiResponse = new APIResponse<>(
+                HttpStatus.NO_CONTENT,
+                null,
+                "Cart cleared successfully");
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
     }
 
     /**
