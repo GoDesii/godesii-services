@@ -20,8 +20,6 @@ public class MenuItemRequest {
     @DecimalMin(value = "0.01", message = "Base price must be at least 0.01")
     private BigDecimal basePrice;
 
-    @Pattern(regexp = "^(https?://)?([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",
-             message = "Invalid image URL format")
     private String imageUrl;
 
     private Boolean isAvailable = true;
