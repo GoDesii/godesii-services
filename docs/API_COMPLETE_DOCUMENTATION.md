@@ -747,7 +747,7 @@ Total = 73547 (₹735.47)
 
 **Example:** `DELETE /api/v1/carts/cart-uuid-abc123/items/item-uuid-xyz789`
 
-#### 4. Get Active Cart ⭐
+#### 4. Get Active Cart⭐
 **Endpoint:** `GET /api/v1/carts/active/user/{userId}`
 
 **Example:** `GET /api/v1/carts/active/user/101`
