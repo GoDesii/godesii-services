@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.entity.restaurant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class Category {
 
     @ManyToOne
     @JoinColumn(name = "menu_id")
+    @JsonIgnore
     private Menu menu;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)

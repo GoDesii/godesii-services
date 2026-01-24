@@ -42,6 +42,13 @@ app:
     enabled: true
     key-id: your_key_id
     key-secret: your_key_secret
+    
+  aws:
+    s3:
+      accessKey:
+      secretKey:
+      region:
+      bucketName:
 
   jwt:
     access-token:
