@@ -1,6 +1,7 @@
 package com.godesii.godesii_services.dto;
 
 import com.godesii.godesii_services.entity.order.Order;
+import com.godesii.godesii_services.entity.order.OrderStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -75,7 +76,18 @@ public class OrderRequest {
         Order order = new Order();
         order.setUserId(request.getUserId());
         order.setRestaurantId(request.getRestaurantId());
-        order.setOrderStatus(request.getOrderStatus() != null ? request.getOrderStatus() : "PENDING");
+
+        // Convert String to OrderStatus enum, default to CREATED
+        if (request.getOrderStatus() != null) {
+            try {
+                order.setOrderStatus(OrderStatus.valueOf(request.getOrderStatus()));
+            } catch (IllegalArgumentException e) {
+                order.setOrderStatus(OrderStatus.CREATED);
+            }
+        } else {
+            order.setOrderStatus(OrderStatus.CREATED);
+        }
+
         order.setOrderDate(Instant.now());
         order.setOrderItems(OrderItemRequest.mapToEntities(request.getOrderItems()));
         order.setOrderAddress(OrderAddressRequest.mapToEntity(request.getOrderAddress()));
@@ -100,7 +112,11 @@ public class OrderRequest {
             existing.setRestaurantId(request.getRestaurantId());
         }
         if (request.getOrderStatus() != null) {
-            existing.setOrderStatus(request.getOrderStatus());
+            try {
+                existing.setOrderStatus(OrderStatus.valueOf(request.getOrderStatus()));
+            } catch (IllegalArgumentException e) {
+                // Invalid status, skip update
+            }
         }
         if (request.getOrderItems() != null && !request.getOrderItems().isEmpty()) {
             existing.setOrderItems(OrderItemRequest.mapToEntities(request.getOrderItems()));

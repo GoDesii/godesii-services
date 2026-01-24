@@ -13,10 +13,22 @@ public class Cart {
     private String id;
     private Instant createAt;
     private Instant updatedAt;
+    private Instant expiresAt;
     private Long userId;
     private Long restaurantId;
     private List<CartItem> cartItems;
     private Long totalPrice;
+
+    // Cart locking fields
+    private Boolean isLocked;
+    private Instant lockedAt;
+    private String lockedForOrderId;
+
+    /**
+     * Check if cart has expired
+     * 
+     * @return true if cart is expired
+     */
 
     @Id
     @UuidGenerator()
@@ -49,6 +61,16 @@ public class Cart {
         this.updatedAt = updatedAt;
     }
 
+    @Column(name = "expires_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
     @Column(name = "user_id")
     public Long getUserId() {
         return userId;
@@ -76,19 +98,14 @@ public class Cart {
         this.totalPrice = totalPrice;
     }
 
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(
-        name = "cart_selection", // Specifies the name of the join table
-        joinColumns = @JoinColumn(
-                name = "cart_id_fk",
-                foreignKey = @ForeignKey(name = "CART_FK")
-        ), // Column in join table referring to Cart
-        inverseJoinColumns = @JoinColumn(
-                name = "cartitem_id_fk",
-                foreignKey = @ForeignKey(name = "CART_ITEM_FK")
-        )
-            // Column in join table referring to CartItem
+    @JoinTable(name = "cart_selection", // Specifies the name of the join table
+            joinColumns = @JoinColumn(name = "cart_id_fk", foreignKey = @ForeignKey(name = "CART_FK")), // Column in
+                                                                                                        // join table
+                                                                                                        // referring to
+                                                                                                        // Cart
+            inverseJoinColumns = @JoinColumn(name = "cartitem_id_fk", foreignKey = @ForeignKey(name = "CART_ITEM_FK"))
+    // Column in join table referring to CartItem
     )
     public List<CartItem> getCartItems() {
         return cartItems;
@@ -96,5 +113,33 @@ public class Cart {
 
     public void setCartItems(List<CartItem> cartItems) {
         this.cartItems = cartItems;
+    }
+
+    @Column(name = "is_locked")
+    public Boolean getIsLocked() {
+        return isLocked != null ? isLocked : false;
+    }
+
+    public void setIsLocked(Boolean isLocked) {
+        this.isLocked = isLocked;
+    }
+
+    @Column(name = "locked_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    public Instant getLockedAt() {
+        return lockedAt;
+    }
+
+    public void setLockedAt(Instant lockedAt) {
+        this.lockedAt = lockedAt;
+    }
+
+    @Column(name = "locked_for_order_id")
+    public String getLockedForOrderId() {
+        return lockedForOrderId;
+    }
+
+    public void setLockedForOrderId(String lockedForOrderId) {
+        this.lockedForOrderId = lockedForOrderId;
     }
 }
