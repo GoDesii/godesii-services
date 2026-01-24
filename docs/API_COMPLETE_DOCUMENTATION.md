@@ -1,6 +1,6 @@
 # GoDesii Platform - Complete API Documentation
 
-> **Comprehensive Technical Reference**  
+> **Comprehensive Technical Reference **  
 > Version: 1.0 | Last Updated: January 23, 2026
 
 ## Table of Contents
