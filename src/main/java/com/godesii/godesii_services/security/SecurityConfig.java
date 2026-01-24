@@ -5,7 +5,6 @@ import com.godesii.godesii_services.repository.auth.UserRepository;
 import com.godesii.godesii_services.security.management.rotation_key.RSAPrivateKeyConverter;
 import com.godesii.godesii_services.security.management.rotation_key.RSAPublicKeyConverter;
 import com.godesii.godesii_services.service.auth.UserDetailServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -31,7 +29,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.NoOpAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -44,13 +41,13 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final HandlerExceptionResolver exceptionResolver;
 
-
     @Value("${app.jwt.encryptor.password}")
     private String password;
     @Value("${app.jwt.encryptor.salt}")
     private String salt;
 
-    public SecurityConfig(JpaRSAKeysRepository jpaRSAKeysRepository, UserRepository userRepository, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
+    public SecurityConfig(JpaRSAKeysRepository jpaRSAKeysRepository, UserRepository userRepository,
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
         this.jpaRSAKeysRepository = jpaRSAKeysRepository;
         this.userRepository = userRepository;
         this.exceptionResolver = exceptionResolver;
@@ -72,67 +69,72 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        request-> {
+                        request -> {
                             request.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
-                            request.requestMatchers("/api/**","/error","/auth/**","/swagger-ui/**").permitAll();
-                        }
-                )
+                            request.requestMatchers(
+                                    "/api/**",
+                                    "/error",
+                                    "/auth/login",
+                                    "/auth/login/password",
+                                    "/auth/login/otp",
+                                    "/auth/login/otp/request",
+                                    "/auth/otp/generate",
+                                    "/auth/register/**",
+                                    "/swagger-ui/**").permitAll();
+                        })
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exception ->
-                        exception.authenticationEntryPoint(authenticationEntryPoint()))
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
 
-
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html",
+        return (web) -> web.ignoring().requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
                 "/webjars/**");
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception{
+    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         return new JwtAuthenticationFilter(jwtProvider(), userDetailsService());
     }
 
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider(){
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService());
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
     @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         return new UserDetailServiceImpl(userRepository);
     }
 
     @Bean
-    public TextEncryptor textEncryptor(){
+    public TextEncryptor textEncryptor() {
         return Encryptors.text(password, salt);
     }
 
     @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint(){
+    public AuthenticationEntryPoint authenticationEntryPoint() {
         return new CustomAuthenticationEntryPoint(exceptionResolver);
     }
 }

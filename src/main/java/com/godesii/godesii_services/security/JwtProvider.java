@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import java.io.IOException;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
@@ -18,7 +19,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 
 public final class JwtProvider {
 
@@ -35,8 +35,8 @@ public final class JwtProvider {
     private final RSAPrivateKeyConverter rsaPrivateKeyConverter;
 
     public JwtProvider(JpaRSAKeysRepository jpaRSAKeysRepository,
-                       RSAPublicKeyConverter rsaPublicKeyConverter,
-                       RSAPrivateKeyConverter rsaPrivateKeyConverter) {
+            RSAPublicKeyConverter rsaPublicKeyConverter,
+            RSAPrivateKeyConverter rsaPrivateKeyConverter) {
         this.jpaRSAKeysRepository = jpaRSAKeysRepository;
         this.rsaPublicKeyConverter = rsaPublicKeyConverter;
         this.rsaPrivateKeyConverter = rsaPrivateKeyConverter;
@@ -44,12 +44,20 @@ public final class JwtProvider {
 
     @SuppressWarnings("all")
     public String generateAccessToken(Authentication authentication) {
-        Map<String, String> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("claim_type", "access_token");
+
+        // Extract and add role to claims
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("USER");
+        claims.put("role", role);
+
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date accessTokenExpiryDate =
-                new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
+        Date accessTokenExpiryDate = new Date(
+                currentDate.getTime() + (Integer.parseInt(this.accessTokenExpiryTime) * 1000));
 
         return Jwts
                 .builder()
@@ -63,12 +71,20 @@ public final class JwtProvider {
 
     @SuppressWarnings("all")
     public String generateRefreshToken(Authentication authentication) {
-        Map<String, String> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("claim_type", "refresh_token");
+
+        // Extract and add role to claims
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("USER");
+        claims.put("role", role);
+
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date refreshTokenExpiryDate =
-                new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
+        Date refreshTokenExpiryDate = new Date(
+                currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
 
         return Jwts
                 .builder()
@@ -80,7 +96,6 @@ public final class JwtProvider {
                 .compact();
     }
 
-
     public String getUsername(String token) {
         return Jwts.parser()
                 .verifyWith(this.getRSAKeys().publicKey())
@@ -90,9 +105,21 @@ public final class JwtProvider {
                 .getSubject();
     }
 
+    /**
+     * Extract role from JWT token
+     */
+    public String getRole(String token) {
+        return Jwts.parser()
+                .verifyWith(this.getRSAKeys().publicKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
+    }
+
     public boolean validateToken(String token, String username) {
         String subject = getUsername(token);
-        return (subject.equals(username) && !isTokenExpired(token, this.getRSAKeys().publicKey())) ;
+        return (subject.equals(username) && !isTokenExpired(token, this.getRSAKeys().publicKey()));
     }
 
     public boolean isTokenExpired(String token, PublicKey publicKey) {
@@ -104,8 +131,8 @@ public final class JwtProvider {
         return expiration.before(new Date());
     }
 
-    public JpaRSAKeysRepository.RsaKeyPair getRSAKeys()  {
-        try{
+    public JpaRSAKeysRepository.RsaKeyPair getRSAKeys() {
+        try {
             RSAKeys rsaKeys = this.jpaRSAKeysRepository
                     .findAll(Sort.by(Sort.Direction.DESC, "createdAt")).get(0);
             RSAPublicKey publicKey = this.rsaPublicKeyConverter
@@ -116,20 +143,18 @@ public final class JwtProvider {
                     rsaKeys.getId(),
                     rsaKeys.getCreatedAt(),
                     publicKey,
-                    privateKey
-            );
-        }
-        catch (IOException ex){
+                    privateKey);
+        } catch (IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
         return null;
     }
 
-    public String getAccessTokenExpiryTime(){
+    public String getAccessTokenExpiryTime() {
         return accessTokenExpiryTime;
     }
 
-    public String getRefreshTokenExpiryTime(){
+    public String getRefreshTokenExpiryTime() {
         return refreshTokenExpiryTime;
     }
 
