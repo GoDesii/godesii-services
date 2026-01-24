@@ -21,8 +21,6 @@ public class CategoryRequest {
     @Min(value = 0, message = "Display order must be non-negative")
     private Integer displayOrder;
 
-    @Pattern(regexp = "^(https?://)?([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$", 
-             message = "Invalid image URL format")
     private String imageUrl;
 
     private Boolean isPureVeg;
