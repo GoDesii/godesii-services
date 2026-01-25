@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Table(name = "menu_items")
 public class MenuItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UuidGenerator
     @Column(name = "item_id")
     private String itemId;
     @Column(nullable = false)
