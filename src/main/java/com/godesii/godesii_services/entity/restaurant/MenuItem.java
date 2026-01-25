@@ -2,6 +2,7 @@ package com.godesii.godesii_services.entity.restaurant;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 @Table(name = "menu_items")
 public class MenuItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UuidGenerator
     @Column(name = "item_id")
     private String itemId;
     @Column(nullable = false)
@@ -21,6 +22,7 @@ public class MenuItem {
     private boolean isAvailable = true;
     // 2026 Industry Standard: Dietary Markers
     private String dietaryType; // VEG, NON_VEG, EGG, VEGAN
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     @JsonIgnore
