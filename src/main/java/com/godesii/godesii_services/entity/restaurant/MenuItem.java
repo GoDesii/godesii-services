@@ -1,9 +1,7 @@
 package com.godesii.godesii_services.entity.restaurant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 
@@ -11,7 +9,7 @@ import java.math.BigDecimal;
 @Table(name = "menu_items")
 public class MenuItem {
     @Id
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_id")
     private String itemId;
     @Column(nullable = false)
@@ -25,9 +23,11 @@ public class MenuItem {
     private String dietaryType; // VEG, NON_VEG, EGG, VEGAN
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonIgnore
     private Category category;
 
     @OneToOne(mappedBy = "menuItem", cascade = CascadeType.ALL)
+    @JsonIgnore
     private NutritionalInfo nutritionalInfo;
 
     public String getItemId() {
