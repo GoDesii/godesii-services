@@ -45,10 +45,10 @@ app:
     
   aws:
     s3:
-      accessKey:
-      secretKey:
-      region:
-      bucketName:
+      accessKey: AKIA3WMTVBRQTKYR6RGL
+      secretKey: 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
+      region: eu-north-1
+      bucketName: go-desi-bucket
 
   jwt:
     access-token:
