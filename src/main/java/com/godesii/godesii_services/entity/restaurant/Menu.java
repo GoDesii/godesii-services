@@ -9,6 +9,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "menus")
 public class Menu {
@@ -31,6 +33,7 @@ public class Menu {
     private Integer sortOrder; // Determines the display priority when multiple menus exist for one restaurant.
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
     @OrderBy("displayOrder ASC")
+    @JsonIgnore
     private List<Category> categories;
 
     public Long getId() {

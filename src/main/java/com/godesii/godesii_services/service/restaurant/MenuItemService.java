@@ -1,6 +1,7 @@
 package com.godesii.godesii_services.service.restaurant;
 
 import com.godesii.godesii_services.dto.MenuItemRequest;
+import com.godesii.godesii_services.dto.MenuItemResponse;
 import com.godesii.godesii_services.entity.restaurant.Category;
 import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.exception.ResourceNotFoundException;
@@ -26,7 +27,7 @@ public class MenuItemService {
     /**
      * Create a new menu item
      */
-    public MenuItem create(MenuItemRequest request) {
+    public MenuItemResponse create(MenuItemRequest request) {
         // Validate category exists
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -37,45 +38,53 @@ public class MenuItemService {
         MenuItem menuItem = MenuItemRequest.mapToEntity(request, category);
         MenuItem saved = menuItemRepository.save(menuItem);
         log.info("Created menu item: {} for category ID: {}", saved.getName(), category.getId());
-        return saved;
+        return MenuItemResponse.fromEntity(saved);
     }
 
     /**
      * Get all menu items
      */
-    public List<MenuItem> getAll() {
-        return menuItemRepository.findAll();
+    public List<MenuItemResponse> getAll() {
+        return menuItemRepository.findAll().stream()
+                .map(MenuItemResponse::fromEntity)
+                .toList();
     }
 
     /**
      * Get menu item by ID
      */
-    public MenuItem getById(String id) {
-        return menuItemRepository.findById(id)
+    public MenuItemResponse getById(String id) {
+        MenuItem menuItem = menuItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Menu item not found with ID: " + id
                 ));
+        return MenuItemResponse.fromEntity(menuItem);
     }
 
     /**
      * Get menu items by category ID
      */
-    public List<MenuItem> getByCategoryId(Long categoryId) {
+    public List<MenuItemResponse> getByCategoryId(Long categoryId) {
         // Validate category exists
         categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Category not found with ID: " + categoryId
                 ));
         
-        return menuItemRepository.findByCategoryId(categoryId);
+        return menuItemRepository.findByCategoryId(categoryId).stream()
+                .map(MenuItemResponse::fromEntity)
+                .toList();
     }
 
     /**
      * Update an existing menu item
      */
-    public MenuItem update(String id, MenuItemRequest request) {
+    public MenuItemResponse update(String id, MenuItemRequest request) {
         // Find existing menu item
-        MenuItem existing = getById(id);
+        MenuItem existing = menuItemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Menu item not found with ID: " + id
+                ));
 
         // Validate category exists if category ID is being changed
         Category category = null;
@@ -91,14 +100,17 @@ public class MenuItemService {
         MenuItemRequest.updateEntity(existing, request, category);
         MenuItem updated = menuItemRepository.save(existing);
         log.info("Updated menu item ID: {}", id);
-        return updated;
+        return MenuItemResponse.fromEntity(updated);
     }
 
     /**
      * Delete a menu item
      */
     public void delete(String id) {
-        MenuItem existing = getById(id);
+        MenuItem existing = menuItemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Menu item not found with ID: " + id
+                ));
         menuItemRepository.delete(existing);
         log.info("Deleted menu item ID: {}", id);
     }
