@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -47,7 +48,7 @@ public class MenuItemService {
     public List<MenuItemResponse> getAll() {
         return menuItemRepository.findAll().stream()
                 .map(MenuItemResponse::fromEntity)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**
@@ -73,7 +74,7 @@ public class MenuItemService {
         
         return menuItemRepository.findByCategoryId(categoryId).stream()
                 .map(MenuItemResponse::fromEntity)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     /**

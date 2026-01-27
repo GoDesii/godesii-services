@@ -4,7 +4,6 @@ import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.dto.MenuItemRequest;
 import com.godesii.godesii_services.dto.MenuItemResponse;
-import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.service.restaurant.MenuItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
