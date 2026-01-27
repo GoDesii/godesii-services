@@ -27,6 +27,7 @@ public class Category {
     private Menu menu;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<MenuItem> items;
 
     public Long getId() {
