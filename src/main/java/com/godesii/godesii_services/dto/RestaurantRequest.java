@@ -71,14 +71,6 @@ public class RestaurantRequest {
         isVerified = verified;
     }
 
-    public Long getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(Long ownerId) {
-        this.ownerId = ownerId;
-    }
-
     public List<OperationalHourRequest> getOperationalHourRequest() {
         return operationalHourRequest;
     }
