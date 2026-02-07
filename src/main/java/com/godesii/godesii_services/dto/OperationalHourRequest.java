@@ -78,6 +78,9 @@ public class OperationalHourRequest {
         // Create a new list to store the updated entities
         List<OperationalHour> updatedList = new ArrayList<>();
 
+        // Track which existing hours were updated
+        List<OperationalHour> updatedExisting = new ArrayList<>();
+
         // Process each request
         for (OperationalHourRequest request : requests) {
             OperationalHour existingHour = null;
@@ -105,10 +108,18 @@ public class OperationalHourRequest {
                 // Update the existing entity
                 updateEntity(existingHour, request);
                 updatedList.add(existingHour);
+                updatedExisting.add(existingHour);
             } else {
                 // Create new entity
                 OperationalHour newHour = mapToEntity(request);
                 updatedList.add(newHour);
+            }
+        }
+
+        // Add back existing hours that weren't updated (preserve them)
+        for (OperationalHour hour : existing) {
+            if (!updatedExisting.contains(hour)) {
+                updatedList.add(hour);
             }
         }
 
