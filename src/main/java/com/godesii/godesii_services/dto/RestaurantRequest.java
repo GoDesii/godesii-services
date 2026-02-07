@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.dto;
 
+import com.godesii.godesii_services.entity.restaurant.OperationalHour;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.entity.restaurant.RestaurantAddress;
 import jakarta.validation.Valid;
@@ -70,6 +71,14 @@ public class RestaurantRequest {
         isVerified = verified;
     }
 
+    public Long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
+    }
+
     public List<OperationalHourRequest> getOperationalHourRequest() {
         return operationalHourRequest;
     }
@@ -126,17 +135,31 @@ public class RestaurantRequest {
         if (request.getDescription() != null) {
             existing.setDescription(request.getDescription());
         }
-        if(!request.getOperationalHourRequest().isEmpty()){
-            existing.setOperatingHours(OperationalHourRequest
-                    .updateEntities(existing.getOperatingHours(), request.getOperationalHourRequest()));
+
+        // Fix for orphan removal: modify the existing collection instead of replacing
+        // it
+        if (request.getOperationalHourRequest() != null && !request.getOperationalHourRequest().isEmpty()) {
+            // Initialize collection if it's null
+            if (existing.getOperatingHours() == null) {
+                existing.setOperatingHours(new java.util.ArrayList<>());
+            }
+
+            List<OperationalHour> updatedHours = OperationalHourRequest
+                    .updateEntities(existing.getOperatingHours(), request.getOperationalHourRequest());
+
+            // Clear and add all to maintain the same collection reference
+            existing.getOperatingHours().clear();
+            existing.getOperatingHours().addAll(updatedHours);
         }
-        if(request.getAddressRequest() != null){
-            existing.setAddress(RestaurantAddressRequest.updateEntity(existing.getAddress(), request.getAddressRequest()));
+
+        if (request.getAddressRequest() != null) {
+            existing.setAddress(
+                    RestaurantAddressRequest.updateEntity(existing.getAddress(), request.getAddressRequest()));
         }
         existing.setVerified(request.isVerified());
     }
 
-    public static class RestaurantAddressRequest{
+    public static class RestaurantAddressRequest {
 
         private String addressLine1; // Primary street address (Building number, Street name).
         private String addressLine2; // Secondary info (Suite, Floor, Landmark).
@@ -144,9 +167,9 @@ public class RestaurantRequest {
         private String state;
         private String postalCode;
         private String country;
-        //@Pattern(regexp = "^[-+]?([1-8]?\\d(.\\d+)?)", message = "")
+        // @Pattern(regexp = "^[-+]?([1-8]?\\d(.\\d+)?)", message = "")
         private BigDecimal latitude;
-        //@Pattern(regexp = "^[-+]?(180(.0+)?)", message = "")
+        // @Pattern(regexp = "^[-+]?(180(.0+)?)", message = "")
         private BigDecimal longitude;
 
         public String getAddressLine1() {
@@ -213,7 +236,7 @@ public class RestaurantRequest {
             this.longitude = longitude;
         }
 
-        public static RestaurantAddress mapToEntity(RestaurantAddressRequest addressRequest){
+        public static RestaurantAddress mapToEntity(RestaurantAddressRequest addressRequest) {
             RestaurantAddress address = new RestaurantAddress();
             address.setLatitude(addressRequest.getLatitude());
             address.setLongitude(addressRequest.getLongitude());
@@ -225,26 +248,26 @@ public class RestaurantRequest {
             return address;
         }
 
-        public static RestaurantAddress updateEntity(RestaurantAddress existing, RestaurantAddressRequest request){
-            if(StringUtils.hasText(request.getAddressLine1())){
+        public static RestaurantAddress updateEntity(RestaurantAddress existing, RestaurantAddressRequest request) {
+            if (StringUtils.hasText(request.getAddressLine1())) {
                 existing.setAddressLine1(request.getAddressLine1());
             }
-            if(StringUtils.hasText(request.getAddressLine2())){
+            if (StringUtils.hasText(request.getAddressLine2())) {
                 existing.setAddressLine2(request.getAddressLine2());
             }
-            if(StringUtils.hasText(request.getCity())){
+            if (StringUtils.hasText(request.getCity())) {
                 existing.setCity(request.getCity());
             }
-            if(StringUtils.hasText(request.getState())){
+            if (StringUtils.hasText(request.getState())) {
                 existing.setState(request.getState());
             }
-            if(StringUtils.hasText(request.getCountry())){
+            if (StringUtils.hasText(request.getCountry())) {
                 existing.setCountry(request.getCountry());
             }
-            if(request.getLatitude() != null){
+            if (request.getLatitude() != null) {
                 existing.setLatitude(request.getLatitude());
             }
-            if(request.getLongitude() != null){
+            if (request.getLongitude() != null) {
                 existing.setLongitude(request.getLongitude());
             }
             return existing;
