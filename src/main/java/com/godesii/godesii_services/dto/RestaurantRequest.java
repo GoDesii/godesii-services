@@ -21,6 +21,7 @@ public class RestaurantRequest {
     @Size(max = 500, message = "Description cannot exceed 500 characters")
     private String description;
     private boolean isVerified;
+    private boolean isActive;
 
     @Valid
     private List<OperationalHourRequest> operationalHourRequest;
@@ -85,6 +86,14 @@ public class RestaurantRequest {
         this.addressRequest = addressRequest;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     /*
      * Maps RestaurantRequest DTO to Restaurant entity
      */
@@ -95,6 +104,7 @@ public class RestaurantRequest {
         restaurant.setCuisineType(request.getCuisineType());
         restaurant.setDescription(request.getDescription());
         restaurant.setVerified(request.isVerified());
+        restaurant.setActive(request.isActive());
         restaurant.setOperatingHours(OperationalHourRequest.mapToEntities(request.getOperationalHourRequest()));
         restaurant.setAddress(RestaurantAddressRequest.mapToEntity(request.getAddressRequest()));
         return restaurant;
