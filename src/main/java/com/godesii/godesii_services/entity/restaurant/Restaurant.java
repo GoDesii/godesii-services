@@ -18,6 +18,7 @@ public class Restaurant {
     private String description;
     private boolean isVerified;
     private boolean isActive;
+    private Long ownerId;
 
 //    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -97,5 +98,14 @@ public class Restaurant {
 
     public void setAddress(RestaurantAddress address) {
         this.address = address;
+    }
+
+    @Column(name = "owner_id", nullable = false)
+    public Long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 }
