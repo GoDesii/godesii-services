@@ -1,13 +1,14 @@
 package com.godesii.godesii_services.entity.restaurant;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.godesii.godesii_services.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
 @Table(name = "restaurant")
-public class Restaurant {
+public class Restaurant extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
