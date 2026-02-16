@@ -2,6 +2,7 @@ package com.godesii.godesii_services.dto;
 
 import com.godesii.godesii_services.entity.order.Cart;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -10,8 +11,8 @@ import java.util.List;
 
 public class CartRequest {
 
-    @NotNull(message = "User ID is required")
-    private Long userId;
+    @NotBlank(message = "Username is required")
+    private String username;
 
     @NotNull(message = "Restaurant ID is required")
     private Long restaurantId;
@@ -20,12 +21,12 @@ public class CartRequest {
     @Valid
     private List<CartItemRequest> cartItemRequests;
 
-    public Long getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getRestaurantId() {
@@ -46,7 +47,7 @@ public class CartRequest {
 
     public static Cart mapToEntity(CartRequest request) {
         Cart cart = new Cart();
-        cart.setUserId(request.getUserId());
+        cart.setUsername(request.getUsername());
         cart.setRestaurantId(request.getRestaurantId());
         cart.setCreateAt(Instant.now());
         cart.setUpdatedAt(Instant.now());
@@ -63,8 +64,8 @@ public class CartRequest {
      * Updates existing Cart entity with non-null values from request
      */
     public static void updateEntity(Cart existing, CartRequest request) {
-        if (request.getUserId() != null) {
-            existing.setUserId(request.getUserId());
+        if (request.getUsername() != null) {
+            existing.setUsername(request.getUsername());
         }
         if (request.getRestaurantId() != null) {
             existing.setRestaurantId(request.getRestaurantId());

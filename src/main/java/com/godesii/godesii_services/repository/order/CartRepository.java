@@ -11,16 +11,16 @@ import java.util.Optional;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, String> {
 
-    Optional<Cart> findByUserId(Long userId);
+    Optional<Cart> findByUsername(String username);
 
     /**
      * Find active (non-expired) cart for a user
      * 
-     * @param userId User ID
-     * @param now    Current timestamp
+     * @param username Username
+     * @param now      Current timestamp
      * @return Optional containing active Cart if exists
      */
-    Optional<Cart> findByUserIdAndExpiresAtAfter(Long userId, Instant now);
+    Optional<Cart> findByUsernameAndExpiresAtAfter(String username, Instant now);
 
     /**
      * Find all expired carts
@@ -33,7 +33,7 @@ public interface CartRepository extends JpaRepository<Cart, String> {
     /**
      * Find active and unlocked cart
      */
-    Optional<Cart> findByUserIdAndIsLockedFalseAndExpiresAtAfter(Long userId, Instant now);
+    Optional<Cart> findByUsernameAndIsLockedFalseAndExpiresAtAfter(String username, Instant now);
 
     /**
      * Find locked cart by order ID

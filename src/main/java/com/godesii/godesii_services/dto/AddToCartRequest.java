@@ -4,9 +4,8 @@ import jakarta.validation.constraints.*;
 
 public class AddToCartRequest {
 
-    @NotNull(message = "User ID is required")
-    @Positive(message = "User ID must be positive")
-    private Long userId;
+    @NotBlank(message = "Username is required")
+    private String username;
 
     @NotNull(message = "Restaurant ID is required")
     @Positive(message = "Restaurant ID must be positive")
@@ -23,12 +22,12 @@ public class AddToCartRequest {
     @Size(max = 500, message = "Special instruction cannot exceed 500 characters")
     private String specialInstruction;
 
-    public Long getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getRestaurantId() {

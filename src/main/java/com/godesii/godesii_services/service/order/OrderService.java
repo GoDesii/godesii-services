@@ -51,10 +51,10 @@ public class OrderService {
      */
     @Transactional
     public PlaceOrderResponse placeOrder(PlaceOrderRequest request) {
-        log.info("Placing order for user: {}", request.getUserId());
+        log.info("Placing order for user: {}", request.getUsername());
 
         // 1. Get active cart (will throw if not found)
-        CartResponse cartResponse = cartService.getActiveCart(request.getUserId());
+        CartResponse cartResponse = cartService.getActiveCart(request.getUsername());
         String cartId = cartResponse.getCartId();
 
         // 2 & 3. Lock cart and recalculate prices
@@ -68,7 +68,7 @@ public class OrderService {
 
             // 4. Create order
             Order order = new Order();
-            order.setUserId(String.valueOf(request.getUserId()));
+            order.setUsername(request.getUsername());
             order.setRestaurantId(String.valueOf(cartResponse.getRestaurantId()));
             order.setOrderStatus(OrderStatus.CREATED);
             order.setOrderDate(Instant.now());
