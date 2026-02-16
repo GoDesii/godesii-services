@@ -6,7 +6,7 @@ import java.util.List;
 public class CartResponse {
 
     private String cartId;
-    private Long userId;
+    private String username;
     private Long restaurantId;
     private String restaurantName;
     private List<CartItemResponse> items;
@@ -24,12 +24,12 @@ public class CartResponse {
         this.cartId = cartId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getRestaurantId() {

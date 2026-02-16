@@ -12,8 +12,8 @@ import java.util.List;
 
 public class OrderRequest {
 
-    @NotBlank(message = "User ID is required")
-    private String userId;
+    @NotBlank(message = "Username is required")
+    private String username;
 
     @NotBlank(message = "Restaurant ID is required")
     private String restaurantId;
@@ -29,12 +29,12 @@ public class OrderRequest {
     private OrderAddressRequest orderAddress;
 
     // Getters and Setters
-    public String getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getRestaurantId() {
@@ -74,7 +74,7 @@ public class OrderRequest {
      */
     public static Order mapToEntity(OrderRequest request) {
         Order order = new Order();
-        order.setUserId(request.getUserId());
+        order.setUsername(request.getUsername());
         order.setRestaurantId(request.getRestaurantId());
 
         // Convert String to OrderStatus enum, default to CREATED
@@ -105,8 +105,8 @@ public class OrderRequest {
      * Updates existing Order entity with non-null values from request
      */
     public static void updateEntity(Order existing, OrderRequest request) {
-        if (request.getUserId() != null) {
-            existing.setUserId(request.getUserId());
+        if (request.getUsername() != null) {
+            existing.setUsername(request.getUsername());
         }
         if (request.getRestaurantId() != null) {
             existing.setRestaurantId(request.getRestaurantId());

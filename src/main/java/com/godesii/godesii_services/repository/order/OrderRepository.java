@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, String> {
 
-    List<Order> findByUserId(String userId);
+    List<Order> findByUsername(String username);
 
     List<Order> findByOrderStatus(OrderStatus orderStatus);
 
@@ -20,7 +20,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findByOrderStatusAndConfirmedAtBefore(OrderStatus status, Instant cutoffTime);
 
     // User order history
-    List<Order> findByUserIdOrderByOrderDateDesc(String userId);
+    List<Order> findByUsernameOrderByOrderDateDesc(String username);
 
     // Restaurant orders
     List<Order> findByRestaurantIdAndOrderStatus(String restaurantId, OrderStatus status);

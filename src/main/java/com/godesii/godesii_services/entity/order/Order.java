@@ -2,8 +2,8 @@ package com.godesii.godesii_services.entity.order;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
+
 import com.godesii.godesii_services.entity.payment.PaymentMethod;
-import com.godesii.godesii_services.entity.order.CancellationReason;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 public class Order {
 
     private String orderId;
-    private String userId;
+    private String username;
     private String restaurantId;
     private OrderStatus orderStatus;
     private Long totalAmount;
@@ -64,13 +64,13 @@ public class Order {
         this.orderId = orderId;
     }
 
-    @Column(name = "user_id")
-    public String getUserId() {
-        return userId;
+    @Column(name = "user_name")
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Column(name = "restaurant_id")

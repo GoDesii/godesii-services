@@ -48,11 +48,11 @@ public class CartService {
     @Transactional
     public CartResponse addItemToCart(AddToCartRequest request) {
         log.info("Adding item to cart for user: {}, restaurant: {}, item: {}",
-                request.getUserId(), request.getRestaurantId(), request.getMenuItemId());
+                request.getUsername(), request.getRestaurantId(), request.getMenuItemId());
 
         // Get or create cart
         Instant now = Instant.now();
-        Optional<Cart> existingCartOpt = cartRepo.findByUserIdAndExpiresAtAfter(request.getUserId(), now);
+        Optional<Cart> existingCartOpt = cartRepo.findByUsernameAndExpiresAtAfter(request.getUsername(), now);
 
         Cart cart;
         if (existingCartOpt.isPresent()) {
@@ -68,7 +68,7 @@ public class CartService {
         } else {
             // Create new cart
             cart = new Cart();
-            cart.setUserId(request.getUserId());
+            cart.setUsername(request.getUsername());
             cart.setRestaurantId(request.getRestaurantId());
             cart.setCreateAt(now);
             cart.setCartItems(new ArrayList<>());
@@ -232,13 +232,13 @@ public class CartService {
     /**
      * Get active cart for user
      */
-    public CartResponse getActiveCart(Long userId) {
-        log.info("Getting active cart for user: {}", userId);
+    public CartResponse getActiveCart(String username) {
+        log.info("Getting active cart for user: {}", username);
 
-        Optional<Cart> cartOpt = cartRepo.findByUserIdAndExpiresAtAfter(userId, Instant.now());
+        Optional<Cart> cartOpt = cartRepo.findByUsernameAndExpiresAtAfter(username, Instant.now());
 
         if (cartOpt.isEmpty()) {
-            throw new ResourceNotFoundException("No active cart found for user ID: " + userId);
+            throw new ResourceNotFoundException("No active cart found for username: " + username);
         }
 
         Cart cart = cartOpt.get();
@@ -387,7 +387,7 @@ public class CartService {
     private CartResponse buildCartResponse(Cart cart, Restaurant restaurant) {
         CartResponse response = new CartResponse();
         response.setCartId(cart.getId());
-        response.setUserId(cart.getUserId());
+        response.setUsername(cart.getUsername());
         response.setRestaurantId(cart.getRestaurantId());
         response.setRestaurantName(restaurant.getName());
         response.setCreatedAt(cart.getCreateAt());
@@ -550,12 +550,12 @@ public class CartService {
     }
 
     /**
-     * Get cart by user ID
+     * Get cart by username
      */
-    public Cart getByUserId(@NonNull Long userId) {
-        return cartRepo.findByUserId(userId)
+    public Cart getByUsername(@NonNull String username) {
+        return cartRepo.findByUsername(username)
                 .orElseThrow(() -> {
-                    return new ResourceNotFoundException("Cart not found for user ID: " + userId);
+                    return new ResourceNotFoundException("Cart not found for username: " + username);
                 });
     }
 

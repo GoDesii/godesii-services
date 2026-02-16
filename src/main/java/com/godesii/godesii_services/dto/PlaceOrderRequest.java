@@ -11,9 +11,8 @@ import jakarta.validation.constraints.Size;
  */
 public class PlaceOrderRequest {
 
-    @NotNull(message = "User ID is required")
-    @Positive(message = "User ID must be positive")
-    private Long userId;
+    @NotBlank(message = "Username is required")
+    private String username;
 
     @Pattern(regexp = "^(UPI|CARD|WALLET|COD|NET_BANKING)$", message = "Payment method must be one of: UPI, CARD, WALLET, COD, NET_BANKING")
     @NotBlank(message = "Payment method is required")
@@ -27,12 +26,12 @@ public class PlaceOrderRequest {
     private String specialInstructions;
 
     // Getters and Setters
-    public Long getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPaymentMethod() {
