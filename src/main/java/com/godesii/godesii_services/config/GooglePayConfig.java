@@ -2,11 +2,14 @@ package com.godesii.godesii_services.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+
 
 /**
  * Google Pay payment gateway configuration
  */
 @Configuration
+@Profile("!prod")
 public class GooglePayConfig {
 
     @Value("${googlepay.merchant-id:TEST_MERCHANT_ID}")
