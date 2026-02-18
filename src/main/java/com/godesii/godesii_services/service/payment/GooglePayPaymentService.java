@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Profile;
+
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -22,6 +24,7 @@ import java.util.UUID;
  * 4. Refunds are handled through the PSP gateway, not Google Pay directly
  */
 @Service
+    @Profile("!prod")
 public class GooglePayPaymentService implements PaymentService {
 
     private static final Logger log = LoggerFactory.getLogger(GooglePayPaymentService.class);
