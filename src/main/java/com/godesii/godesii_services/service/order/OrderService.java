@@ -136,7 +136,7 @@ public class OrderService {
 
         // Verify payment signature
         boolean isValid = paymentService.verifyPaymentSignature(
-                callback.getRazorpayOrderId() != null ? callback.getRazorpayOrderId() : order.getRazorpayOrderId(),
+                callback.getGatewayOrderId() != null ? callback.getGatewayOrderId() : order.getGatewayOrderId(),
                 callback.getPaymentId(),
                 callback.getSignature());
 

@@ -25,7 +25,7 @@ public class Order {
     private String paymentId;
     private PaymentMethod paymentMethod; // Changed to enum
     private String paymentStatus;
-    private String razorpayOrderId; // Razorpay-specific order ID
+    private String gatewayOrderId; // Payment gateway order ID
 
     // Order tracking fields
     private Instant confirmedAt;
@@ -168,13 +168,13 @@ public class Order {
         this.refundedAt = refundedAt;
     }
 
-    @Column(name = "razorpay_order_id")
-    public String getRazorpayOrderId() {
-        return razorpayOrderId;
+    @Column(name = "gateway_order_id")
+    public String getGatewayOrderId() {
+        return gatewayOrderId;
     }
 
-    public void setRazorpayOrderId(String razorpayOrderId) {
-        this.razorpayOrderId = razorpayOrderId;
+    public void setGatewayOrderId(String gatewayOrderId) {
+        this.gatewayOrderId = gatewayOrderId;
     }
 
     @Column(name = "delivery_notes", length = 500)

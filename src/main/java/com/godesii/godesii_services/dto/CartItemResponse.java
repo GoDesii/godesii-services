@@ -11,6 +11,7 @@ public class CartItemResponse {
     private String specialInstruction;
     private Boolean isAvailable;
     private Boolean priceChanged;
+    private String imageUrl;
     private Long currentPrice; // Only set if price changed
 
     public String getCartItemId() {
@@ -91,5 +92,13 @@ public class CartItemResponse {
 
     public void setCurrentPrice(Long currentPrice) {
         this.currentPrice = currentPrice;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

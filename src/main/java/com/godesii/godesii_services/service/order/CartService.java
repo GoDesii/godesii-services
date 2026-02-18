@@ -235,7 +235,7 @@ public class CartService {
     public CartResponse getActiveCart(String username) {
         log.info("Getting active cart for user: {}", username);
 
-        Optional<Cart> cartOpt = cartRepo.findByUsernameAndExpiresAtAfter(username, Instant.now());
+        Optional<Cart> cartOpt = cartRepo.findByUsername(username);
 
         if (cartOpt.isEmpty()) {
             throw new ResourceNotFoundException("No active cart found for username: " + username);
@@ -410,6 +410,7 @@ public class CartService {
             if (menuItemOpt.isPresent()) {
                 MenuItem menuItem = menuItemOpt.get();
                 itemResponse.setMenuItemName(menuItem.getName());
+                itemResponse.setImageUrl(menuItem.getImageUrl());
                 itemResponse.setIsAvailable(menuItem.isAvailable());
 
                 // Check price change

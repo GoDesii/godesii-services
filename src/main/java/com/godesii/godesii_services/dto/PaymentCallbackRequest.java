@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 /**
- * Payment callback request from payment gateway (Razorpay)
+ * Payment callback request from payment gateway (Google Pay)
  */
 public class PaymentCallbackRequest {
 
@@ -21,14 +21,14 @@ public class PaymentCallbackRequest {
     private String paymentMethod;
     private String transactionId;
     private String failureReason;
-    private String signature; // Razorpay signature for verification
+    private String signature; // Google Pay signature for verification
 
     // UPI-specific fields
     private String upiTransactionId; // UPI transaction reference ID
     private String vpa; // Virtual Payment Address used for payment
 
-    // Razorpay order ID
-    private String razorpayOrderId;
+    // Gateway order ID
+    private String gatewayOrderId;
 
     // Getters and Setters
     public String getOrderId() {
@@ -103,11 +103,11 @@ public class PaymentCallbackRequest {
         this.vpa = vpa;
     }
 
-    public String getRazorpayOrderId() {
-        return razorpayOrderId;
+    public String getGatewayOrderId() {
+        return gatewayOrderId;
     }
 
-    public void setRazorpayOrderId(String razorpayOrderId) {
-        this.razorpayOrderId = razorpayOrderId;
+    public void setGatewayOrderId(String gatewayOrderId) {
+        this.gatewayOrderId = gatewayOrderId;
     }
 }
