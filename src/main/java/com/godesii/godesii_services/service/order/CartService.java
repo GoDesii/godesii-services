@@ -87,7 +87,7 @@ public class CartService {
 
         // Check if item already exists in cart
         Optional<CartItem> existingItem = cart.getCartItems().stream()
-                .filter(ci -> ci.getProductId().equals(Long.parseLong(request.getMenuItemId())))
+                .filter(ci -> ci.getProductId().equals(request.getMenuItemId()))
                 .findFirst();
 
         if (existingItem.isPresent()) {
@@ -105,7 +105,7 @@ public class CartService {
         } else {
             // Add new item to cart
             CartItem newItem = new CartItem();
-            newItem.setProductId(Long.parseLong(request.getMenuItemId()));
+            newItem.setProductId(request.getMenuItemId());
             newItem.setQuantity(request.getQuantity());
             newItem.setPrice(itemPriceInPaise);
             newItem.setSpecialInstruction(request.getSpecialInstruction());
@@ -399,14 +399,14 @@ public class CartService {
         for (CartItem cartItem : cart.getCartItems()) {
             CartItemResponse itemResponse = new CartItemResponse();
             itemResponse.setCartItemId(cartItem.getCartItemId());
-            itemResponse.setMenuItemId(String.valueOf(cartItem.getProductId()));
+            itemResponse.setMenuItemId(cartItem.getProductId());
             itemResponse.setQuantity(cartItem.getQuantity());
             itemResponse.setUnitPrice(cartItem.getPrice());
             itemResponse.setTotalPrice(cartItem.getPrice() * cartItem.getQuantity());
             itemResponse.setSpecialInstruction(cartItem.getSpecialInstruction());
 
             // Check current availability and price
-            Optional<MenuItem> menuItemOpt = menuItemRepo.findById(String.valueOf(cartItem.getProductId()));
+            Optional<MenuItem> menuItemOpt = menuItemRepo.findById(cartItem.getProductId());
             if (menuItemOpt.isPresent()) {
                 MenuItem menuItem = menuItemOpt.get();
                 itemResponse.setMenuItemName(menuItem.getName());
@@ -499,7 +499,7 @@ public class CartService {
 
         // Validate items and recalculate prices
         for (CartItem item : cart.getCartItems()) {
-            MenuItem menuItem = validateItemAvailability(String.valueOf(item.getProductId()));
+            MenuItem menuItem = validateItemAvailability(item.getProductId());
 
             // Update price if changed
             Long currentPrice = menuItem.getBasePrice().multiply(BigDecimal.valueOf(100)).longValue();
