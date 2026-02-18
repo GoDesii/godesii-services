@@ -11,7 +11,7 @@ import java.util.List;
 public class CartItem {
 
     private String cartItemId;
-    private Long productId;
+    private String productId;
     private Integer quantity;
     private Long price;
     private Cart cart;
@@ -29,11 +29,11 @@ public class CartItem {
     }
 
     @Column(name = "product_id", nullable = false)
-    public Long getProductId() {
+    public String getProductId() {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 
@@ -56,7 +56,8 @@ public class CartItem {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id", insertable = false, updatable = false) // Foreign key in CartItem table (though it's null when using JoinTable)
+    @JoinColumn(name = "cart_id", insertable = false, updatable = false) // Foreign key in CartItem table (though it's
+                                                                         // null when using JoinTable)
     public Cart getCarts() {
         return cart;
     }

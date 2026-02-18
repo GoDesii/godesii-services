@@ -11,8 +11,8 @@ public class CartItemRequest {
     private String cartItemId;
 
     @NotNull(message = "Product ID is required")
-    @Positive(message = "Product ID must be positive")
-    private Long productId;
+    @NotBlank(message = "Product ID must not be blank")
+    private String productId;
 
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")
@@ -34,11 +34,11 @@ public class CartItemRequest {
         this.cartItemId = cartItemId;
     }
 
-    public Long getProductId() {
+    public String getProductId() {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 

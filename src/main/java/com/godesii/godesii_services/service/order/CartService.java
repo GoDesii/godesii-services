@@ -105,7 +105,7 @@ public class CartService {
         } else {
             // Add new item to cart
             CartItem newItem = new CartItem();
-            newItem.setProductId(Long.parseLong(request.getMenuItemId()));
+            newItem.setProductId(request.getMenuItemId());
             newItem.setQuantity(request.getQuantity());
             newItem.setPrice(itemPriceInPaise);
             newItem.setSpecialInstruction(request.getSpecialInstruction());
