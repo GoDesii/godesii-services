@@ -410,6 +410,7 @@ public class CartService {
             if (menuItemOpt.isPresent()) {
                 MenuItem menuItem = menuItemOpt.get();
                 itemResponse.setMenuItemName(menuItem.getName());
+                itemResponse.setImageUrl(menuItem.getImageUrl());
                 itemResponse.setIsAvailable(menuItem.isAvailable());
 
                 // Check price change

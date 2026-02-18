@@ -33,6 +33,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     // Find by payment ID (for webhooks)
     java.util.Optional<Order> findByPaymentId(String paymentId);
 
-    // Find by Razorpay order ID
-    java.util.Optional<Order> findByRazorpayOrderId(String razorpayOrderId);
+    // Find by gateway order ID
+    java.util.Optional<Order> findByGatewayOrderId(String gatewayOrderId);
 }

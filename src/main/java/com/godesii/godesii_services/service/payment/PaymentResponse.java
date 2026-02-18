@@ -21,8 +21,8 @@ public class PaymentResponse {
     private String upiIntentUrl; // Deep link for UPI apps (gpay://, phonepe://, etc.)
     private String merchantVpa; // Merchant's Virtual Payment Address
 
-    // Razorpay specific
-    private String razorpayOrderId; // Razorpay order ID
+    // Gateway specific order ID (e.g., Google Pay transaction ID)
+    private String gatewayOrderId;
 
     // Payment expiry
     private Instant expiresAt;
@@ -110,12 +110,12 @@ public class PaymentResponse {
         this.merchantVpa = merchantVpa;
     }
 
-    public String getRazorpayOrderId() {
-        return razorpayOrderId;
+    public String getGatewayOrderId() {
+        return gatewayOrderId;
     }
 
-    public void setRazorpayOrderId(String razorpayOrderId) {
-        this.razorpayOrderId = razorpayOrderId;
+    public void setGatewayOrderId(String gatewayOrderId) {
+        this.gatewayOrderId = gatewayOrderId;
     }
 
     public Instant getExpiresAt() {

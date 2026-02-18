@@ -38,11 +38,6 @@ app:
     token: 9d6b7594eac2c3c1956db43df8685e68
     phoneNo: +17176708304
 
-  razorpay:
-    enabled: true
-    key-id: your_key_id
-    key-secret: your_key_secret
-    
   aws:
     s3:
       accessKey: AKIA3WMTVBRQTKYR6RGL
@@ -58,3 +53,14 @@ app:
     encryptor:
       password: password
       salt: 626F6F746966756C
+
+# Google Pay Configuration (Production)
+googlepay:
+  enabled: true
+  environment: PRODUCTION
+  merchant-id: ${GPAY_MERCHANT_ID}
+  merchant-name: GoDesii
+  callback-url: ${GPAY_CALLBACK_URL}
+  supported-networks: VISA,MASTERCARD,AMEX
+  gateway-name: ${GPAY_GATEWAY_NAME}
+  gateway-merchant-id: ${GPAY_GATEWAY_MERCHANT_ID}

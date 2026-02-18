@@ -17,7 +17,7 @@ public interface PaymentService {
     PaymentResponse initiatePayment(Order order, String paymentMethod);
 
     /**
-     * Verify payment signature (for Razorpay)
+     * Verify payment signature from the payment gateway
      * 
      * @param orderId   Order ID
      * @param paymentId Payment ID from gateway
