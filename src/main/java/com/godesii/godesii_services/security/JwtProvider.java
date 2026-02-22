@@ -6,18 +6,21 @@ import com.godesii.godesii_services.security.management.rotation_key.RSAPrivateK
 import com.godesii.godesii_services.security.management.rotation_key.RSAPublicKeyConverter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import java.io.IOException;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 public final class JwtProvider {
@@ -29,6 +32,9 @@ public final class JwtProvider {
 
     @Value("${app.jwt.refresh-token.expiration}")
     private String refreshTokenExpiryTime;
+
+    @Autowired
+    private HttpServletRequest request;
 
     private final JpaRSAKeysRepository jpaRSAKeysRepository;
     private final RSAPublicKeyConverter rsaPublicKeyConverter;
@@ -44,13 +50,15 @@ public final class JwtProvider {
 
     @SuppressWarnings("all")
     public String generateAccessToken(Authentication authentication) {
-        Map<String, String> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("claim_type", "access_token");
         String username = authentication.getName();
         Date currentDate = new Date();
         Date accessTokenExpiryDate =
                 new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
-
+        claims.put("authorities", addAuthorities(authentication));
+        claims.put("roles", ((UserPrincipal)authentication.getPrincipal()).getRoles());
+        claims.put("iss", getIssuerServer());
         return Jwts
                 .builder()
                 .setClaims(claims)
@@ -59,6 +67,17 @@ public final class JwtProvider {
                 .expiration(accessTokenExpiryDate)
                 .signWith(this.getRSAKeys().privateKey(), SignatureAlgorithm.RS256)
                 .compact();
+    }
+
+    private List<String> addAuthorities(Authentication authentication){
+        Collection<? extends GrantedAuthority> grantedAuthorities = authentication.getAuthorities();
+        List<String> authorities = new ArrayList<>(grantedAuthorities.size());
+        for(GrantedAuthority authority: grantedAuthorities){
+
+            authorities.add(authority.getAuthority());
+        }
+
+        return authorities;
     }
 
     @SuppressWarnings("all")
@@ -133,4 +152,7 @@ public final class JwtProvider {
         return refreshTokenExpiryTime;
     }
 
+    private String getIssuerServer(){
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+    }
 }
