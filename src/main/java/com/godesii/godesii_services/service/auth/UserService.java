@@ -14,6 +14,9 @@ import com.godesii.godesii_services.repository.auth.UserRepository;
 import com.godesii.godesii_services.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,34 +54,37 @@ public class UserService  {
         return null;
     }
 
-    public String registerMobileUser(String mobileNo){
-        if(!isMobileNumber(mobileNo)) {
+    public String registerMobileUser(MobileUserCreationRequest request){
+        if(!isMobileNumber(request.getMobile())) {
             throw new IllegalArgumentException("");
         }
-
         String generatedOTP = SecurityUtils.generateOTP();
         LOGGER.info("Generated OTP " + generatedOTP);
-        this.twilioSmsSenderService.sendSms(new SmsRequest(mobileNo, "OTP Send! " + generatedOTP));
-        User existingUser = checkIfUserExistByMobileNo(mobileNo);
+        this.twilioSmsSenderService.sendSms(new SmsRequest(request.getMobile(), "OTP Send! " + generatedOTP));
+        User existingUser = checkIfUserExistByMobileNo(request.getMobile());
         if(existingUser != null){
             existingUser.setLoginOtp(passwordEncoder.encode(generatedOTP));
             existingUser.setAccountNonExpired(true);
             existingUser.setAccountNonLocked(true);
             existingUser.setCredentialsNonExpired(true);
+            existingUser.setEnabled(true);
+            if(!existingUser.getRoles().contains(Role.valueOf(request.getRoleType().toUpperCase()))){
+                existingUser.setRoles(addRoles(existingUser, request.getRoleType()));
+            }
             userRepository.saveAndFlush(existingUser);
             return generatedOTP;
         }
         User user = new User();
-        user.setMobileNo(mobileNo);
-//        user.setAuthProvider(AuthProvider.MOBILE_OTP);
-        user.setRole(Role.CUSTOMER);
+        user.setMobileNo(request.getMobile());
+        user.setUsername(request.getMobile());
+        user.setEnabled(true);
+        user.setRoles(addRoles(user, request.getRoleType()));
         user.setMobileNoVerified(false);
         user.setLoginOtp(passwordEncoder.encode(generatedOTP));
         user.setAccountNonExpired(true);
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
         this.userRepository.save(user);
-
         return generatedOTP;
     }
 
@@ -116,6 +124,14 @@ public class UserService  {
             existingUser.setGender(Gender.MALE);
         }
         return UserProfileCreateResponse.mapToUserProfileCreateResponse(this.userRepository.save(existingUser));
+    }
+
+    private Set<Role> addRoles(User user, String requestedRole){
+        if(Role.ADMIN.name().equalsIgnoreCase(requestedRole) || Role.MANGER.name().equalsIgnoreCase(requestedRole)){
+            throw new InsufficientAuthenticationException("Authentication Failed!");
+        }
+        user.getRoles().add(Role.valueOf(requestedRole.toUpperCase()));
+        return user.getRoles();
     }
 
 }

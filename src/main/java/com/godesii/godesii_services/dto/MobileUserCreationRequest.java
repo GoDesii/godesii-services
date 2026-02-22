@@ -4,6 +4,7 @@ public class MobileUserCreationRequest {
 
     private String mobile;
     private String countryCode;
+    private String roleType;
 
 
     public String getCountryCode() {
@@ -20,5 +21,13 @@ public class MobileUserCreationRequest {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(String roleType) {
+        this.roleType = roleType;
     }
 }
