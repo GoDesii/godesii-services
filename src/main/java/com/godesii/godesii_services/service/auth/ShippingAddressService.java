@@ -2,15 +2,14 @@ package com.godesii.godesii_services.service.auth;
 
 import com.godesii.godesii_services.dto.ShippingAddressRequest;
 import com.godesii.godesii_services.entity.auth.ShippingAddress;
-import com.godesii.godesii_services.entity.auth.User;
 import com.godesii.godesii_services.exception.ResourceNotFoundException;
 import com.godesii.godesii_services.repository.auth.ShippingAddressRepository;
 import com.godesii.godesii_services.repository.auth.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ShippingAddressService {
@@ -25,19 +24,14 @@ public class ShippingAddressService {
     }
 
 
-    public ShippingAddress saveOrUpdateShippingAddress(ShippingAddressRequest request, Long userId) {
+    public ShippingAddress saveOrUpdateShippingAddress(ShippingAddressRequest request) {
         if (request.getId() > 0) {
             ShippingAddress existingAddress = this.addressRepository.findById(request.getId())
                     .orElseThrow(() -> new ResourceNotFoundException(""));
             updateShippingAddress(existingAddress, request);
             return this.addressRepository.save(existingAddress);
         }
-        Optional<User> exitingUser = this.userRepository.findById(userId);
-        if (exitingUser.isEmpty())
-            throw new ResourceNotFoundException("User does not exist with user id" + userId);
-
         ShippingAddress shippingAddress = ShippingAddressRequest.mapToEntity(request);
-        shippingAddress.setUserId(userId);
         return this.addressRepository.save(shippingAddress);
 
     }
@@ -78,8 +72,8 @@ public class ShippingAddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Shipping Address not found with id: " + id));
     }
 
-    public List<ShippingAddress> getAllShippingAddresses() {
-        return addressRepository.findAll();
+    public List<ShippingAddress> getAllShippingAddresses(String username) {
+        return addressRepository.findAllByCreatedBy(username).orElse(Collections.emptyList());
     }
 
     public void deleteShippingAddress(Long id) {

@@ -33,10 +33,9 @@ public class ShippingAddressController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<APIResponse<ShippingAddressResponse>> createShippingAddress(@RequestBody ShippingAddressRequest request,
-                                                                                      @RequestParam(name = "userId") Long userId) {
+    public ResponseEntity<APIResponse<ShippingAddressResponse>> createShippingAddress(@RequestBody ShippingAddressRequest request){
 
-        ShippingAddress shippingAddress = this.shippingAddressService.saveOrUpdateShippingAddress(request, userId);
+        ShippingAddress shippingAddress = this.shippingAddressService.saveOrUpdateShippingAddress(request);
         APIResponse<ShippingAddressResponse> apiResponse = new APIResponse<>(
                 HttpStatus.CREATED,
                 ShippingAddressResponse.mapToUserAddressCreateResponse(shippingAddress),
@@ -49,9 +48,8 @@ public class ShippingAddressController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<APIResponse<ShippingAddressResponse>> updateShippingAddress(@RequestBody ShippingAddressRequest request,
-                                                                                      @RequestParam(name = "userId") Long userId) {
-        ShippingAddress shippingAddress = this.shippingAddressService.saveOrUpdateShippingAddress(request, userId);
+    public ResponseEntity<APIResponse<ShippingAddressResponse>> updateShippingAddress(@RequestBody ShippingAddressRequest request) {
+        ShippingAddress shippingAddress = this.shippingAddressService.saveOrUpdateShippingAddress(request);
         APIResponse<ShippingAddressResponse> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 ShippingAddressResponse.mapToUserAddressCreateResponse(shippingAddress),
@@ -70,8 +68,10 @@ public class ShippingAddressController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<APIResponse<List<ShippingAddressResponse>>> getAllShippingAddresses() {
-        List<ShippingAddress> addresses = shippingAddressService.getAllShippingAddresses();
+    public ResponseEntity<APIResponse<List<ShippingAddressResponse>>> getAllShippingAddresses(
+            @RequestParam(name = "username") String username
+    ) {
+        List<ShippingAddress> addresses = shippingAddressService.getAllShippingAddresses(username);
         List<ShippingAddressResponse> responseList = addresses.stream().map(ShippingAddressResponse::mapToUserAddressCreateResponse).collect(Collectors.toList());
         APIResponse<List<ShippingAddressResponse>> apiResponse = new APIResponse<>(HttpStatus.OK, responseList, GoDesiiConstant.SUCCESSFULLY_FETCHED);
         return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
