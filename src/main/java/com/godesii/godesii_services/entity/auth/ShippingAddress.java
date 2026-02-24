@@ -2,16 +2,16 @@ package com.godesii.godesii_services.entity.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.godesii.godesii_services.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
 @Table(name = "shipping_address")
-public class ShippingAddress {
+public class ShippingAddress extends BaseEntity {
 
     private Long id;
-    private Long userId;
     private String latitude;
     private String longitude;
     private String houseNumber;
@@ -32,14 +32,6 @@ public class ShippingAddress {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId){
-        this.userId = userId;
     }
 
     @Column(name = "latitude")

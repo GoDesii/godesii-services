@@ -7,6 +7,7 @@ import java.util.List;
 
 public class ShippingAddressResponse {
 
+    private Long id;
     private String latitude;
     private String longitude;
     private String houseNumber;
@@ -16,6 +17,14 @@ public class ShippingAddressResponse {
     private String pinCode;
     private String country;
     private String addressType;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getAddressType() {
         return addressType;
@@ -91,6 +100,7 @@ public class ShippingAddressResponse {
 
     public static ShippingAddressResponse mapToUserAddressCreateResponse(ShippingAddress shippingAddress){
         ShippingAddressResponse response = new ShippingAddressResponse();
+        response.setId(shippingAddress.getId());
         response.setStreet(shippingAddress.getStreet());
         response.setHouseNumber(shippingAddress.getHouseNumber());
         response.setLatitude(shippingAddress.getLatitude());
