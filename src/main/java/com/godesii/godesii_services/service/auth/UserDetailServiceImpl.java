@@ -1,13 +1,16 @@
 package com.godesii.godesii_services.service.auth;
 
+import com.godesii.godesii_services.entity.auth.Role;
 import com.godesii.godesii_services.security.UserPrincipal;
 import com.godesii.godesii_services.entity.auth.User;
 import com.godesii.godesii_services.repository.auth.UserRepository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.Set;
+import java.util.*;
 
 public record UserDetailServiceImpl(UserRepository userRepository) implements UserDetailsService {
 
@@ -29,14 +32,27 @@ public record UserDetailServiceImpl(UserRepository userRepository) implements Us
 
     private static UserPrincipal buildUserPrincipal(User user) {
 
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        Set<String> roles = new HashSet<>(user.getRoles().size());
+        if(!user.getRoles().isEmpty()) {
+            user.getRoles().forEach(userRole -> {
+                roles.add(userRole.name());
+                authorities.add(new SimpleGrantedAuthority(userRole.name()));
+                userRole.getPermissions().forEach(permission ->
+                        authorities.add(new SimpleGrantedAuthority(permission.name()))
+                );
+            });
+        }
+
         return UserPrincipal.buildWithId(user.getId().toString())
                 .username(user.getMobileNo())
                 .password(user.getLoginOtp())
-                .roles(Set.of("ADMIN"))
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .credentialsNonExpired(true)
-                .enabled(true)
+                .roles(roles)
+                .authorities(authorities)
+                .accountNonExpired(user.getAccountNonExpired())
+                .accountNonLocked(user.getAccountNonLocked())
+                .credentialsNonExpired(user.getCredentialsNonExpired())
+                .enabled(user.getEnabled())
                 .build();
     }
 
