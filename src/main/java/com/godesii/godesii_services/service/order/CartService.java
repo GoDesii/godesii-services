@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.service.order;
 
+import com.godesii.godesii_services.common.DatabaseHelper;
 import com.godesii.godesii_services.config.CartConfig;
 import com.godesii.godesii_services.dto.*;
 import com.godesii.godesii_services.entity.order.Cart;
@@ -14,7 +15,9 @@ import com.godesii.godesii_services.repository.restaurant.RestaurantRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -543,9 +546,16 @@ public class CartService {
     /**
      * Get all carts with pagination
      */
-    public Page<Cart> getAll(Pageable pageable) {
-        Page<Cart> carts = cartRepo.findAll(pageable);
-        return carts;
+    public Page<Cart> getAll(String username, DatabaseHelper databaseHelper) {
+        Pageable pageable;
+        if(databaseHelper.getSortOrder().isEmpty() || databaseHelper.getSortBy().isEmpty()){
+            pageable = PageRequest.of(databaseHelper.getCurrentPage(), databaseHelper.getItemPerPage());
+        }else{
+            pageable = PageRequest
+                    .of(databaseHelper.getCurrentPage(), databaseHelper.getItemPerPage())
+                    .withSort(Sort.Direction.fromString(databaseHelper.getSortOrder()), databaseHelper.getSortBy());
+        }
+        return cartRepo.findAllByUsername(username, pageable);
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.godesii.godesii_services.repository.order;
 
 import com.godesii.godesii_services.entity.order.Cart;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -44,4 +46,6 @@ public interface CartRepository extends JpaRepository<Cart, String> {
      * Find stale locked carts for unlocking
      */
     List<Cart> findByIsLockedTrueAndLockedAtBefore(Instant timestamp);
+
+    Page<Cart> findAllByUsername(String username, Pageable pageable);
 }

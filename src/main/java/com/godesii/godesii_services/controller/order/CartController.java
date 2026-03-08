@@ -1,6 +1,7 @@
 package com.godesii.godesii_services.controller.order;
 
 import com.godesii.godesii_services.common.APIResponse;
+import com.godesii.godesii_services.common.DatabaseHelper;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.dto.AddToCartRequest;
 import com.godesii.godesii_services.dto.CartRequest;
@@ -8,6 +9,7 @@ import com.godesii.godesii_services.dto.CartResponse;
 import com.godesii.godesii_services.dto.UpdateCartItemRequest;
 import com.godesii.godesii_services.entity.order.Cart;
 import com.godesii.godesii_services.service.order.CartService;
+import io.jsonwebtoken.lang.Strings;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,7 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(CartController.ENDPOINT)
@@ -64,25 +69,25 @@ public class CartController {
          */
         @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Get all carts", description = "Retrieves paginated list of carts")
-        public ResponseEntity<APIResponse<Page<Cart>>> getAll(
-                        @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "10") int size,
-                        @RequestParam(defaultValue = "createAt") String sortBy,
-                        @RequestParam(defaultValue = "desc") String direction) {
+        public ResponseEntity<APIResponse<List<Cart>>> getAll(
+                @RequestParam(name = "username") String username,
+                @RequestParam(name = "currentPage", defaultValue = "0", required = false) int currentPage,
+                @RequestParam(name = "itemsPerPage",  defaultValue = "0", required = false) int itemsPerPage,
+                @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+                @RequestParam(name = "sortBy", defaultValue = "", required = false) String sortBy) {
 
-                Sort.Direction sortDirection = direction.equalsIgnoreCase("desc")
-                                ? Sort.Direction.DESC
-                                : Sort.Direction.ASC;
+            DatabaseHelper databaseHelper = new DatabaseHelper(Strings.EMPTY, currentPage, itemsPerPage, sortBy, sortOrder);
+                Page<Cart> carts = service.getAll(username, databaseHelper);
 
-                Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-                Page<Cart> carts = service.getAll(pageable);
+            APIResponse<List<Cart>> apiResponse = new APIResponse<>(
+                    HttpStatus.OK,
+                    carts.getContent(),
+                    GoDesiiConstant.SUCCESSFULLY_FETCHED,
+                    databaseHelper.getCurrentPage(),
+                    (int)carts.getTotalElements());
 
-                APIResponse<Page<Cart>> apiResponse = new APIResponse<>(
-                                HttpStatus.OK,
-                                carts,
-                                GoDesiiConstant.SUCCESSFULLY_FETCHED);
 
-                return ResponseEntity.ok(apiResponse);
+            return ResponseEntity.ok(apiResponse);
         }
 
         /**

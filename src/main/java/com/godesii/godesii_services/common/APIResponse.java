@@ -10,6 +10,9 @@ public class APIResponse<T>  {
     private String message;
     private int status;
     private T data;
+    private int currentPage;
+    private int totalItems;
+    private int[] noOfPages;
 
     public APIResponse(HttpStatus status, T data){
         this(status, data, null);
@@ -24,6 +27,17 @@ public class APIResponse<T>  {
         this.status = status.value();
         this.message = message;
         this.data = data;
+    }
+
+    public APIResponse(HttpStatus status, T data, String message, int currentPage, int totalItems){
+        this(status, data, message);
+        this.currentPage = currentPage;
+        this.totalItems = totalItems;
+    }
+
+    public APIResponse(HttpStatus status, T data, String message, int currentPage, int totalItems, int[] noOfPages){
+        this(status, data, message, currentPage, totalItems);
+        this.noOfPages = noOfPages;
     }
 
     public Date getTimestamp() {
@@ -58,4 +72,27 @@ public class APIResponse<T>  {
         this.data = data;
     }
 
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public int getTotalItems() {
+        return totalItems;
+    }
+
+    public void setTotalItems(int totalItems) {
+        this.totalItems = totalItems;
+    }
+
+    public int[] getNoOfPages() {
+        return noOfPages;
+    }
+
+    public void setNoOfPages(int[] noOfPages) {
+        this.noOfPages = noOfPages;
+    }
 }
