@@ -48,11 +48,12 @@ public record UserDetailServiceImpl(UserRepository userRepository) implements Us
                 .username(user.getMobileNo())
                 .password(user.getLoginOtp())
                 .roles(roles)
+                .enabled(true)
                 .authorities(authorities)
                 .accountNonExpired(user.getAccountNonExpired())
                 .accountNonLocked(user.getAccountNonLocked())
                 .credentialsNonExpired(user.getCredentialsNonExpired())
-                .enabled(user.getEnabled())
+//                .enabled(user.getEnabled())
                 .build();
     }
 
