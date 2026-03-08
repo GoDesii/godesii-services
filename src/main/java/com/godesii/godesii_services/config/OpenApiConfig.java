@@ -26,7 +26,7 @@ public class OpenApiConfig {
                                 .url("http://localhost:8081")
                                 .description("Godesii API"),
                             new Server()
-                                .url("http://13.51.109.97:8081")
+                                .url("http://16.171.159.254:8081")
                                 .description("Godesii API")
                 ))
                 .components(new Components()
