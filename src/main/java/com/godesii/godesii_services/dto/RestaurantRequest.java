@@ -237,6 +237,7 @@ public class RestaurantRequest {
             address.setCity(addressRequest.getCity());
             address.setState(addressRequest.getState());
             address.setCountry(addressRequest.getCountry());
+            address.setPostalCode(addressRequest.getPostalCode());
             return address;
         }
 
@@ -252,6 +253,9 @@ public class RestaurantRequest {
             }
             if (StringUtils.hasText(request.getState())) {
                 existing.setState(request.getState());
+            }
+            if(StringUtils.hasText(request.getPostalCode())){
+                existing.setPostalCode(request.getPostalCode());
             }
             if (StringUtils.hasText(request.getCountry())) {
                 existing.setCountry(request.getCountry());

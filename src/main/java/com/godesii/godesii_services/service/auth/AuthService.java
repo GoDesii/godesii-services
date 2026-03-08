@@ -25,6 +25,7 @@ public class AuthService {
 
     public Map<String, Object> login(LoginPayload payload) {
         Map<String, Object> map = new HashMap<>();
+
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(payload.getUsername(), payload.getPassword())
         );

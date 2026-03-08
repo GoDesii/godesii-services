@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.service.order;
 
+import com.godesii.godesii_services.common.DatabaseHelper;
 import com.godesii.godesii_services.config.CartConfig;
 import com.godesii.godesii_services.dto.*;
 import com.godesii.godesii_services.entity.order.Cart;
@@ -14,7 +15,9 @@ import com.godesii.godesii_services.repository.restaurant.RestaurantRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,8 +50,8 @@ public class CartService {
      */
     @Transactional
     public CartResponse addItemToCart(AddToCartRequest request) {
-        log.info("Adding item to cart for user: {}, restaurant: {}, item: {}",
-                request.getUsername(), request.getRestaurantId(), request.getMenuItemId());
+        log.info("Adding {} item(s) to cart for user: {}, restaurant: {}",
+                request.getItems().size(), request.getUsername(), request.getRestaurantId());
 
         // Get or create cart
         Instant now = Instant.now();
@@ -77,39 +80,47 @@ public class CartService {
         // Validate restaurant is active and open
         validateRestaurantOpen(request.getRestaurantId());
 
-        // Validate menu item availability
-        MenuItem menuItem = validateItemAvailability(request.getMenuItemId());
+        // Process each item
+        for (AddToCartRequest.CartItemEntry item : request.getItems()) {
+            // Validate menu item availability
+            MenuItem menuItem = validateItemAvailability(item.getMenuItemId());
 
-        // Convert BigDecimal price to Long (assuming price is in rupees, store as
-        // paise)
-        Long itemPriceInPaise = menuItem.getBasePrice().multiply(BigDecimal.valueOf(100))
-                .longValue();
+            // Convert BigDecimal price to Long (assuming price is in rupees, store as
+            // paise)
+            Long itemPriceInPaise = menuItem.getBasePrice().multiply(BigDecimal.valueOf(100))
+                    .longValue();
 
-        // Check if item already exists in cart
-        Optional<CartItem> existingItem = cart.getCartItems().stream()
-                .filter(ci -> ci.getProductId().equals(request.getMenuItemId()))
-                .findFirst();
+            // Check if item already exists in cart
+            Optional<CartItem> existingItem = cart.getCartItems().stream()
+                    .filter(ci -> ci.getProductId().equals(item.getMenuItemId()))
+                    .findFirst();
 
-        if (existingItem.isPresent()) {
-            // Update quantity
-            CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + request.getQuantity());
+            if (existingItem.isPresent()) {
+                // Update quantity
+                CartItem cartItem = existingItem.get();
+                cartItem.setQuantity(cartItem.getQuantity() + item.getQuantity());
 
-            // Check price hasn't changed
-            if (!item.getPrice().equals(itemPriceInPaise)) {
-                log.warn("Price changed for item: {}. Old: {}, New: {}",
-                        request.getMenuItemId(), item.getPrice(), itemPriceInPaise);
-                // Update to new price
-                item.setPrice(itemPriceInPaise);
+                // Check price hasn't changed
+                if (!cartItem.getPrice().equals(itemPriceInPaise)) {
+                    log.warn("Price changed for item: {}. Old: {}, New: {}",
+                            item.getMenuItemId(), cartItem.getPrice(), itemPriceInPaise);
+                    // Update to new price
+                    cartItem.setPrice(itemPriceInPaise);
+                }
+
+                // Update special instruction if provided
+                if (item.getSpecialInstruction() != null) {
+                    cartItem.setSpecialInstruction(item.getSpecialInstruction());
+                }
+            } else {
+                // Add new item to cart
+                CartItem newItem = new CartItem();
+                newItem.setProductId(item.getMenuItemId());
+                newItem.setQuantity(item.getQuantity());
+                newItem.setPrice(itemPriceInPaise);
+                newItem.setSpecialInstruction(item.getSpecialInstruction());
+                cart.getCartItems().add(newItem);
             }
-        } else {
-            // Add new item to cart
-            CartItem newItem = new CartItem();
-            newItem.setProductId(request.getMenuItemId());
-            newItem.setQuantity(request.getQuantity());
-            newItem.setPrice(itemPriceInPaise);
-            newItem.setSpecialInstruction(request.getSpecialInstruction());
-            cart.getCartItems().add(newItem);
         }
 
         // Update cart metadata
@@ -535,9 +546,16 @@ public class CartService {
     /**
      * Get all carts with pagination
      */
-    public Page<Cart> getAll(Pageable pageable) {
-        Page<Cart> carts = cartRepo.findAll(pageable);
-        return carts;
+    public Page<Cart> getAll(String username, DatabaseHelper databaseHelper) {
+        Pageable pageable;
+        if(databaseHelper.getSortOrder().isEmpty() || databaseHelper.getSortBy().isEmpty()){
+            pageable = PageRequest.of(databaseHelper.getCurrentPage(), databaseHelper.getItemPerPage());
+        }else{
+            pageable = PageRequest
+                    .of(databaseHelper.getCurrentPage(), databaseHelper.getItemPerPage())
+                    .withSort(Sort.Direction.fromString(databaseHelper.getSortOrder()), databaseHelper.getSortBy());
+        }
+        return cartRepo.findAllByUsername(username, pageable);
     }
 
     /**

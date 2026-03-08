@@ -1,0 +1,1480 @@
+{
+	"info": {
+		"_postman_id": "godesii-services-api-collection",
+		"name": "GoDesii Services API",
+		"description": "Complete Postman collection for GoDesii food delivery platform REST API.\n\nBase URL: {{baseUrl}} (default: http://localhost:8080/api)\n\nAuthentication: Bearer token (JWT) obtained via /auth/login",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api",
+			"type": "string"
+		},
+		{
+			"key": "bearerToken",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"description": "Authentication endpoints",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe\",\n  \"password\": \"P@ssw0rd123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Authenticate user and receive JWT tokens."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"description": "User registration and profile management",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"mobile\": \"9876543210\",\n  \"countryCode\": \"+91\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "register"]
+						},
+						"description": "Register a new user."
+					},
+					"response": []
+				},
+				{
+					"name": "Register Mobile User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"mobile\": \"9876543210\",\n  \"countryCode\": \"+91\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/mobile/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "mobile", "register"]
+						},
+						"description": "Register a new mobile user."
+					},
+					"response": []
+				},
+				{
+					"name": "Edit User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"mobile\": \"9876543210\",\n  \"countryCode\": \"+91\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/profile/edit",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "profile", "edit"]
+						},
+						"description": "Update an existing user profile."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Shipping Addresses",
+			"description": "CRUD operations for user shipping addresses",
+			"item": [
+				{
+					"name": "Create Shipping Address",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"latitude\": \"28.6139\",\n  \"longitude\": \"77.2090\",\n  \"houseNumber\": \"42-B\",\n  \"street\": \"MG Road\",\n  \"city\": \"New Delhi\",\n  \"state\": \"Delhi\",\n  \"pinCode\": \"110001\",\n  \"country\": \"India\",\n  \"addressType\": \"HOME\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/shipping/address/create?userId=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["shipping", "address", "create"],
+							"query": [
+								{ "key": "userId", "value": "1" }
+							]
+						},
+						"description": "Create a new shipping address for a user."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Shipping Address",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"latitude\": \"28.6139\",\n  \"longitude\": \"77.2090\",\n  \"houseNumber\": \"42-B\",\n  \"street\": \"MG Road\",\n  \"city\": \"New Delhi\",\n  \"state\": \"Delhi\",\n  \"pinCode\": \"110001\",\n  \"country\": \"India\",\n  \"addressType\": \"OFFICE\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/shipping/address/update/1?userId=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["shipping", "address", "update", "1"],
+							"query": [
+								{ "key": "userId", "value": "1" }
+							]
+						},
+						"description": "Update an existing shipping address."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Shipping Address by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/shipping/address/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["shipping", "address", "1"]
+						},
+						"description": "Retrieve a shipping address by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Shipping Addresses",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/shipping/address/all",
+							"host": ["{{baseUrl}}"],
+							"path": ["shipping", "address", "all"]
+						},
+						"description": "Retrieve all shipping addresses."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Shipping Address",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/shipping/address/delete/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["shipping", "address", "delete", "1"]
+						},
+						"description": "Delete a shipping address by its ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AWS S3",
+			"description": "File upload operations via AWS S3",
+			"item": [
+				{
+					"name": "Upload File",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/path/to/your/file.jpg",
+									"description": "File to upload"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/aws/s3/upload",
+							"host": ["{{baseUrl}}"],
+							"path": ["aws", "s3", "upload"]
+						},
+						"description": "Upload a file to AWS S3 and get the URL back."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Carts",
+			"description": "Shopping cart management",
+			"item": [
+				{
+					"name": "Create Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe\",\n  \"restaurantId\": 1,\n  \"cartItemRequests\": [\n    {\n      \"productId\": \"PROD-001\",\n      \"quantity\": 2,\n      \"price\": 250,\n      \"specialInstruction\": \"Extra spicy\"\n    },\n    {\n      \"productId\": \"PROD-002\",\n      \"quantity\": 1,\n      \"price\": 180,\n      \"specialInstruction\": \"\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "create"]
+						},
+						"description": "Create a new cart with items."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Carts",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/carts/all?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "all"],
+							"query": [
+								{ "key": "page", "value": "0" },
+								{ "key": "size", "value": "10" }
+							]
+						},
+						"description": "Retrieve all carts with pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cart by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/carts/cart-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "cart-id-here"]
+						},
+						"description": "Retrieve a cart by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cart by Username",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/carts/user/john_doe",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "user", "john_doe"]
+						},
+						"description": "Retrieve cart for a specific user."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Cart",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/carts/active?username=john_doe",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "active"],
+							"query": [
+								{ "key": "username", "value": "john_doe" }
+							]
+						},
+						"description": "Retrieve the active cart for a user."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe\",\n  \"restaurantId\": 1,\n  \"cartItemRequests\": [\n    {\n      \"productId\": \"PROD-001\",\n      \"quantity\": 3,\n      \"price\": 250,\n      \"specialInstruction\": \"No onions\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/update/cart-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "update", "cart-id-here"]
+						},
+						"description": "Update an existing cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Add Item(s) to Cart",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe\",\n  \"restaurantId\": 1,\n  \"items\": [\n    {\n      \"menuItemId\": \"MENU-ITEM-001\",\n      \"quantity\": 2,\n      \"specialInstruction\": \"Extra cheese\"\n    },\n    {\n      \"menuItemId\": \"MENU-ITEM-002\",\n      \"quantity\": 1,\n      \"specialInstruction\": \"No onions\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/add-item",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "add-item"]
+						},
+						"description": "Add one or more menu items to user's cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart Item Quantity",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"quantity\": 3\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/carts/cart-id-here/items/cart-item-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "cart-id-here", "items", "cart-item-id-here"]
+						},
+						"description": "Update the quantity of a specific cart item. Set quantity to 0 to remove."
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Cart Item",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/carts/cart-id-here/items/cart-item-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "cart-id-here", "items", "cart-item-id-here"]
+						},
+						"description": "Remove a specific item from the cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Clear Cart",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/carts/cart-id-here/clear",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "cart-id-here", "clear"]
+						},
+						"description": "Remove all items from the cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Cart",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/carts/delete/cart-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["carts", "delete", "cart-id-here"]
+						},
+						"description": "Delete a cart entirely."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart Items",
+			"description": "Direct CRUD operations for cart items",
+			"item": [
+				{
+					"name": "Create Cart Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"PROD-001\",\n  \"quantity\": 2,\n  \"price\": 250,\n  \"specialInstruction\": \"Extra spicy\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cart-items/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["cart-items", "create"]
+						},
+						"description": "Create a new cart item."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Cart Items",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/cart-items/all?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["cart-items", "all"],
+							"query": [
+								{ "key": "page", "value": "0" },
+								{ "key": "size", "value": "10" }
+							]
+						},
+						"description": "Retrieve all cart items with pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Cart Item by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/cart-items/cart-item-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["cart-items", "cart-item-id-here"]
+						},
+						"description": "Retrieve a cart item by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cart Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"PROD-001\",\n  \"quantity\": 4,\n  \"price\": 250,\n  \"specialInstruction\": \"No chili\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cart-items/update/cart-item-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["cart-items", "update", "cart-item-id-here"]
+						},
+						"description": "Update an existing cart item."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Cart Item",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/cart-items/delete/cart-item-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["cart-items", "delete", "cart-item-id-here"]
+						},
+						"description": "Delete a cart item by its ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"description": "Order management and lifecycle operations",
+			"item": [
+				{
+					"name": "Place Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe\",\n  \"paymentMethod\": \"UPI\",\n  \"deliveryAddressId\": 1,\n  \"specialInstructions\": \"Ring the doorbell twice\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/place-order",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "place-order"]
+						},
+						"description": "Place a new order from the user's active cart."
+					},
+					"response": []
+				},
+				{
+					"name": "Payment Success Callback",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"ORDER-001\",\n  \"paymentId\": \"PAY-001\",\n  \"paymentStatus\": \"SUCCESS\",\n  \"paymentMethod\": \"UPI\",\n  \"transactionId\": \"TXN-123456789\",\n  \"signature\": \"abc123signature\",\n  \"upiTransactionId\": \"UPI-REF-001\",\n  \"vpa\": \"john@upi\",\n  \"gatewayOrderId\": \"GW-ORDER-001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/payment/success",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "payment", "success"]
+						},
+						"description": "Handle successful payment callback from payment gateway."
+					},
+					"response": []
+				},
+				{
+					"name": "Payment Failure Callback",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"ORDER-001\",\n  \"paymentId\": \"PAY-001\",\n  \"paymentStatus\": \"FAILED\",\n  \"paymentMethod\": \"UPI\",\n  \"transactionId\": \"TXN-123456789\",\n  \"failureReason\": \"Insufficient funds\",\n  \"signature\": \"abc123signature\",\n  \"gatewayOrderId\": \"GW-ORDER-001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/payment/failure",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "payment", "failure"]
+						},
+						"description": "Handle failed payment callback from payment gateway."
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Order (Restaurant)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"ACCEPT\",\n  \"estimatedPreparationTime\": 30\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here/confirm",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here", "confirm"]
+						},
+						"description": "Restaurant confirms (accepts) an order with estimated prep time."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Order (Restaurant)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"REJECT\",\n  \"rejectionReason\": \"Restaurant is closing soon\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here/confirm",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here", "confirm"]
+						},
+						"description": "Restaurant rejects an order with a reason."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Order (User)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Changed my mind\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here/cancel/user",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here", "cancel", "user"]
+						},
+						"description": "User cancels their own order."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Order (Restaurant)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Ingredient unavailable\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here/cancel/restaurant",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here", "cancel", "restaurant"]
+						},
+						"description": "Restaurant cancels an order."
+					},
+					"response": []
+				},
+				{
+					"name": "Retry Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here/retry-payment?paymentMethod=UPI",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here", "retry-payment"],
+							"query": [
+								{ "key": "paymentMethod", "value": "UPI" }
+							]
+						},
+						"description": "Retry payment for a failed order."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Orders",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/orders/all?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "all"],
+							"query": [
+								{ "key": "page", "value": "0" },
+								{ "key": "size", "value": "10" }
+							]
+						},
+						"description": "Retrieve all orders with pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here"]
+						},
+						"description": "Retrieve an order by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe\",\n  \"restaurantId\": \"REST-001\",\n  \"orderStatus\": \"CONFIRMED\",\n  \"orderItems\": [\n    {\n      \"productId\": \"PROD-001\",\n      \"quantity\": 3,\n      \"priceAtPurchase\": 250\n    }\n  ],\n  \"orderAddress\": {\n    \"latitude\": \"28.6139\",\n    \"longitude\": \"77.2090\",\n    \"houseNumber\": \"42-B\",\n    \"street\": \"MG Road\",\n    \"city\": \"New Delhi\",\n    \"state\": \"Delhi\",\n    \"pinCode\": \"110001\",\n    \"country\": \"India\",\n    \"addressType\": \"HOME\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/update/order-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "update", "order-id-here"]
+						},
+						"description": "Update an existing order."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Order Preparing",
+					"request": {
+						"method": "PUT",
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here/preparing",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here", "preparing"]
+						},
+						"description": "Mark an order as being prepared."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Order Ready",
+					"request": {
+						"method": "PUT",
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here/ready",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here", "ready"]
+						},
+						"description": "Mark an order as ready for pickup."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Order Out for Delivery",
+					"request": {
+						"method": "PUT",
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here/out-for-delivery",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here", "out-for-delivery"]
+						},
+						"description": "Mark an order as out for delivery."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Order Delivered",
+					"request": {
+						"method": "PUT",
+						"url": {
+							"raw": "{{baseUrl}}/orders/order-id-here/delivered",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "order-id-here", "delivered"]
+						},
+						"description": "Mark an order as delivered."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe\",\n  \"restaurantId\": \"REST-001\",\n  \"orderStatus\": \"CREATED\",\n  \"orderItems\": [\n    {\n      \"productId\": \"PROD-001\",\n      \"quantity\": 2,\n      \"priceAtPurchase\": 250\n    },\n    {\n      \"productId\": \"PROD-002\",\n      \"quantity\": 1,\n      \"priceAtPurchase\": 180\n    }\n  ],\n  \"orderAddress\": {\n    \"latitude\": \"28.6139\",\n    \"longitude\": \"77.2090\",\n    \"houseNumber\": \"42-B\",\n    \"street\": \"MG Road\",\n    \"city\": \"New Delhi\",\n    \"state\": \"Delhi\",\n    \"pinCode\": \"110001\",\n    \"country\": \"India\",\n    \"addressType\": \"HOME\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "create"]
+						},
+						"description": "Create a new order directly (not from cart)."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Order",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/orders/delete/order-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders", "delete", "order-id-here"]
+						},
+						"description": "Delete an order by its ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Items",
+			"description": "Direct CRUD operations for order items",
+			"item": [
+				{
+					"name": "Create Order Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"PROD-001\",\n  \"quantity\": 2,\n  \"priceAtPurchase\": 250\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/order-items/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["order-items", "create"]
+						},
+						"description": "Create a new order item."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Order Items",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/order-items/all?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["order-items", "all"],
+							"query": [
+								{ "key": "page", "value": "0" },
+								{ "key": "size", "value": "10" }
+							]
+						},
+						"description": "Retrieve all order items with pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Item by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/order-items/order-item-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["order-items", "order-item-id-here"]
+						},
+						"description": "Retrieve an order item by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"PROD-001\",\n  \"quantity\": 4,\n  \"priceAtPurchase\": 250\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/order-items/update/order-item-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["order-items", "update", "order-item-id-here"]
+						},
+						"description": "Update an existing order item."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Order Item",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/order-items/delete/order-item-id-here",
+							"host": ["{{baseUrl}}"],
+							"path": ["order-items", "delete", "order-item-id-here"]
+						},
+						"description": "Delete an order item by its ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delivery",
+			"description": "Delivery partner assignment and management",
+			"item": [
+				{
+					"name": "Accept Delivery",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/delivery/assignments/assignment-id-here/accept",
+							"host": ["{{baseUrl}}"],
+							"path": ["delivery", "assignments", "assignment-id-here", "accept"]
+						},
+						"description": "Delivery partner accepts an assigned order."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Delivery",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/delivery/assignments/assignment-id-here/reject",
+							"host": ["{{baseUrl}}"],
+							"path": ["delivery", "assignments", "assignment-id-here", "reject"]
+						},
+						"description": "Delivery partner rejects an assigned order."
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Order Picked Up",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/delivery/assignments/assignment-id-here/pickup",
+							"host": ["{{baseUrl}}"],
+							"path": ["delivery", "assignments", "assignment-id-here", "pickup"]
+						},
+						"description": "Mark order as picked up by delivery partner."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Delivery Location",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"latitude\": 28.6139,\n  \"longitude\": 77.2090\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/delivery/assignments/assignment-id-here/location",
+							"host": ["{{baseUrl}}"],
+							"path": ["delivery", "assignments", "assignment-id-here", "location"]
+						},
+						"description": "Update delivery partner's current location."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Delivery Assignment",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/delivery/assignments/assignment-id-here/cancel",
+							"host": ["{{baseUrl}}"],
+							"path": ["delivery", "assignments", "assignment-id-here", "cancel"]
+						},
+						"description": "Cancel a delivery assignment."
+					},
+					"response": []
+				},
+				{
+					"name": "Reassign Delivery",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/delivery/assignments/assignment-id-here/reassign",
+							"host": ["{{baseUrl}}"],
+							"path": ["delivery", "assignments", "assignment-id-here", "reassign"]
+						},
+						"description": "Reassign a delivery to a different partner."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Restaurants",
+			"description": "Restaurant CRUD operations",
+			"item": [
+				{
+					"name": "Create Restaurant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Spice Garden\",\n  \"phoneNo\": \"+91-9876543210\",\n  \"cuisineType\": \"Indian\",\n  \"description\": \"Authentic North Indian cuisine with a modern twist.\",\n  \"verified\": false,\n  \"active\": true,\n  \"operationalHourRequest\": [\n    {\n      \"dayOfWeek\": \"MONDAY\",\n      \"openTime\": \"09:00\",\n      \"closeTime\": \"22:00\"\n    },\n    {\n      \"dayOfWeek\": \"TUESDAY\",\n      \"openTime\": \"09:00\",\n      \"closeTime\": \"22:00\"\n    }\n  ],\n  \"addressRequest\": {\n    \"addressLine1\": \"42-B, Connaught Place\",\n    \"addressLine2\": \"Near Rajiv Chowk Metro\",\n    \"city\": \"New Delhi\",\n    \"state\": \"Delhi\",\n    \"postalCode\": \"110001\",\n    \"country\": \"India\",\n    \"latitude\": 28.6315,\n    \"longitude\": 77.2167\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", "create"]
+						},
+						"description": "Create a new restaurant."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Restaurants",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/all?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", "all"],
+							"query": [
+								{ "key": "page", "value": "0" },
+								{ "key": "size", "value": "10" }
+							]
+						},
+						"description": "Retrieve all restaurants with pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Restaurant by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", "1"]
+						},
+						"description": "Retrieve a restaurant by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Restaurant",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Spice Garden Premium\",\n  \"phoneNo\": \"+91-9876543210\",\n  \"cuisineType\": \"Indian, Mughlai\",\n  \"description\": \"Premium North Indian and Mughlai cuisine.\",\n  \"verified\": true,\n  \"active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/update/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", "update", "1"]
+						},
+						"description": "Update an existing restaurant."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Restaurant",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/restaurants/delete/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["restaurants", "delete", "1"]
+						},
+						"description": "Delete a restaurant by its ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Menus",
+			"description": "Restaurant menu CRUD operations",
+			"item": [
+				{
+					"name": "Create Menu",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Lunch Special\",\n  \"description\": \"Available weekdays 12pm - 3pm\",\n  \"menuType\": \"LUNCH\",\n  \"sortOrder\": 1,\n  \"isActive\": true,\n  \"restaurantId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menus/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["menus", "create"]
+						},
+						"description": "Create a new menu for a restaurant."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Menus",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/menus/all",
+							"host": ["{{baseUrl}}"],
+							"path": ["menus", "all"]
+						},
+						"description": "Retrieve all menus."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/menus/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["menus", "1"]
+						},
+						"description": "Retrieve a menu by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menus by Restaurant ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/menus/restaurant/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["menus", "restaurant", "1"]
+						},
+						"description": "Retrieve all menus for a specific restaurant."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Menu",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Weekend Brunch\",\n  \"description\": \"Available Saturdays and Sundays 10am - 2pm\",\n  \"menuType\": \"BREAKFAST\",\n  \"sortOrder\": 2,\n  \"isActive\": true,\n  \"restaurantId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menus/update/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["menus", "update", "1"]
+						},
+						"description": "Update an existing menu."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Menu",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/menus/delete/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["menus", "delete", "1"]
+						},
+						"description": "Delete a menu by its ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Menu Items",
+			"description": "Menu item CRUD operations",
+			"item": [
+				{
+					"name": "Create Menu Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Butter Chicken\",\n  \"description\": \"Creamy tomato-based curry with tender chicken pieces.\",\n  \"basePrice\": 350.00,\n  \"imageUrl\": \"https://example.com/images/butter-chicken.jpg\",\n  \"isAvailable\": true,\n  \"dietaryType\": \"NON_VEG\",\n  \"categoryId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", "create"]
+						},
+						"description": "Create a new menu item."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Menu Items",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/all",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", "all"]
+						},
+						"description": "Retrieve all menu items."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu Item by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", "1"]
+						},
+						"description": "Retrieve a menu item by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Menu Items by Category ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/category/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", "category", "1"]
+						},
+						"description": "Retrieve all menu items for a specific category."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Menu Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Butter Chicken (Large)\",\n  \"description\": \"Large portion of creamy tomato-based curry with tender chicken pieces.\",\n  \"basePrice\": 450.00,\n  \"imageUrl\": \"https://example.com/images/butter-chicken-large.jpg\",\n  \"isAvailable\": true,\n  \"dietaryType\": \"NON_VEG\",\n  \"categoryId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/update/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", "update", "1"]
+						},
+						"description": "Update an existing menu item."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Menu Item",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/menu-items/delete/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["menu-items", "delete", "1"]
+						},
+						"description": "Delete a menu item by its ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"description": "Menu category CRUD operations",
+			"item": [
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Main Course\",\n  \"description\": \"Hearty main dishes for lunch and dinner.\",\n  \"displayOrder\": 1,\n  \"imageUrl\": \"https://example.com/images/main-course.jpg\",\n  \"isPureVeg\": false,\n  \"menuId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categories/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["categories", "create"]
+						},
+						"description": "Create a new menu category."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Categories",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/categories/all",
+							"host": ["{{baseUrl}}"],
+							"path": ["categories", "all"]
+						},
+						"description": "Retrieve all categories."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/categories/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["categories", "1"]
+						},
+						"description": "Retrieve a category by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Categories by Menu ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/categories/menu/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["categories", "menu", "1"]
+						},
+						"description": "Retrieve all categories for a specific menu."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Starters & Appetizers\",\n  \"description\": \"Light bites to begin your meal.\",\n  \"displayOrder\": 0,\n  \"imageUrl\": \"https://example.com/images/starters.jpg\",\n  \"isPureVeg\": true,\n  \"menuId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/categories/update/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["categories", "update", "1"]
+						},
+						"description": "Update an existing category."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/categories/delete/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["categories", "delete", "1"]
+						},
+						"description": "Delete a category by its ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Nutritional Info",
+			"description": "Nutritional information for menu items",
+			"item": [
+				{
+					"name": "Create Nutritional Info",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"calories\": 450,\n  \"protein\": 28.5,\n  \"totalFat\": 22.0,\n  \"carbohydrates\": 35.0,\n  \"sugar\": 8.5,\n  \"allergens\": \"Dairy, Nuts\",\n  \"isGlutenFree\": true,\n  \"isDairyFree\": false,\n  \"menuItemId\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/nutritional-info/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["nutritional-info", "create"]
+						},
+						"description": "Create nutritional info for a menu item."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Nutritional Info",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/nutritional-info/all",
+							"host": ["{{baseUrl}}"],
+							"path": ["nutritional-info", "all"]
+						},
+						"description": "Retrieve all nutritional information entries."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Nutritional Info by ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/nutritional-info/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["nutritional-info", "1"]
+						},
+						"description": "Retrieve nutritional info by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Nutritional Info by Menu Item ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/nutritional-info/menu-item/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["nutritional-info", "menu-item", "1"]
+						},
+						"description": "Retrieve nutritional info for a specific menu item."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Nutritional Info",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"calories\": 500,\n  \"protein\": 32.0,\n  \"totalFat\": 25.0,\n  \"carbohydrates\": 40.0,\n  \"sugar\": 10.0,\n  \"allergens\": \"Dairy, Nuts, Soy\",\n  \"isGlutenFree\": false,\n  \"isDairyFree\": false,\n  \"menuItemId\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/nutritional-info/update/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["nutritional-info", "update", "1"]
+						},
+						"description": "Update existing nutritional info."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Nutritional Info",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{baseUrl}}/nutritional-info/delete/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["nutritional-info", "delete", "1"]
+						},
+						"description": "Delete nutritional info by its ID."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

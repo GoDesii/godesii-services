@@ -7,6 +7,7 @@ import com.godesii.godesii_services.dto.UserProfileCreateRequest;
 import com.godesii.godesii_services.dto.UserProfileCreateResponse;
 import com.godesii.godesii_services.entity.auth.User;
 import com.godesii.godesii_services.service.auth.UserService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,22 +23,11 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<APIResponse<User>> registerUser(@RequestBody MobileUserCreationRequest request){
-        APIResponse<User> apiResponse = new APIResponse<>(
-                HttpStatus.CREATED,
-                userService.createUser(request),
-                GoDesiiConstant.SUCCESSFULLY_CREATED);
-        return ResponseEntity
-                .status(apiResponse.getStatus())
-                .build();
-    }
-
     @PostMapping("/mobile/register")
-    public ResponseEntity<Object> register(@RequestBody MobileUserCreationRequest mobileNo){
+    public ResponseEntity<Object> register(@RequestBody MobileUserCreationRequest request){
         APIResponse<String> apiResponse = new APIResponse<>(
                 HttpStatus.CREATED,
-                userService.registerMobileUser(mobileNo.getMobile()),
+                userService.registerMobileUser(request),
                 GoDesiiConstant.SUCCESSFULLY_CREATED);
         return ResponseEntity
                 .status(apiResponse.getStatus())

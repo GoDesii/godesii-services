@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -22,7 +24,7 @@ public class User {
     private String middleName;
     private String lastName;
     private Gender gender;
-    private Role role;
+    private Set<Role> roles;
     private String countryCode;
     private String mobileNo;
     private Boolean isMobileNoVerified;
@@ -32,6 +34,7 @@ public class User {
     private Boolean isAccountNonLocked = false;
     private Boolean isAccountNonExpired = false;
     private Boolean isCredentialsNonExpired = false;
+    private Boolean isEnabled = false;
 
     @Id
     @GeneratedValue(
@@ -135,14 +138,19 @@ public class User {
         this.gender = gender;
     }
 
-    @Column(name = "role")
+    @ElementCollection(fetch = FetchType.EAGER) // FetchType.EAGER is often useful, but optional
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role", nullable = false) // Specifies the column name for the enum value in the join table
     @Enumerated(EnumType.STRING)
-    public Role getRole() {
-        return role;
+    public Set<Role> getRoles() {
+        if (roles == null) {
+            roles = new HashSet<>();
+        }
+        return roles;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Column(name = "country_code", length = 3)
@@ -235,5 +243,14 @@ public class User {
 
     public void setLoginOtp(String loginOtp) {
         this.loginOtp = loginOtp;
+    }
+
+    @Column(name = "is_enabled")
+    public Boolean getEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        isEnabled = enabled;
     }
 }
