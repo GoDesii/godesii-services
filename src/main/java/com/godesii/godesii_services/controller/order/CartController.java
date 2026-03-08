@@ -147,20 +147,20 @@ public class CartController {
         }
 
         /**
-         * Add item to cart
+         * Add items to cart
          * 
-         * @param request Validated add to cart request
+         * @param request Validated add to cart request with list of items
          * @return Cart response with updated cart
          */
         @PostMapping(value = "/add-item", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-        @Operation(summary = "Add item to cart", description = "Add a menu item to user's cart with validations")
+        @Operation(summary = "Add items to cart", description = "Add one or more menu items to user's cart with validations")
         public ResponseEntity<APIResponse<CartResponse>> addItemToCart(@Valid @RequestBody AddToCartRequest request) {
                 CartResponse cartResponse = service.addItemToCart(request);
 
                 APIResponse<CartResponse> apiResponse = new APIResponse<>(
                                 HttpStatus.OK,
                                 cartResponse,
-                                "Item added to cart successfully");
+                                "Item(s) added to cart successfully");
 
                 return ResponseEntity.ok(apiResponse);
         }
