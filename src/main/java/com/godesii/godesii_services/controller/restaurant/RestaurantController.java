@@ -1,6 +1,7 @@
 package com.godesii.godesii_services.controller.restaurant;
 
 import com.godesii.godesii_services.common.APIResponse;
+import com.godesii.godesii_services.common.DatabaseHelper;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.dto.RestaurantRequest;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
@@ -17,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(RestaurantController.ENDPOINT)
@@ -59,25 +62,26 @@ public class RestaurantController {
      * @param direction Sort direction (default: asc)
      * @return Paginated list of restaurants
      */
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/all")
     @Operation(summary = "Get all restaurants", description = "Retrieves paginated list of restaurants")
-    public ResponseEntity<APIResponse<Page<Restaurant>>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction) {
+    public ResponseEntity<APIResponse<List<Restaurant>>> getAll(
+            @RequestParam(name = "search", defaultValue = "", required = false) String search,
+            @RequestParam(name = "currentPage", defaultValue = "0", required = false) int currentPage,
+            @RequestParam(name = "itemsPerPage",  defaultValue = "0", required = false) int itemsPerPage,
+            @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
+            @RequestParam(name = "sortBy", defaultValue = "", required = false) String sortBy,
+            @RequestParam(name = "foodType", defaultValue = "all", required = false) String foodType){
 
-        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc")
-                ? Sort.Direction.DESC
-                : Sort.Direction.ASC;
+        DatabaseHelper databaseHelper = new DatabaseHelper(search, currentPage, itemsPerPage, sortBy, sortOrder);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
-        Page<Restaurant> restaurants = service.getAll(pageable);
+        Page<Restaurant> restaurants = service.getAll(foodType,databaseHelper);
 
-        APIResponse<Page<Restaurant>> apiResponse = new APIResponse<>(
+        APIResponse<List<Restaurant>> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
-                restaurants,
-                GoDesiiConstant.SUCCESSFULLY_FETCHED);
+                restaurants.getContent(),
+                GoDesiiConstant.SUCCESSFULLY_FETCHED,
+                databaseHelper.getCurrentPage(),
+                (int)restaurants.getTotalElements());
 
         return ResponseEntity.ok(apiResponse);
     }

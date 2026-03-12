@@ -3,6 +3,8 @@ package com.godesii.godesii_services.entity.restaurant;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 
 import java.math.BigDecimal;
 
@@ -13,11 +15,18 @@ public class RestaurantAddress {
 
     private String addressLine1; // Primary street address (Building number, Street name).
     private String addressLine2; // Secondary info (Suite, Floor, Landmark).
+
+    @FullTextField(analyzer = "food_analyzer", searchAnalyzer = "food_query_analyzer")
     private String city;
+
     private String state;
     private String postalCode;
     private String country;
+
+    @GenericField
     private BigDecimal latitude;
+
+    @GenericField
     private BigDecimal longitude;
 
     public String getAddressLine1() {

@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 import java.util.List;
 
@@ -15,15 +19,22 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
     private Long id;
+
+    @GenericField
     private String name;
+
     private String description;
     private Integer displayOrder; // Controls the sorting sequence on the digital/print menu.
     private String imageUrl;
-    private Boolean isPureVeg; // Optional filter for platforms like Swiggy to show purely vegetarian categories.
+    private Boolean isPureVeg; // Optional filter for platforms like Swiggy to show purely vegetarian
+                               // categories.
 
     @ManyToOne
     @JoinColumn(name = "menu_id")
     @JsonIgnore
+    @IndexedEmbedded(includePaths = { "restaurant.name", "restaurant.isActive",
+            "restaurant.address.latitude", "restaurant.address.longitude", "restaurant.address.city" })
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     private Menu menu;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
@@ -94,4 +105,3 @@ public class Category {
         this.items = items;
     }
 }
-

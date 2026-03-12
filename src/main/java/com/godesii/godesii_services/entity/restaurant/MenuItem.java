@@ -3,29 +3,46 @@ package com.godesii.godesii_services.entity.restaurant;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "menu_items")
+@Indexed
 public class MenuItem {
     @Id
     @UuidGenerator
     @Column(name = "item_id")
     private String itemId;
+
     @Column(nullable = false)
+    @FullTextField(analyzer = "food_analyzer", searchAnalyzer = "food_query_analyzer")
     private String name;
+
+    @FullTextField(analyzer = "food_analyzer", searchAnalyzer = "food_query_analyzer")
     private String description;
+
     @Column(precision = 10, scale = 2)
+    @GenericField
     private BigDecimal basePrice;
+
     private String imageUrl;
+
+    @GenericField
     private boolean isAvailable = true;
+
     // 2026 Industry Standard: Dietary Markers
+    @KeywordField
     private String dietaryType; // VEG, NON_VEG, EGG, VEGAN
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     @JsonIgnore
+    @IndexedEmbedded(includePaths = { "name", "menu.restaurant.name", "menu.restaurant.isActive",
+            "menu.restaurant.address.latitude", "menu.restaurant.address.longitude", "menu.restaurant.address.city" })
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     private Category category;
 
     @OneToOne(mappedBy = "menuItem", cascade = CascadeType.ALL)
