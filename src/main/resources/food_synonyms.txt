@@ -1,0 +1,75 @@
+# GoDesii Food Synonym Dictionary
+# Format: word1,word2,word3 (all considered equivalent)
+
+# Protein / Meat
+murg,murgh,chicken
+gosht,mutton,lamb
+machhi,machli,fish
+jhinga,prawn,shrimp
+keema,mince,minced meat
+anda,egg
+
+# Vegetables & Dairy
+paneer,cottage cheese
+aloo,potato
+gobhi,cauliflower,gobi
+palak,spinach
+bhindi,okra,ladyfinger
+baingan,brinjal,eggplant
+matar,peas
+pyaaz,onion
+tamatar,tomato
+lauki,bottle gourd
+shimla mirch,capsicum,bell pepper
+methi,fenugreek
+jeera,cumin
+
+# Grains & Bread
+naan,nan,tandoori roti
+roti,chapati,chapatti,phulka
+paratha,parantha
+puri,poori
+kulcha,naan kulcha
+dosa,dosai
+idli,idly
+rice,chawal,chaval
+
+# Lentils
+dal,daal,dhal,lentil
+rajma,kidney beans
+chana,chickpea,chole
+sambar,sambhar
+
+# Dishes (spelling variants)
+biryani,biriyani,biriani,briyani,bryani
+tikka,tikki
+kebab,kabab,kabob
+korma,kurma
+tandoori,tanduri
+pulao,pulav,pilaf,pilau
+samosa,samoosa
+pakora,pakoda,bhajia,bhaji
+chaat,chat
+raita,raitha
+halwa,halva
+gulab jamun,gulab jaman
+jalebi,jalabi
+kheer,payasam
+
+# Cuisine categories
+starter,appetizer,snack,starters
+dessert,sweet,mithai,desserts
+beverage,drink,beverages,drinks
+thali,combo,meal
+chinese,indo chinese,manchurian
+pizza,flatbread
+burger,sandwich
+wrap,roll,kathi roll,frankie
+momos,dumpling,dumplings
+pasta,noodles,maggi
+soup,shorba
+
+# Dietary
+veg,vegetarian
+nonveg,non veg,non-veg,non vegetarian
+vegan,plant based

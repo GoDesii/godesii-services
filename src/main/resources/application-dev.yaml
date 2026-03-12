@@ -19,6 +19,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+        search:
+          backend:
+            type: lucene
+            directory:
+              root: ./lucene-indexes
+            analysis:
+              configurer: com.godesii.godesii_services.config.FoodSearchAnalysisConfigurer
     show-sql: true
     hibernate:
       ddl-auto: update

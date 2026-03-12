@@ -1,31 +1,50 @@
 package com.godesii.godesii_services.entity.restaurant;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.godesii.godesii_services.common.FoodCategory;
 import com.godesii.godesii_services.entity.BaseEntity;
 import jakarta.persistence.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
+import org.hibernate.search.engine.backend.types.Sortable;
 
 import java.util.List;
 
 @Entity
 @Table(name = "restaurant")
+@Indexed
 public class Restaurant extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @FullTextField(analyzer = "food_analyzer", searchAnalyzer = "food_query_analyzer")
+    @KeywordField(name = "name_sort", normalizer = "sort_normalizer", sortable = Sortable.YES)
     private String name;
+
     private String phoneNo;
+
+    @FullTextField(analyzer = "food_analyzer", searchAnalyzer = "food_query_analyzer")
     private String cuisineType;
+
+    @FullTextField(analyzer = "food_analyzer", searchAnalyzer = "food_query_analyzer")
     private String description;
+
     private boolean isVerified;
+
+    @Column(name = "food_category")
+    @Enumerated(EnumType.STRING)
+    private FoodCategory foodCategory;
+
+    @GenericField
     private boolean isActive;
 
-//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private List<OperationalHour> operatingHours;
 
     @Embedded
+    @IndexedEmbedded
     private RestaurantAddress address;
 
     public Long getId() {
@@ -74,6 +93,14 @@ public class Restaurant extends BaseEntity {
 
     public void setVerified(boolean verified) {
         isVerified = verified;
+    }
+
+    public FoodCategory getFoodCategory() {
+        return foodCategory;
+    }
+
+    public void setFoodCategory(FoodCategory foodCategory) {
+        this.foodCategory = foodCategory;
     }
 
     public boolean isActive() {
