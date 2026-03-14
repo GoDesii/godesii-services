@@ -67,7 +67,7 @@ public class RestaurantController {
     public ResponseEntity<APIResponse<List<Restaurant>>> getAll(
             @RequestParam(name = "search", defaultValue = "", required = false) String search,
             @RequestParam(name = "currentPage", defaultValue = "0", required = false) int currentPage,
-            @RequestParam(name = "itemsPerPage",  defaultValue = "0", required = false) int itemsPerPage,
+            @RequestParam(name = "itemsPerPage",  defaultValue = "10", required = false) int itemsPerPage,
             @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
             @RequestParam(name = "sortBy", defaultValue = "", required = false) String sortBy,
             @RequestParam(name = "foodType", defaultValue = "all", required = false) String foodType){

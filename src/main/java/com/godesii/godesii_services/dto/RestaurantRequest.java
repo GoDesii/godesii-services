@@ -1,5 +1,6 @@
 package com.godesii.godesii_services.dto;
 
+import com.godesii.godesii_services.common.FoodCategory;
 import com.godesii.godesii_services.entity.restaurant.OperationalHour;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.entity.restaurant.RestaurantAddress;
@@ -23,6 +24,7 @@ public class RestaurantRequest {
     private String description;
     private boolean isVerified;
     private boolean isActive;
+    private String foodCategory;
 
     @Valid
     private List<OperationalHourRequest> operationalHourRequest;
@@ -95,6 +97,14 @@ public class RestaurantRequest {
         isActive = active;
     }
 
+    public String getFoodCategory() {
+        return foodCategory;
+    }
+
+    public void setFoodCategory(String foodCategory) {
+        this.foodCategory = foodCategory;
+    }
+
     /*
      * Maps RestaurantRequest DTO to Restaurant entity
      */
@@ -108,6 +118,7 @@ public class RestaurantRequest {
         restaurant.setActive(request.isActive());
         restaurant.setOperatingHours(OperationalHourRequest.mapToEntities(request.getOperationalHourRequest()));
         restaurant.setAddress(RestaurantAddressRequest.mapToEntity(request.getAddressRequest()));
+        restaurant.setFoodCategory(FoodCategory.valueOf(request.getFoodCategory()));
         return restaurant;
     }
 
