@@ -57,7 +57,7 @@ public class RestaurantService {
                     .of(databaseHelper.getCurrentPage(), databaseHelper.getItemPerPage())
                     .withSort(Sort.Direction.fromString(databaseHelper.getSortOrder()), databaseHelper.getSortBy());
         }
-        if(FoodCategory.ALL.name().equalsIgnoreCase(foodType)){
+        if(FoodCategory.ALL.name().equals(foodType)){
             return this.repo.findAll(pageable);
         }
         return this.repo.findAllByFoodCategory(FoodCategory.valueOf(foodType),pageable);
