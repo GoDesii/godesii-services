@@ -70,7 +70,7 @@ public class RestaurantController {
             @RequestParam(name = "itemsPerPage",  defaultValue = "10", required = false) int itemsPerPage,
             @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
             @RequestParam(name = "sortBy", defaultValue = "", required = false) String sortBy,
-            @RequestParam(name = "foodType", defaultValue = "all", required = false) String foodType){
+            @RequestParam(name = "foodType", defaultValue = "ALL", required = false) String foodType){
 
         DatabaseHelper databaseHelper = new DatabaseHelper(search, currentPage, itemsPerPage, sortBy, sortOrder);
 
