@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <!-- ============================================================ -->
+    <!--           V1.0.0 — DATA MIGRATION (DML CHANGES)              -->
+    <!-- ============================================================ -->
+    <!-- Place INSERT, UPDATE, DELETE, data transformation
+         changesets here for the v1.0.0 release cycle.                -->
+
+    <!--
+    <changeSet id="v1.0.0-dml-001" author="admin">
+        <comment>Example: Update existing data for new feature</comment>
+        <update tableName="user">
+            <column name="auth_provider" value="DEFAULT"/>
+            <where>auth_provider IS NULL</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="v1.0.0-dml-002" author="admin">
+        <comment>Example: Insert new reference data</comment>
+        <insert tableName="user_roles">
+            <column name="user_id" valueComputed="(SELECT id FROM user WHERE user_name='admin')"/>
+            <column name="role" value="RESTAURANT_PARTNER"/>
+        </insert>
+    </changeSet>
+    -->
+
+</databaseChangeLog>

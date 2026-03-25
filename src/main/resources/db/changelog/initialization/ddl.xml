@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <!-- ============================================================ -->
+    <!--                     AUTH DOMAIN TABLES                        -->
+    <!-- ============================================================ -->
+
+    <!-- USER TABLE -->
+    <changeSet id="init-ddl-001" author="admin">
+        <createTable tableName="user">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="VARCHAR(50)">
+                <constraints unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="login_otp" type="VARCHAR(255)"/>
+            <column name="email_id" type="VARCHAR(255)"/>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="middle_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="gender" type="VARCHAR(255)"/>
+            <column name="country_code" type="VARCHAR(3)"/>
+            <column name="mobile_no" type="VARCHAR(10)">
+                <constraints unique="true"/>
+            </column>
+            <column name="is_mobile_verified" type="BOOLEAN"/>
+            <column name="auth_provider" type="VARCHAR(255)"/>
+            <column name="is_email_verified" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="is_phone_no_verified" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="is_account_non_locked" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="is_account_non_expired" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="is_credentials_non_expired" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="is_enabled" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="last_logged_in" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <!-- USER_ROLES COLLECTION TABLE -->
+    <changeSet id="init-ddl-002" author="admin">
+        <createTable tableName="user_roles">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="user_roles"
+                baseColumnNames="user_id"
+                constraintName="fk_user_roles_user"
+                referencedTableName="user"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- CLIENT TABLE (OAuth2) -->
+    <changeSet id="init-ddl-003" author="admin">
+        <createTable tableName="client">
+            <column name="id" type="VARCHAR(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="client_id" type="VARCHAR(255)"/>
+            <column name="client_name" type="VARCHAR(255)"/>
+            <column name="client_secret" type="VARCHAR(255)"/>
+            <column name="client_id_issued_at" type="TIMESTAMP"/>
+            <column name="client_secret_expired_at" type="TIMESTAMP"/>
+            <column name="client_authentication_method" type="VARCHAR(1000)"/>
+            <column name="client_authorization_grant_type" type="VARCHAR(1000)"/>
+            <column name="redirect_uris" type="VARCHAR(1000)"/>
+            <column name="post_logout_redirect_uris" type="VARCHAR(1000)"/>
+            <column name="scopes" type="VARCHAR(1000)"/>
+            <column name="client_settings" type="VARCHAR(2000)"/>
+            <column name="token_settings" type="VARCHAR(2000)"/>
+        </createTable>
+    </changeSet>
+
+    <!-- SECURE_TOKEN TABLE -->
+    <changeSet id="init-ddl-004" author="admin">
+        <createTable tableName="secure_token">
+            <column name="secure_otp_id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="issued_at" type="TIMESTAMP"/>
+            <column name="expired_at" type="TIMESTAMP"/>
+            <column name="identifier" type="VARCHAR(255)"/>
+            <column name="token" type="VARCHAR(255)">
+                <constraints unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- RSA_KEYS TABLE -->
+    <changeSet id="init-ddl-005" author="admin">
+        <createTable tableName="rsa_keys">
+            <column name="id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="public_key" type="CLOB"/>
+            <column name="private_key" type="CLOB"/>
+        </createTable>
+    </changeSet>
+
+    <!-- SHIPPING_ADDRESS TABLE -->
+    <changeSet id="init-ddl-006" author="admin">
+        <createTable tableName="shipping_address">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="latitude" type="VARCHAR(255)"/>
+            <column name="lognitude" type="VARCHAR(255)"/>
+            <column name="house_number" type="VARCHAR(255)"/>
+            <column name="street" type="VARCHAR(255)"/>
+            <column name="city" type="VARCHAR(255)"/>
+            <column name="state" type="VARCHAR(255)"/>
+            <column name="pin_code" type="VARCHAR(255)"/>
+            <column name="country" type="VARCHAR(255)"/>
+            <column name="address_type" type="VARCHAR(255)"/>
+            <!-- BaseEntity audit columns -->
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_date" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <!-- ============================================================ -->
+    <!--                   RESTAURANT DOMAIN TABLES                    -->
+    <!-- ============================================================ -->
+
+    <!-- RESTAURANT TABLE -->
+    <changeSet id="init-ddl-007" author="admin">
+        <createTable tableName="restaurant">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="phone_no" type="VARCHAR(255)"/>
+            <column name="cuisine_type" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="is_verified" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="food_category" type="VARCHAR(255)"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="false"/>
+            <!-- Embedded RestaurantAddress columns -->
+            <column name="address_line1" type="VARCHAR(255)"/>
+            <column name="address_line2" type="VARCHAR(255)"/>
+            <column name="city" type="VARCHAR(255)"/>
+            <column name="state" type="VARCHAR(255)"/>
+            <column name="postal_code" type="VARCHAR(255)"/>
+            <column name="country" type="VARCHAR(255)"/>
+            <column name="latitude" type="DECIMAL(19,2)"/>
+            <column name="longitude" type="DECIMAL(19,2)"/>
+            <!-- BaseEntity audit columns -->
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_date" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <!-- OPERATIONAL_HOUR TABLE -->
+    <changeSet id="init-ddl-008" author="admin">
+        <createTable tableName="operational_hour">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="restaurant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="day_of_week" type="INT"/>
+            <column name="open_time" type="TIME"/>
+            <column name="close_time" type="TIME"/>
+            <column name="service_type" type="VARCHAR(255)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="operational_hour"
+                baseColumnNames="restaurant_id"
+                constraintName="fk_operational_hour_restaurant"
+                referencedTableName="restaurant"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- MENUS TABLE -->
+    <changeSet id="init-ddl-009" author="admin">
+        <createTable tableName="menus">
+            <column name="menu_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="menu_type" type="VARCHAR(255)"/>
+            <column name="restaurant_id" type="BIGINT"/>
+            <column name="sort_order" type="INT"/>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="menus"
+                baseColumnNames="restaurant_id"
+                constraintName="fk_menus_restaurant"
+                referencedTableName="restaurant"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+    <!-- CATEGORIES TABLE -->
+    <changeSet id="init-ddl-010" author="admin">
+        <createTable tableName="categories">
+            <column name="category_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="display_order" type="INT"/>
+            <column name="image_url" type="VARCHAR(255)"/>
+            <column name="is_pure_veg" type="BOOLEAN"/>
+            <column name="menu_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="categories"
+                baseColumnNames="menu_id"
+                constraintName="fk_categories_menu"
+                referencedTableName="menus"
+                referencedColumnNames="menu_id"/>
+    </changeSet>
+
+    <!-- MENU_ITEMS TABLE -->
+    <changeSet id="init-ddl-011" author="admin">
+        <createTable tableName="menu_items">
+            <column name="item_id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="base_price" type="DECIMAL(10,2)"/>
+            <column name="image_url" type="VARCHAR(255)"/>
+            <column name="is_available" type="BOOLEAN" defaultValueBoolean="true"/>
+            <column name="dietary_type" type="VARCHAR(255)"/>
+            <column name="category_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="menu_items"
+                baseColumnNames="category_id"
+                constraintName="fk_menu_items_category"
+                referencedTableName="categories"
+                referencedColumnNames="category_id"/>
+    </changeSet>
+
+    <!-- NUTRITIONAL_INFO TABLE -->
+    <changeSet id="init-ddl-012" author="admin">
+        <createTable tableName="nutritional_info">
+            <column name="info_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="item_id" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="calories" type="INT"/>
+            <column name="protein" type="DECIMAL(5,2)"/>
+            <column name="total_fat" type="DECIMAL(5,2)"/>
+            <column name="carbohydrates" type="DECIMAL(5,2)"/>
+            <column name="sugar" type="DECIMAL(5,2)"/>
+            <column name="allergens" type="VARCHAR(255)"/>
+            <column name="is_gluten_free" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="is_dairy_free" type="BOOLEAN" defaultValueBoolean="false"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="nutritional_info"
+                baseColumnNames="item_id"
+                constraintName="fk_nutritional_info_menu_item"
+                referencedTableName="menu_items"
+                referencedColumnNames="item_id"/>
+    </changeSet>
+
+    <!-- ============================================================ -->
+    <!--                     ORDER DOMAIN TABLES                       -->
+    <!-- ============================================================ -->
+
+    <!-- ORDERS TABLE -->
+    <changeSet id="init-ddl-013" author="admin">
+        <createTable tableName="orders">
+            <column name="order_id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="VARCHAR(255)"/>
+            <column name="restaurant_id" type="VARCHAR(255)"/>
+            <column name="order_status" type="VARCHAR(255)"/>
+            <column name="total_amount" type="BIGINT"/>
+            <column name="order_date" type="TIMESTAMP"/>
+            <!-- Embedded OrderAddress columns -->
+            <column name="latitude" type="VARCHAR(255)"/>
+            <column name="longitude" type="VARCHAR(255)"/>
+            <column name="house_number" type="VARCHAR(255)"/>
+            <column name="street" type="VARCHAR(255)"/>
+            <column name="city" type="VARCHAR(255)"/>
+            <column name="state" type="VARCHAR(255)"/>
+            <column name="pin_code" type="VARCHAR(255)"/>
+            <column name="country" type="VARCHAR(255)"/>
+            <column name="address_type" type="VARCHAR(255)"/>
+            <!-- Payment fields -->
+            <column name="payment_id" type="VARCHAR(255)"/>
+            <column name="payment_method" type="VARCHAR(255)"/>
+            <column name="payment_status" type="VARCHAR(255)"/>
+            <column name="gateway_order_id" type="VARCHAR(255)"/>
+            <!-- Order tracking -->
+            <column name="confirmed_at" type="TIMESTAMP"/>
+            <column name="cancelled_at" type="TIMESTAMP"/>
+            <column name="cancellation_reason" type="VARCHAR(255)"/>
+            <!-- Delivery tracking -->
+            <column name="delivery_notes" type="VARCHAR(500)"/>
+            <column name="estimated_delivery_time" type="TIMESTAMP"/>
+            <column name="preparation_time" type="INT"/>
+            <!-- Delivery partner -->
+            <column name="delivery_partner_id" type="VARCHAR(255)"/>
+            <column name="delivery_partner_name" type="VARCHAR(100)"/>
+            <column name="delivery_partner_phone" type="VARCHAR(15)"/>
+            <column name="assigned_to_delivery_at" type="TIMESTAMP"/>
+            <column name="picked_up_at" type="TIMESTAMP"/>
+            <!-- Cancellation tracking -->
+            <column name="cancelled_by" type="VARCHAR(20)"/>
+            <column name="cancellation_category" type="VARCHAR(255)"/>
+            <column name="refund_issued" type="BOOLEAN"/>
+            <!-- Refund -->
+            <column name="refund_id" type="VARCHAR(255)"/>
+            <column name="refunded_at" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <!-- ORDER_ITEMS TABLE -->
+    <changeSet id="init-ddl-014" author="admin">
+        <createTable tableName="order_items">
+            <column name="order_item_id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_id" type="VARCHAR(255)"/>
+            <column name="quantity" type="INT"/>
+            <column name="price_at_purchase" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <!-- ORDER_ORDER_ITEM JOIN TABLE -->
+    <changeSet id="init-ddl-015" author="admin">
+        <createTable tableName="order_order_item">
+            <column name="order_id" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_item_id" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="order_order_item"
+                baseColumnNames="order_id"
+                constraintName="fk_order_order_item_order"
+                referencedTableName="orders"
+                referencedColumnNames="order_id"/>
+        <addForeignKeyConstraint
+                baseTableName="order_order_item"
+                baseColumnNames="order_item_id"
+                constraintName="fk_order_order_item_item"
+                referencedTableName="order_items"
+                referencedColumnNames="order_item_id"/>
+    </changeSet>
+
+    <!-- CART TABLE -->
+    <changeSet id="init-ddl-016" author="admin">
+        <createTable tableName="cart">
+            <column name="cart_id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="VARCHAR(255)"/>
+            <column name="restaurant_id" type="BIGINT"/>
+            <column name="total_price" type="BIGINT"/>
+            <column name="is_locked" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="locked_at" type="TIMESTAMP"/>
+            <column name="locked_for_order_id" type="VARCHAR(255)"/>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="expires_at" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <!-- CART_ITEM TABLE -->
+    <changeSet id="init-ddl-017" author="admin">
+        <createTable tableName="cart_item">
+            <column name="cart_item_id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_quantity" type="INT"/>
+            <column name="item_price" type="BIGINT"/>
+            <column name="cart_id" type="VARCHAR(36)"/>
+            <column name="special_instruction" type="VARCHAR(255)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="cart_item"
+                baseColumnNames="cart_id"
+                constraintName="fk_cart_item_cart"
+                referencedTableName="cart"
+                referencedColumnNames="cart_id"/>
+    </changeSet>
+
+    <!-- CART_SELECTION JOIN TABLE -->
+    <changeSet id="init-ddl-018" author="admin">
+        <createTable tableName="cart_selection">
+            <column name="cart_id_fk" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cartitem_id_fk" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="cart_selection"
+                baseColumnNames="cart_id_fk"
+                constraintName="CART_FK"
+                referencedTableName="cart"
+                referencedColumnNames="cart_id"/>
+        <addForeignKeyConstraint
+                baseTableName="cart_selection"
+                baseColumnNames="cartitem_id_fk"
+                constraintName="CART_ITEM_FK"
+                referencedTableName="cart_item"
+                referencedColumnNames="cart_item_id"/>
+    </changeSet>
+
+    <!-- ============================================================ -->
+    <!--                    DELIVERY DOMAIN TABLES                     -->
+    <!-- ============================================================ -->
+
+    <!-- DELIVERY_PARTNERS TABLE -->
+    <changeSet id="init-ddl-019" author="admin">
+        <createTable tableName="delivery_partners">
+            <column name="partner_id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="VARCHAR(15)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(100)"/>
+            <column name="vehicle_type" type="VARCHAR(255)"/>
+            <column name="current_lat" type="DECIMAL(10,8)"/>
+            <column name="current_lng" type="DECIMAL(11,8)"/>
+            <column name="is_available" type="BOOLEAN"/>
+            <column name="rating" type="DECIMAL(3,2)"/>
+            <column name="total_deliveries" type="INT"/>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="last_active" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <!-- DELIVERY_ASSIGNMENTS TABLE -->
+    <changeSet id="init-ddl-020" author="admin">
+        <createTable tableName="delivery_assignments">
+            <column name="assignment_id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assigned_at" type="TIMESTAMP"/>
+            <column name="accepted_at" type="TIMESTAMP"/>
+            <column name="rejected_at" type="TIMESTAMP"/>
+            <column name="rejection_reason" type="VARCHAR(500)"/>
+            <column name="picked_up_at" type="TIMESTAMP"/>
+            <column name="delivered_at" type="TIMESTAMP"/>
+            <column name="pickup_lat" type="DECIMAL(10,8)"/>
+            <column name="pickup_lng" type="DECIMAL(11,8)"/>
+            <column name="drop_lat" type="DECIMAL(10,8)"/>
+            <column name="drop_lng" type="DECIMAL(11,8)"/>
+        </createTable>
+    </changeSet>
+
+    <!-- ============================================================ -->
+    <!--                     PERFORMANCE INDEXES                       -->
+    <!-- ============================================================ -->
+
+    <!-- Auth indexes -->
+    <changeSet id="init-ddl-021" author="admin">
+        <createIndex indexName="idx_user_user_name" tableName="user">
+            <column name="user_name"/>
+        </createIndex>
+        <createIndex indexName="idx_user_email_id" tableName="user">
+            <column name="email_id"/>
+        </createIndex>
+        <createIndex indexName="idx_user_mobile_no" tableName="user">
+            <column name="mobile_no"/>
+        </createIndex>
+        <createIndex indexName="idx_user_roles_user_id" tableName="user_roles">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex indexName="idx_secure_token_identifier" tableName="secure_token">
+            <column name="identifier"/>
+        </createIndex>
+        <createIndex indexName="idx_client_client_id" tableName="client">
+            <column name="client_id"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Restaurant indexes -->
+    <changeSet id="init-ddl-022" author="admin">
+        <createIndex indexName="idx_restaurant_food_category" tableName="restaurant">
+            <column name="food_category"/>
+        </createIndex>
+        <createIndex indexName="idx_operational_hour_restaurant" tableName="operational_hour">
+            <column name="restaurant_id"/>
+        </createIndex>
+        <createIndex indexName="idx_menus_restaurant" tableName="menus">
+            <column name="restaurant_id"/>
+        </createIndex>
+        <createIndex indexName="idx_categories_menu" tableName="categories">
+            <column name="menu_id"/>
+        </createIndex>
+        <createIndex indexName="idx_menu_items_category" tableName="menu_items">
+            <column name="category_id"/>
+        </createIndex>
+        <createIndex indexName="idx_nutritional_info_item" tableName="nutritional_info">
+            <column name="item_id"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Order indexes -->
+    <changeSet id="init-ddl-023" author="admin">
+        <createIndex indexName="idx_orders_user_name" tableName="orders">
+            <column name="user_name"/>
+        </createIndex>
+        <createIndex indexName="idx_orders_restaurant_id" tableName="orders">
+            <column name="restaurant_id"/>
+        </createIndex>
+        <createIndex indexName="idx_orders_order_status" tableName="orders">
+            <column name="order_status"/>
+        </createIndex>
+        <createIndex indexName="idx_orders_order_date" tableName="orders">
+            <column name="order_date"/>
+        </createIndex>
+        <createIndex indexName="idx_cart_user_name" tableName="cart">
+            <column name="user_name"/>
+        </createIndex>
+        <createIndex indexName="idx_cart_item_product" tableName="cart_item">
+            <column name="product_id"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Delivery indexes -->
+    <changeSet id="init-ddl-024" author="admin">
+        <createIndex indexName="idx_delivery_assignments_order" tableName="delivery_assignments">
+            <column name="order_id"/>
+        </createIndex>
+        <createIndex indexName="idx_delivery_assignments_partner" tableName="delivery_assignments">
+            <column name="partner_id"/>
+        </createIndex>
+        <createIndex indexName="idx_delivery_assignments_status" tableName="delivery_assignments">
+            <column name="status"/>
+        </createIndex>
+        <createIndex indexName="idx_delivery_partners_available" tableName="delivery_partners">
+            <column name="is_available"/>
+        </createIndex>
+        <createIndex indexName="idx_delivery_partners_phone" tableName="delivery_partners">
+            <column name="phone"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

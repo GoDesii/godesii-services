@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.security.*;
@@ -56,9 +57,24 @@ public final class JwtProvider {
         Date currentDate = new Date();
         Date accessTokenExpiryDate =
                 new Date(currentDate.getTime() + (Integer.parseInt(this.refreshTokenExpiryTime) * 1000));
+
         claims.put("authorities", addAuthorities(authentication));
         claims.put("roles", ((UserPrincipal)authentication.getPrincipal()).getRoles());
+        UserPrincipal userPrincipal = ((UserPrincipal) authentication.getPrincipal());
         claims.put("iss", getIssuerServer());
+        if(StringUtils.hasText(userPrincipal.getFirstName())){
+            claims.put("first_name", userPrincipal.getFirstName());
+        }
+        if(StringUtils.hasText(userPrincipal.getMiddleName())){
+            claims.put("middle_name", userPrincipal.getMiddleName());
+        }
+        if(StringUtils.hasText(userPrincipal.getLastname())){
+            claims.put("last_name", userPrincipal.getLastname());
+        }
+        if(StringUtils.hasText(userPrincipal.getGender())){
+            claims.put("gender", userPrincipal.getGender());
+        }
+        claims.put("is_mobile_no_verified", userPrincipal.getIsMobileNoVerified());
         return Jwts
                 .builder()
                 .setClaims(claims)

@@ -15,6 +15,13 @@ import java.util.Set;
 public class UserPrincipal implements UserDetails {
 
     private String id;
+    private String firstName;
+    private String middleName;
+    private String lastname;
+    private String profilePic;
+    private boolean isMobileNoVerified;
+    private String gender;
+    private String countryCode;
     private String username;
     private String password;
     private String emailId;
@@ -101,6 +108,34 @@ public class UserPrincipal implements UserDetails {
         return StringUtils.collectionToCommaDelimitedString(getRoles());
     }
 
+    public String getFirstName() {
+        return this.firstName;
+    }
+
+    public String getMiddleName() {
+        return this.middleName;
+    }
+
+    public String getLastname() {
+        return this.lastname;
+    }
+
+    public String getProfilePic() {
+        return this.profilePic;
+    }
+
+    public boolean getIsMobileNoVerified() {
+        return this.isMobileNoVerified;
+    }
+
+    public String getGender() {
+        return this.gender;
+    }
+
+    public String getCountryCode() {
+        return this.countryCode;
+    }
+
     public static Builder buildWithId(String id){
         if(id == null)
             throw new IllegalArgumentException("Id can't be null!");
@@ -110,6 +145,13 @@ public class UserPrincipal implements UserDetails {
     public static class Builder implements Serializable{
 
         private String id;
+        private String firstName;
+        private String middleName;
+        private String lastname;
+        private String profilePic;
+        private boolean isMobileNoVerified;
+        private String gender;
+        private String countryCode;
         private String username;
         private String password;
         private String emailId;
@@ -131,6 +173,41 @@ public class UserPrincipal implements UserDetails {
 
         public Builder id(String id){
             this.id = id;
+            return this;
+        }
+
+        public Builder firstName(String firstName){
+            this.firstName = firstName;
+            return this;
+        }
+
+        public Builder middleName(String middleName){
+            this.middleName = middleName;
+            return this;
+        }
+
+        public Builder lastName(String lastname){
+            this.lastname = lastname;
+            return this;
+        }
+
+        public Builder profilePic(String profilePic){
+            this.profilePic = profilePic;
+            return this;
+        }
+
+        public Builder gender(String gender){
+            this.gender = gender;
+            return this;
+        }
+
+        public Builder countryCode(String countryCode){
+            this.countryCode = countryCode;
+            return this;
+        }
+
+        public Builder isMobileVerified(boolean isMobileNoVerified){
+            this.isMobileNoVerified = isMobileNoVerified;
             return this;
         }
 
@@ -206,6 +283,13 @@ public class UserPrincipal implements UserDetails {
         public UserPrincipal build(){
             UserPrincipal principal = new UserPrincipal();
             principal.id = this.id;
+            principal.firstName = this.firstName;
+            principal.lastname = this.lastname;
+            principal.middleName = this.middleName;
+            principal.gender = this.gender;
+            principal.profilePic = this.profilePic;
+            principal.isMobileNoVerified = this.isMobileNoVerified;
+            principal.countryCode = this.countryCode;
             principal.username = this.username;
             principal.emailId = this.emailId;
             principal.password = password;
@@ -226,8 +310,8 @@ public class UserPrincipal implements UserDetails {
 
         private static void check(UserPrincipal principal){
 
-            if(!principal.isEnabled())
-                throw new DisabledException("Users account is disabled");
+//            if(!principal.isEnabled())
+//                throw new DisabledException("Users account is disabled");
 
             if(!principal.isAccountNonExpired())
                 throw new AccountExpiredException("Users account is expired");

@@ -130,6 +130,7 @@ public class User {
         this.lastName = lastName;
     }
 
+    @Enumerated(EnumType.STRING)
     public Gender getGender() {
         return gender;
     }
