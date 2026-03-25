@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <!-- ============================================================ -->
+    <!--           V1.0.0 — SCHEMA MIGRATION (DDL CHANGES)            -->
+    <!-- ============================================================ -->
+    <!-- Place ALTER TABLE, ADD COLUMN, DROP COLUMN, RENAME,
+         CREATE TABLE (new entities), ADD/DROP INDEX, ADD/DROP FK
+         changesets here for the v1.0.0 release cycle.                -->
+
+    <!-- =============================================================== -->
+    <!-- Convert user.gender from ORDINAL (INT) to STRING (VARCHAR)       -->
+    <!-- Reason: @Enumerated(EnumType.STRING) added to User.getGender()   -->
+    <!-- =============================================================== -->
+
+    <!-- Step 1: Add a temporary VARCHAR column -->
+    <changeSet id="v1.0.0-ddl-001" author="admin">
+        <comment>Add temporary column for gender string migration</comment>
+        <addColumn tableName="user">
+            <column name="gender_tmp" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- Step 2: Migrate existing ordinal values to string values -->
+    <changeSet id="v1.0.0-ddl-002" author="admin">
+        <comment>Map ordinal gender values to string enum names</comment>
+        <sql>UPDATE `user` SET gender_tmp = CASE gender WHEN 0 THEN 'MALE' WHEN 1 THEN 'FEMALE' WHEN 2 THEN 'OTHER' ELSE NULL END WHERE gender IS NOT NULL;</sql>
+    </changeSet>
+
+    <!-- Step 3: Drop the old INT column -->
+    <changeSet id="v1.0.0-ddl-003" author="admin">
+        <comment>Drop old ordinal gender column</comment>
+        <dropColumn tableName="user" columnName="gender"/>
+    </changeSet>
+
+    <!-- Step 4: Rename temp column to gender -->
+    <changeSet id="v1.0.0-ddl-004" author="admin">
+        <comment>Rename gender_tmp to gender</comment>
+        <renameColumn tableName="user"
+                      oldColumnName="gender_tmp"
+                      newColumnName="gender"
+                      columnDataType="VARCHAR(255)"/>
+    </changeSet>
+
+</databaseChangeLog>

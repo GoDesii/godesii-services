@@ -1,0 +1,91 @@
+[2026-03-25 15:30:31] INFO [liquibase.ui] ####################################################
+##   _     _             _ _                      ##
+##  | |   (_)           (_) |                     ##
+##  | |    _  __ _ _   _ _| |__   __ _ ___  ___   ##
+##  | |   | |/ _` | | | | | '_ \ / _` / __|/ _ \  ##
+##  | |___| | (_| | |_| | | |_) | (_| \__ \  __/  ##
+##  \_____/_|\__, |\__,_|_|_.__/ \__,_|___/\___|  ##
+##              | |                               ##
+##              |_|                               ##
+##                                                ## 
+##  Get documentation at docs.liquibase.com       ##
+##  Get certified courses at learn.liquibase.com  ## 
+##                                                ##
+####################################################
+Starting Liquibase at 15:30:31 using Java 17.0.12 (version 5.0.1 #9400 built at 2025-10-03 17:37+0000)
+[2026-03-25 15:30:31] INFO [liquibase.ui] Liquibase Version: 5.0.1
+[2026-03-25 15:30:31] INFO [liquibase.ui] 
+[2026-03-25 15:30:31] INFO [liquibase.integration] Starting command execution.
+[2026-03-25 15:30:31] INFO [liquibase.command] Logging exception.
+[2026-03-25 15:30:31] INFO [liquibase.ui] ERROR: Exception Details
+[2026-03-25 15:30:31] INFO [liquibase.ui] ERROR: Exception Primary Class:  ChangeLogParseException
+[2026-03-25 15:30:31] INFO [liquibase.ui] ERROR: Exception Primary Reason:  The file src/main/resources/db/changelog/db/changelog/V1.0.0/ddl.xml was not found in the configured search path:
+    - /Users/shashankjain/Documents/Go Desii/godesii-services
+More locations can be added with the 'searchPath' parameter.
+[2026-03-25 15:30:31] INFO [liquibase.ui] ERROR: Exception Primary Source:  5.0.1
+[2026-03-25 15:30:31] INFO [liquibase.command] Command execution complete
+[2026-03-25 15:30:32] SEVERE [liquibase.integration] The file src/main/resources/db/changelog/db/changelog/V1.0.0/ddl.xml was not found in the configured search path:
+    - /Users/shashankjain/Documents/Go Desii/godesii-services
+More locations can be added with the 'searchPath' parameter.
+liquibase.exception.CommandExecutionException: liquibase.exception.ChangeLogParseException: liquibase.exception.SetupException: The file src/main/resources/db/changelog/db/changelog/V1.0.0/ddl.xml was not found in the configured search path:
+    - /Users/shashankjain/Documents/Go Desii/godesii-services
+More locations can be added with the 'searchPath' parameter.
+	at liquibase.command.CommandScope.lambda$execute$6(CommandScope.java:310)
+	at liquibase.Scope.child(Scope.java:223)
+	at liquibase.Scope.child(Scope.java:199)
+	at liquibase.command.CommandScope.execute(CommandScope.java:251)
+	at liquibase.integration.commandline.CommandRunner.call(CommandRunner.java:51)
+	at liquibase.integration.commandline.CommandRunner.call(CommandRunner.java:21)
+	at picocli.CommandLine.executeUserObject(CommandLine.java:2041)
+	at picocli.CommandLine.access$1500(CommandLine.java:148)
+	at picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2461)
+	at picocli.CommandLine$RunLast.handle(CommandLine.java:2453)
+	at picocli.CommandLine$RunLast.handle(CommandLine.java:2415)
+	at picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2273)
+	at picocli.CommandLine$RunLast.execute(CommandLine.java:2417)
+	at picocli.CommandLine.execute(CommandLine.java:2170)
+	at liquibase.integration.commandline.LiquibaseCommandLine.lambda$execute$2(LiquibaseCommandLine.java:412)
+	at liquibase.Scope.child(Scope.java:223)
+	at liquibase.Scope.child(Scope.java:199)
+	at liquibase.integration.commandline.LiquibaseCommandLine.lambda$execute$3(LiquibaseCommandLine.java:389)
+	at liquibase.Scope.child(Scope.java:223)
+	at liquibase.Scope.child(Scope.java:199)
+	at liquibase.integration.commandline.LiquibaseCommandLine.execute(LiquibaseCommandLine.java:386)
+	at liquibase.integration.commandline.LiquibaseCommandLine.main(LiquibaseCommandLine.java:105)
+Caused by: liquibase.exception.ChangeLogParseException: liquibase.exception.SetupException: The file src/main/resources/db/changelog/db/changelog/V1.0.0/ddl.xml was not found in the configured search path:
+    - /Users/shashankjain/Documents/Go Desii/godesii-services
+More locations can be added with the 'searchPath' parameter.
+	at liquibase.parser.core.xml.AbstractChangeLogParser.parse(AbstractChangeLogParser.java:25)
+	at liquibase.command.core.helpers.DatabaseChangelogCommandStep.lambda$getDatabaseChangeLog$0(DatabaseChangelogCommandStep.java:143)
+	at liquibase.Scope.lambda$child$0(Scope.java:214)
+	at liquibase.Scope.child(Scope.java:223)
+	at liquibase.Scope.child(Scope.java:213)
+	at liquibase.Scope.child(Scope.java:192)
+	at liquibase.Scope.child(Scope.java:280)
+	at liquibase.Scope.child(Scope.java:284)
+	at liquibase.command.core.helpers.DatabaseChangelogCommandStep.getDatabaseChangeLog(DatabaseChangelogCommandStep.java:138)
+	at liquibase.command.core.helpers.DatabaseChangelogCommandStep.run(DatabaseChangelogCommandStep.java:84)
+	at liquibase.command.CommandScope.lambda$execute$6(CommandScope.java:263)
+	... 21 more
+Caused by: liquibase.exception.SetupException: The file src/main/resources/db/changelog/db/changelog/V1.0.0/ddl.xml was not found in the configured search path:
+    - /Users/shashankjain/Documents/Go Desii/godesii-services
+More locations can be added with the 'searchPath' parameter.
+	at liquibase.changelog.DatabaseChangeLog.handleInclude(DatabaseChangeLog.java:663)
+	at liquibase.changelog.DatabaseChangeLog.handleChildNodeHelper(DatabaseChangeLog.java:485)
+	at liquibase.changelog.DatabaseChangeLog.handleChildNode(DatabaseChangeLog.java:470)
+	at liquibase.changelog.DatabaseChangeLog.load(DatabaseChangeLog.java:437)
+	at liquibase.parser.core.xml.AbstractChangeLogParser.parse(AbstractChangeLogParser.java:23)
+	... 31 more
+Caused by: liquibase.exception.LiquibaseException: The file src/main/resources/db/changelog/db/changelog/V1.0.0/ddl.xml was not found in the configured search path:
+    - /Users/shashankjain/Documents/Go Desii/godesii-services
+More locations can be added with the 'searchPath' parameter.
+	at liquibase.changelog.DatabaseChangeLog.include(DatabaseChangeLog.java:1137)
+	at liquibase.changelog.DatabaseChangeLog.handleInclude(DatabaseChangeLog.java:652)
+	... 35 more
+Caused by: liquibase.exception.ChangeLogParseException: The file src/main/resources/db/changelog/db/changelog/V1.0.0/ddl.xml was not found in the configured search path:
+    - /Users/shashankjain/Documents/Go Desii/godesii-services
+More locations can be added with the 'searchPath' parameter.
+	at liquibase.changelog.DatabaseChangeLog.include(DatabaseChangeLog.java:1098)
+	... 36 more
+
+[2026-03-25 15:30:32] INFO [liquibase.ui] Logs saved to ${buildDir}/reports/liquibase/liquibase.log

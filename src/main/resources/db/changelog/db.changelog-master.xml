@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <!-- ============================================================ -->
+    <!--  INITIALIZATION: Full schema creation + seed data             -->
+    <!-- ============================================================ -->
+    <include file="initialization/ddl.xml" relativeToChangelogFile="true"/>
+    <include file="initialization/dml.xml" relativeToChangelogFile="true"/>
+
+    <!-- ============================================================ -->
+    <!--  MIGRATIONS: Versioned schema + data changes                  -->
+    <!-- ============================================================ -->
+    <include file="migrate/v1.0.0/ddl.xml" relativeToChangelogFile="true"/>
+    <include file="migrate/v1.0.0/dml.xml" relativeToChangelogFile="true"/>
+
+    <!-- Future versions: uncomment and add as needed
+    <include file="migrate/v2.0.0/ddl.xml" relativeToChangelogFile="true"/>
+    <include file="migrate/v2.0.0/dml.xml" relativeToChangelogFile="true"/>
+    -->
+
+</databaseChangeLog>

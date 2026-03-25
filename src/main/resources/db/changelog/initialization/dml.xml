@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <!-- ============================================================ -->
+    <!--              INITIAL SEED / REFERENCE DATA                    -->
+    <!-- ============================================================ -->
+
+    <!-- Add initial seed data inserts below as needed.
+         Examples: default admin user, system roles, default OAuth2 clients, etc. -->
+
+    <!--
+    <changeSet id="init-dml-001" author="admin">
+        <comment>Insert default admin user</comment>
+        <insert tableName="user">
+            <column name="user_name" value="admin"/>
+            <column name="password" value="$2a$10$..."/>
+            <column name="email_id" value="admin@godesii.com"/>
+            <column name="first_name" value="System"/>
+            <column name="last_name" value="Admin"/>
+            <column name="auth_provider" value="DEFAULT"/>
+            <column name="is_email_verified" valueBoolean="true"/>
+            <column name="is_account_non_locked" valueBoolean="true"/>
+            <column name="is_account_non_expired" valueBoolean="true"/>
+            <column name="is_credentials_non_expired" valueBoolean="true"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="init-dml-002" author="admin">
+        <comment>Assign ADMIN role to default admin user</comment>
+        <insert tableName="user_roles">
+            <column name="user_id" valueComputed="(SELECT id FROM user WHERE user_name='admin')"/>
+            <column name="role" value="ADMIN"/>
+        </insert>
+    </changeSet>
+    -->
+
+</databaseChangeLog>

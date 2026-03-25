@@ -35,8 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
-
+/lucene-indexes/
 /logs/
 .DS_Store
+test_output.**
 LOG_FILE_IS_UNDEFINED
 
