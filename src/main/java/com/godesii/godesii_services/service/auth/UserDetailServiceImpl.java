@@ -51,7 +51,7 @@ public record UserDetailServiceImpl(UserRepository userRepository) implements Us
                 .lastName(user.getLastName())
                 .middleName(user.getMiddleName())
                 .countryCode(user.getCountryCode())
-                .gender(user.getGender().getValue())
+                .gender(user.getGender() != null ? user.getGender().getValue() : "")
                 .isMobileVerified(user.getMobileNoVerified())
                 .roles(roles)
                 .enabled(true)
