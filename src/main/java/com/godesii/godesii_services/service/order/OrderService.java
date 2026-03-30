@@ -30,15 +30,17 @@ public class OrderService {
     private final CartService cartService;
     private final PaymentService paymentService;
     private final DeliveryService deliveryService;
+    private final OrderNotificationService notificationService;
 
     public static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
     public OrderService(OrderRepository repo, CartService cartService, PaymentService paymentService,
-            DeliveryService deliveryService) {
+            DeliveryService deliveryService, OrderNotificationService notificationService) {
         this.repo = repo;
         this.cartService = cartService;
         this.paymentService = paymentService;
         this.deliveryService = deliveryService;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -166,8 +168,8 @@ public class OrderService {
             log.error("Failed to clear cart for order: {}", order.getOrderId(), e);
         }
 
-        // Notify restaurant (TODO: implement notification service)
-        log.info("Order {} payment successful, restaurant should be notified", order.getOrderId());
+        // Notify restaurant via WebSocket
+        notificationService.notifyNewOrder(saved);
 
         return saved;
     }
@@ -195,6 +197,9 @@ public class OrderService {
             log.error("Failed to clear cart for order: {}", order.getOrderId(), e);
         }
 
+        // Notify restaurant of payment failure
+        notificationService.notifyPaymentFailed(saved);
+
         return saved;
     }
 
@@ -221,6 +226,11 @@ public class OrderService {
                 order.setEstimatedDeliveryTime(
                         Instant.now().plusSeconds((request.getEstimatedPreparationTime() + 20) * 60L));
             }
+
+            Order saved = repo.save(order);
+            notificationService.notifyCustomerOrderConfirmed(saved);
+            return saved;
+
         } else if ("REJECT".equalsIgnoreCase(request.getAction())) {
             order.setOrderStatus(OrderStatus.CANCELLED);
             order.setCancelledAt(Instant.now());
@@ -233,6 +243,11 @@ public class OrderService {
                 order.setOrderStatus(OrderStatus.REFUNDED);
                 order.setRefundedAt(Instant.now());
             }
+
+            Order saved = repo.save(order);
+            notificationService.notifyCustomerOrderRejected(saved, request.getRejectionReason());
+            notificationService.notifyCustomerRefundInitiated(saved);
+            return saved;
         }
 
         return repo.save(order);
@@ -329,7 +344,9 @@ public class OrderService {
 
         order.setOrderStatus(OrderStatus.PREPARING);
         log.info("Order {} marked as PREPARING", orderId);
-        return repo.save(order);
+        Order saved = repo.save(order);
+        notificationService.notifyCustomerOrderPreparing(saved);
+        return saved;
     }
 
     /**
@@ -355,7 +372,9 @@ public class OrderService {
 
         order.setOrderStatus(OrderStatus.OUT_FOR_DELIVERY);
         log.info("Order {} marked as OUT_FOR_DELIVERY", orderId);
-        return repo.save(order);
+        Order saved = repo.save(order);
+        notificationService.notifyCustomerOrderOutForDelivery(saved);
+        return saved;
     }
 
     /**
@@ -368,7 +387,9 @@ public class OrderService {
 
         order.setOrderStatus(OrderStatus.DELIVERED);
         log.info("Order {} marked as DELIVERED", orderId);
-        return repo.save(order);
+        Order saved = repo.save(order);
+        notificationService.notifyCustomerOrderDelivered(saved);
+        return saved;
     }
 
     /**
@@ -476,7 +497,12 @@ public class OrderService {
         }
 
         log.info("User cancelled order: {}, Reason: {}", orderId, reason);
-        return repo.save(order);
+        Order saved = repo.save(order);
+        notificationService.notifyOrderCancelled(saved, reason);
+        if (saved.getRefundIssued() != null && saved.getRefundIssued()) {
+            notificationService.notifyCustomerRefundInitiated(saved);
+        }
+        return saved;
     }
 
     /**
@@ -514,7 +540,9 @@ public class OrderService {
         }
 
         log.warn("Restaurant cancelled order: {}, Reason: {}", orderId, reason);
-        return repo.save(order);
+        Order saved = repo.save(order);
+        notificationService.notifyOrderCancelled(saved, details);
+        return saved;
     }
 
     // ========== CRUD Methods ==========
