@@ -160,6 +160,7 @@ public class RestaurantRequest {
                     RestaurantAddressRequest.updateEntity(existing.getAddress(), request.getAddressRequest()));
         }
         existing.setVerified(request.isVerified());
+        existing.setActive(request.isActive());
     }
 
     public static class RestaurantAddressRequest {
