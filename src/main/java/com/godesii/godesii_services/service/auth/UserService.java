@@ -59,8 +59,6 @@ public class UserService  {
             throw new IllegalArgumentException("");
         }
         String generatedOTP = SecurityUtils.generateOTP();
-        LOGGER.info("Generated OTP " + generatedOTP);
-        this.twilioSmsSenderService.sendSms(new SmsRequest(request.getMobile(), "OTP Send! " + generatedOTP));
         User existingUser = checkIfUserExistByMobileNo(request.getMobile());
         if(existingUser != null){
             existingUser.setLoginOtp(passwordEncoder.encode(generatedOTP));
@@ -85,6 +83,8 @@ public class UserService  {
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
         this.userRepository.save(user);
+        LOGGER.info("OTP is generated for mobile no {}", request.getMobile());
+        this.twilioSmsSenderService.sendSms(new SmsRequest(request.getMobile(), "OTP Send! " + generatedOTP));
         return generatedOTP;
     }
 

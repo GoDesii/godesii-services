@@ -6,6 +6,7 @@ import com.godesii.godesii_services.dto.RestaurantRequest;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.exception.ResourceNotFoundException;
 import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
+import io.jsonwebtoken.lang.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.dialect.Database;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class RestaurantService {
      * @param pageable Pagination information
      * @return Page of restaurants
      */
-    public Page<Restaurant> getAll(String foodType,DatabaseHelper databaseHelper) {
+    public Page<Restaurant> getAll(String foodType,DatabaseHelper databaseHelper, String username) {
         Pageable pageable;
         if(databaseHelper.getSortOrder().isEmpty() || databaseHelper.getSortBy().isEmpty()){
             pageable = PageRequest.of(databaseHelper.getCurrentPage(), databaseHelper.getItemPerPage());
@@ -60,7 +61,9 @@ public class RestaurantService {
         if(FoodCategory.ALL.name().equals(foodType)){
             return this.repo.findAll(pageable);
         }
-        return this.repo.findAllByFoodCategory(FoodCategory.valueOf(foodType),pageable);
+        return Strings.hasText(username) ?
+                this.repo.findAllByCreatedBy(username, pageable):
+                this.repo.findAllByFoodCategory(FoodCategory.valueOf(foodType),pageable);
     }
 
     /**

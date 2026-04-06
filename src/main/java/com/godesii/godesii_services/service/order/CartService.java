@@ -11,7 +11,7 @@ import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.exception.*;
 import com.godesii.godesii_services.repository.order.CartRepository;
 import com.godesii.godesii_services.repository.restaurant.MenuItemRepository;
-import com.godesii.godesii_services.repository.restaurant.RestaurantRepository;
+import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -36,10 +36,10 @@ public class CartService {
 
     private final CartRepository cartRepo;
     private final MenuItemRepository menuItemRepo;
-    private final RestaurantRepository restaurantRepo;
+    private final RestaurantRepo restaurantRepo;
     public static final Logger log = LoggerFactory.getLogger(CartService.class);
 
-    public CartService(CartRepository cartRepo, MenuItemRepository menuItemRepo, RestaurantRepository restaurantRepo) {
+    public CartService(CartRepository cartRepo, MenuItemRepository menuItemRepo, RestaurantRepo restaurantRepo) {
         this.cartRepo = cartRepo;
         this.menuItemRepo = menuItemRepo;
         this.restaurantRepo = restaurantRepo;

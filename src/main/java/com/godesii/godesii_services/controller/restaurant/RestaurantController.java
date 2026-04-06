@@ -62,7 +62,7 @@ public class RestaurantController {
      * @param direction Sort direction (default: asc)
      * @return Paginated list of restaurants
      */
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/all")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = {"/all","/{username}/all"})
     @Operation(summary = "Get all restaurants", description = "Retrieves paginated list of restaurants")
     public ResponseEntity<APIResponse<List<Restaurant>>> getAll(
             @RequestParam(name = "search", defaultValue = "", required = false) String search,
@@ -70,11 +70,12 @@ public class RestaurantController {
             @RequestParam(name = "itemsPerPage",  defaultValue = "10", required = false) int itemsPerPage,
             @RequestParam(name = "sortOrder", defaultValue = "asc", required = false) String sortOrder,
             @RequestParam(name = "sortBy", defaultValue = "", required = false) String sortBy,
-            @RequestParam(name = "foodType", defaultValue = "ALL", required = false) String foodType){
+            @RequestParam(name = "foodType", defaultValue = "ALL", required = false) String foodType,
+            @PathVariable(name = "username", required = false) String username){
 
         DatabaseHelper databaseHelper = new DatabaseHelper(search, currentPage, itemsPerPage, sortBy, sortOrder);
 
-        Page<Restaurant> restaurants = service.getAll(foodType,databaseHelper);
+        Page<Restaurant> restaurants = service.getAll(foodType,databaseHelper, username);
 
         APIResponse<List<Restaurant>> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
