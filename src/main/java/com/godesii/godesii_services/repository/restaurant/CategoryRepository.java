@@ -4,6 +4,7 @@ import com.godesii.godesii_services.entity.restaurant.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,4 +20,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
      * Find category by name and menu ID (for duplicate checking)
      */
     Optional<Category> findByNameAndMenuId(String name, Long menuId);
+
+    Optional<Category> findByName(String name);
 }
