@@ -58,12 +58,14 @@ public class RestaurantService {
                     .of(databaseHelper.getCurrentPage(), databaseHelper.getItemPerPage())
                     .withSort(Sort.Direction.fromString(databaseHelper.getSortOrder()), databaseHelper.getSortBy());
         }
-        if(FoodCategory.ALL.name().equals(foodType)){
-            return this.repo.findAll(pageable);
-        }
-        return Strings.hasText(username) ?
-                this.repo.findAllByCreatedBy(username, pageable):
+
+        if(Strings.hasText(username))
+            return this.repo.findAllByCreatedBy(username, pageable);
+
+        return FoodCategory.ALL.name().equals(foodType) ?
+                this.repo.findAll(pageable) :
                 this.repo.findAllByFoodCategory(FoodCategory.valueOf(foodType),pageable);
+
     }
 
     /**
