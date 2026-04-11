@@ -29,9 +29,11 @@ public class RestaurantController {
     public static final String ENDPOINT = GoDesiiConstant.API_VERSION + "/restaurants";
 
     private final RestaurantService service;
+    private final com.godesii.godesii_services.service.restaurant.DashboardService dashboardService;
 
-    public RestaurantController(RestaurantService service) {
+    public RestaurantController(RestaurantService service, com.godesii.godesii_services.service.restaurant.DashboardService dashboardService) {
         this.service = service;
+        this.dashboardService = dashboardService;
     }
 
     /**
@@ -84,6 +86,25 @@ public class RestaurantController {
                 databaseHelper.getCurrentPage(),
                 (int)restaurants.getTotalElements());
 
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Get dashboard statistics for a user
+     * 
+     * @param username Username or owner ID
+     * @return Dashboard statistics
+     */
+    @GetMapping(value = "/{username}/stats", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get dashboard statistics", description = "Retrieves total restaurants, menus, and item counts for a given user")
+    public ResponseEntity<APIResponse<com.godesii.godesii_services.dto.DashboardStatsDto>> getStats(@PathVariable(name = "username") @NonNull String username) {
+        com.godesii.godesii_services.dto.DashboardStatsDto stats = dashboardService.getDashboardStats(username);
+        
+        APIResponse<com.godesii.godesii_services.dto.DashboardStatsDto> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                stats,
+                "Stats fetched successfully");
+                
         return ResponseEntity.ok(apiResponse);
     }
 
