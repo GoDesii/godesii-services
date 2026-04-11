@@ -14,6 +14,8 @@ public interface RestaurantRepo extends JpaRepository<Restaurant, Long>{
 
     Page<Restaurant> findAllByCreatedBy(String createdBy, Pageable pageable);
 
+    long countByCreatedBy(String createdBy);
+
     Optional<Restaurant> findByIdAndIsActiveTrue(Long id);
 
 
