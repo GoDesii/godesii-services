@@ -82,15 +82,9 @@ public class CartItemController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * Get cart item by ID
-     * 
-     * @param id Cart item ID
-     * @return CartItem entity or 404 if not found
-     */
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get cart item by ID", description = "Retrieves a single cart item by its ID")
-    public ResponseEntity<APIResponse<CartItem>> getById(@PathVariable @NonNull String id) {
+    public ResponseEntity<APIResponse<CartItem>> getById(@PathVariable @NonNull Long id) {
         CartItem cartItem = service.getById(id);
 
         APIResponse<CartItem> apiResponse = new APIResponse<>(
@@ -101,17 +95,10 @@ public class CartItemController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * Update cart item details
-     * 
-     * @param id      Cart item ID
-     * @param request Validated cart item update request
-     * @return Updated cart item or 404 if not found
-     */
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Update cart item", description = "Updates an existing cart item's details")
     public ResponseEntity<APIResponse<CartItem>> update(
-            @PathVariable @NonNull String id,
+            @PathVariable @NonNull Long id,
             @Valid @RequestBody CartItemRequest request) {
 
         CartItem updated = service.update(id, request);
@@ -124,15 +111,9 @@ public class CartItemController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /**
-     * Delete cart item by ID
-     * 
-     * @param id Cart item ID
-     * @return 204 No Content on success
-     */
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Delete cart item", description = "Deletes a cart item by its ID")
-    public ResponseEntity<APIResponse<Void>> delete(@PathVariable @NonNull String id) {
+    public ResponseEntity<APIResponse<Void>> delete(@PathVariable @NonNull Long id) {
         service.delete(id);
 
         APIResponse<Void> apiResponse = new APIResponse<>(

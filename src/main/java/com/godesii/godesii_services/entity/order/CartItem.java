@@ -2,15 +2,17 @@ package com.godesii.godesii_services.entity.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.sql.Types;
 import java.util.List;
 
 @Entity
 @Table(name = "cart_item")
 public class CartItem {
 
-    private String cartItemId;
+    private Long cartItemId;
     private String productId;
     private Integer quantity;
     private Long price;
@@ -18,13 +20,15 @@ public class CartItem {
     private String specialInstruction;
 
     @Id
-    @UuidGenerator
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
     @Column(name = "cart_item_id")
-    public String getCartItemId() {
+    public Long getCartItemId() {
         return cartItemId;
     }
 
-    public void setCartItemId(String cartItemId) {
+    public void setCartItemId(Long cartItemId) {
         this.cartItemId = cartItemId;
     }
 

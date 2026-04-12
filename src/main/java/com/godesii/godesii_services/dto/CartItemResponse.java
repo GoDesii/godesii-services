@@ -2,7 +2,7 @@ package com.godesii.godesii_services.dto;
 
 public class CartItemResponse {
 
-    private String cartItemId;
+    private Long cartItemId;
     private String menuItemId;
     private String menuItemName;
     private Integer quantity;
@@ -14,11 +14,11 @@ public class CartItemResponse {
     private String imageUrl;
     private Long currentPrice; // Only set if price changed
 
-    public String getCartItemId() {
+    public Long getCartItemId() {
         return cartItemId;
     }
 
-    public void setCartItemId(String cartItemId) {
+    public void setCartItemId(Long cartItemId) {
         this.cartItemId = cartItemId;
     }
 

@@ -27,7 +27,7 @@ spring:
               configurer: com.godesii.godesii_services.config.FoodSearchAnalysisConfigurer
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
   liquibase:
     enabled: false
     change-log: classpath:db/changelog/db.changelog-master.xml

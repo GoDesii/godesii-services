@@ -149,7 +149,7 @@ public class CartService {
      * Update cart item quantity
      */
     @Transactional
-    public CartResponse updateCartItem(String cartId, String cartItemId, UpdateCartItemRequest request) {
+    public CartResponse updateCartItem(Long cartId, Long cartItemId, UpdateCartItemRequest request) {
         log.info("Updating cart item: {}, new quantity: {}", cartItemId, request.getQuantity());
 
         Cart cart = getById(cartId);
@@ -205,7 +205,7 @@ public class CartService {
      * Remove cart item
      */
     @Transactional
-    public CartResponse removeCartItem(String cartId, String cartItemId) {
+    public CartResponse removeCartItem(Long cartId, Long cartItemId) {
         log.info("Removing cart item: {} from cart: {}", cartItemId, cartId);
 
         Cart cart = getById(cartId);
@@ -265,7 +265,7 @@ public class CartService {
      * Clear cart
      */
     @Transactional
-    public void clearCart(String cartId) {
+    public void clearCart(Long cartId) {
         log.info("Clearing cart: {}", cartId);
         Cart cart = getById(cartId);
         cartRepo.delete(cart);
@@ -468,7 +468,7 @@ public class CartService {
      * Lock cart for checkout
      */
     @Transactional
-    public void lockCart(String cartId, String orderId) {
+    public void lockCart(Long cartId, String orderId) {
         Cart cart = getById(cartId);
 
         if (Boolean.TRUE.equals(cart.getIsLocked())) {
@@ -487,7 +487,7 @@ public class CartService {
      * Unlock cart
      */
     @Transactional
-    public void unlockCart(String cartId) {
+    public void unlockCart(Long cartId) {
         Cart cart = getById(cartId);
         cart.setIsLocked(false);
         cart.setLockedAt(null);
@@ -501,7 +501,7 @@ public class CartService {
      * Recalculates prices and validates availability
      */
     @Transactional
-    public PriceBreakdown getFinalPriceBreakdown(String cartId) {
+    public PriceBreakdown getFinalPriceBreakdown(Long cartId) {
         Cart cart = getById(cartId);
 
         // Validate expiry
@@ -561,7 +561,7 @@ public class CartService {
     /**
      * Get cart by ID
      */
-    public Cart getById(@NonNull String id) {
+    public Cart getById(@NonNull Long id) {
         return cartRepo.findById(id)
                 .orElseThrow(() -> {
                     return new ResourceNotFoundException("Cart not found with ID: " + id);
@@ -582,7 +582,7 @@ public class CartService {
      * Update existing cart
      */
     @Transactional
-    public Cart update(@NonNull String id, CartRequest request) {
+    public Cart update(@NonNull Long id, CartRequest request) {
         Cart existing = getById(id);
 
         // Update only non-null fields
@@ -596,7 +596,7 @@ public class CartService {
      * Delete cart by ID
      */
     @Transactional
-    public void delete(@NonNull String id) {
+    public void delete(@NonNull Long id) {
         Cart existing = getById(id);
         cartRepo.delete(existing);
     }
