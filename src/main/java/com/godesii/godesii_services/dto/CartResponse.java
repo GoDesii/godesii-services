@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CartResponse {
 
-    private String cartId;
+    private Long cartId;
     private String username;
     private Long restaurantId;
     private String restaurantName;
@@ -16,11 +16,11 @@ public class CartResponse {
     private Instant updatedAt;
     private Instant expiresAt;
 
-    public String getCartId() {
+    public Long getCartId() {
         return cartId;
     }
 
-    public void setCartId(String cartId) {
+    public void setCartId(Long cartId) {
         this.cartId = cartId;
     }
 

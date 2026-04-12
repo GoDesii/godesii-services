@@ -2,8 +2,10 @@ package com.godesii.godesii_services.entity.order;
 
 import com.godesii.godesii_services.entity.BaseEntity;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.sql.Types;
 import java.time.Instant;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import java.util.List;
 @Table(name = "cart")
 public class Cart {
 
-    private String id;
+    private Long id;
     private Instant createAt;
     private Instant updatedAt;
     private Instant expiresAt;
@@ -32,13 +34,15 @@ public class Cart {
      */
 
     @Id
-    @UuidGenerator()
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
     @Column(name = "cart_id")
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

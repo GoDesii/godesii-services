@@ -57,7 +57,7 @@ public class OrderService {
 
         // 1. Get active cart (will throw if not found)
         CartResponse cartResponse = cartService.getActiveCart(request.getUsername());
-        String cartId = cartResponse.getCartId();
+        Long cartId = cartResponse.getCartId();
 
         // 2 & 3. Lock cart and recalculate prices
         // Since we need to lock first to prevent race conditions

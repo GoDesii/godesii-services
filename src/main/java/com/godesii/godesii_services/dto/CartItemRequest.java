@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CartItemRequest {
 
-    private String cartItemId;
+    private Long cartItemId;
 
     @NotNull(message = "Product ID is required")
     @NotBlank(message = "Product ID must not be blank")
@@ -26,11 +26,11 @@ public class CartItemRequest {
     @Size(max = 500, message = "Special instruction cannot exceed 500 characters")
     private String specialInstruction;
 
-    public String getCartItemId() {
+    public Long getCartItemId() {
         return cartItemId;
     }
 
-    public void setCartItemId(String cartItemId) {
+    public void setCartItemId(Long cartItemId) {
         this.cartItemId = cartItemId;
     }
 

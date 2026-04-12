@@ -90,15 +90,9 @@ public class CartController {
             return ResponseEntity.ok(apiResponse);
         }
 
-        /**
-         * Get cart by ID
-         * 
-         * @param id Cart ID
-         * @return Cart entity or 404 if not found
-         */
         @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Get cart by ID", description = "Retrieves a single cart by its ID")
-        public ResponseEntity<APIResponse<Cart>> getById(@PathVariable @NonNull String id) {
+        public ResponseEntity<APIResponse<Cart>> getById(@PathVariable @NonNull Long id) {
                 Cart cart = service.getById(id);
 
                 APIResponse<Cart> apiResponse = new APIResponse<>(
@@ -128,17 +122,10 @@ public class CartController {
                 return ResponseEntity.ok(apiResponse);
         }
 
-        /**
-         * Update cart details
-         * 
-         * @param id      Cart ID
-         * @param request Validated cart update request
-         * @return Updated cart or 404 if not found
-         */
         @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Update cart", description = "Updates an existing cart's details")
         public ResponseEntity<APIResponse<Cart>> update(
-                        @PathVariable @NonNull String id,
+                        @PathVariable @NonNull Long id,
                         @Valid @RequestBody CartRequest request) {
 
                 Cart updated = service.update(id, request);
@@ -170,19 +157,11 @@ public class CartController {
                 return ResponseEntity.ok(apiResponse);
         }
 
-        /**
-         * Update cart item quantity
-         * 
-         * @param cartId     Cart ID
-         * @param cartItemId Cart item ID
-         * @param request    Update request with new quantity
-         * @return Updated cart response or 204 if cart deleted
-         */
         @PutMapping(value = "/{cartId}/items/{cartItemId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Update cart item", description = "Update quantity of cart item (0 removes item)")
         public ResponseEntity<APIResponse<CartResponse>> updateCartItem(
-                        @PathVariable @NonNull String cartId,
-                        @PathVariable @NonNull String cartItemId,
+                        @PathVariable @NonNull Long cartId,
+                        @PathVariable @NonNull Long cartItemId,
                         @Valid @RequestBody UpdateCartItemRequest request) {
 
                 CartResponse cartResponse = service.updateCartItem(cartId, cartItemId, request);
@@ -204,18 +183,11 @@ public class CartController {
                 return ResponseEntity.ok(apiResponse);
         }
 
-        /**
-         * Remove item from cart
-         * 
-         * @param cartId     Cart ID
-         * @param cartItemId Cart item ID to remove
-         * @return Updated cart response or 204 if cart deleted
-         */
         @DeleteMapping(value = "/{cartId}/items/{cartItemId}", produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Remove cart item", description = "Remove a specific item from cart")
         public ResponseEntity<APIResponse<CartResponse>> removeCartItem(
-                        @PathVariable @NonNull String cartId,
-                        @PathVariable @NonNull String cartItemId) {
+                        @PathVariable @NonNull Long cartId,
+                        @PathVariable @NonNull Long cartItemId) {
 
                 CartResponse cartResponse = service.removeCartItem(cartId, cartItemId);
 
@@ -255,15 +227,9 @@ public class CartController {
                 return ResponseEntity.ok(apiResponse);
         }
 
-        /**
-         * Clear all items from cart
-         * 
-         * @param cartId Cart ID to clear
-         * @return 204 No Content
-         */
         @DeleteMapping(value = "/{cartId}/clear", produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Clear cart", description = "Remove all items and delete the cart")
-        public ResponseEntity<APIResponse<Void>> clearCart(@PathVariable @NonNull String cartId) {
+        public ResponseEntity<APIResponse<Void>> clearCart(@PathVariable @NonNull Long cartId) {
                 service.clearCart(cartId);
 
                 APIResponse<Void> apiResponse = new APIResponse<>(
@@ -274,15 +240,9 @@ public class CartController {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
         }
 
-        /**
-         * Delete cart by ID
-         * 
-         * @param id Cart ID
-         * @return 204 No Content on success
-         */
         @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Delete cart", description = "Deletes a cart by its ID")
-        public ResponseEntity<APIResponse<Void>> delete(@PathVariable @NonNull String id) {
+        public ResponseEntity<APIResponse<Void>> delete(@PathVariable @NonNull Long id) {
                 service.delete(id);
 
                 APIResponse<Void> apiResponse = new APIResponse<>(

@@ -2,16 +2,16 @@ package com.godesii.godesii_services.exception;
 
 public class CartLockedException extends RuntimeException {
 
-    private final String cartId;
+    private final Long cartId;
     private final String lockedForOrderId;
 
-    public CartLockedException(String message, String cartId, String lockedForOrderId) {
+    public CartLockedException(String message, Long cartId, String lockedForOrderId) {
         super(message);
         this.cartId = cartId;
         this.lockedForOrderId = lockedForOrderId;
     }
 
-    public String getCartId() {
+    public Long getCartId() {
         return cartId;
     }
 

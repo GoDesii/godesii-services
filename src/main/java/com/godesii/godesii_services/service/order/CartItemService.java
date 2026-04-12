@@ -53,7 +53,7 @@ public class CartItemService {
      * @return CartItem entity
      * @throws ResourceNotFoundException if cart item not found
      */
-    public CartItem getById(@NonNull String id) {
+    public CartItem getById(@NonNull Long id) {
         return repo.findById(id)
                 .orElseThrow(() -> {
                     return new ResourceNotFoundException("Cart item not found with ID: " + id);
@@ -69,7 +69,7 @@ public class CartItemService {
      * @throws ResourceNotFoundException if cart item not found
      */
     @Transactional
-    public CartItem update(@NonNull String id, CartItemRequest request) {
+    public CartItem update(@NonNull Long id, CartItemRequest request) {
         CartItem existing = getById(id);
 
         // Update only non-null fields
@@ -86,7 +86,7 @@ public class CartItemService {
      * @throws ResourceNotFoundException if cart item not found
      */
     @Transactional
-    public void delete(@NonNull String id) {
+    public void delete(@NonNull Long id) {
         CartItem existing = getById(id);
         repo.delete(existing);
     }
