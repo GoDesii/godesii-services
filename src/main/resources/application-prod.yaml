@@ -63,14 +63,3 @@ app:
     encryptor:
       password: password
       salt: 626F6F746966756C
-
-# Google Pay Configuration (Production)
-googlepay:
-  enabled: true
-  environment: PRODUCTION
-  merchant-id: ${GPAY_MERCHANT_ID}
-  merchant-name: GoDesii
-  callback-url: ${GPAY_CALLBACK_URL}
-  supported-networks: VISA,MASTERCARD,AMEX
-  gateway-name: ${GPAY_GATEWAY_NAME}
-  gateway-merchant-id: ${GPAY_GATEWAY_MERCHANT_ID}

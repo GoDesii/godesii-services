@@ -484,6 +484,24 @@ public class CartService {
     }
 
     /**
+     * Update cart lock with a different order ID
+     * Used when transitioning from a temporary lock ID to a final order ID
+     */
+    @Transactional
+    public void updateLockOrderId(Long cartId, String expectedOrderId, String newOrderId) {
+        Cart cart = getById(cartId);
+
+        if (!Boolean.TRUE.equals(cart.getIsLocked()) || !expectedOrderId.equals(cart.getLockedForOrderId())) {
+            throw new CartLockedException("Cart is not locked with the expected order ID", cartId,
+                    cart.getLockedForOrderId());
+        }
+
+        cart.setLockedForOrderId(newOrderId);
+        cartRepo.save(cart);
+        log.info("Updated cart lock: {} from {} to {}", cartId, expectedOrderId, newOrderId);
+    }
+
+    /**
      * Unlock cart
      */
     @Transactional

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
  * Google Pay payment gateway configuration
  */
 @Configuration
-@Profile("!prod")
+@Profile("xyz")
 public class GooglePayConfig {
 
     @Value("${googlepay.merchant-id:TEST_MERCHANT_ID}")
