@@ -121,7 +121,7 @@ public class UserService  {
             existingUser.setLastName(request.getLastName());
         }
         if(StringUtils.hasText(request.getGender())){
-            existingUser.setGender(Gender.valueOf(request.getGender().toLowerCase()));
+            existingUser.setGender(Gender.valueOf(request.getGender().toUpperCase()));
         }
         return UserProfileCreateResponse.mapToUserProfileCreateResponse(this.userRepository.save(existingUser));
     }
