@@ -109,8 +109,8 @@ public class UserService  {
     }
 
     public UserProfileCreateResponse updateProfile(UserProfileCreateRequest request){
-        User existingUser = this.userRepository.findById(request.getUserId())
-                .orElseThrow(()-> new ResourceNotFoundException("User does not exist with id " + request.getUserId()));
+        User existingUser = this.userRepository.findByUsername(request.getUserId())
+                .orElseThrow(()-> new ResourceNotFoundException("User does not exist with username " + request.getUserId()));
         if(StringUtils.hasText(request.getFirstName())){
             existingUser.setFirstName(request.getFirstName());
         }
@@ -121,7 +121,7 @@ public class UserService  {
             existingUser.setLastName(request.getLastName());
         }
         if(StringUtils.hasText(request.getGender())){
-            existingUser.setGender(Gender.MALE);
+            existingUser.setGender(Gender.valueOf(request.getGender().toLowerCase()));
         }
         return UserProfileCreateResponse.mapToUserProfileCreateResponse(this.userRepository.save(existingUser));
     }
