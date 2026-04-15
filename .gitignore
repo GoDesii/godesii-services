@@ -40,4 +40,8 @@ out/
 .DS_Store
 test_output.**
 LOG_FILE_IS_UNDEFINED
-
+GoDesii_API_Collection.postman_collection.json
+/${buildDir}/
+/${buildDir}/**
+${buildDir}/**
+${buildDir}/

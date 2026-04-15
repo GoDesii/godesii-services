@@ -111,7 +111,7 @@ public enum OrderStatus {
 
         switch (this) {
             case CREATED:
-                return target == PENDING_PAYMENT || target == CANCELLED;
+                return target == PENDING_PAYMENT || target == PAYMENT_SUCCESS || target == CANCELLED;
 
             case PENDING_PAYMENT:
                 return target == PAYMENT_SUCCESS || target == PAYMENT_FAILED || target == CANCELLED;

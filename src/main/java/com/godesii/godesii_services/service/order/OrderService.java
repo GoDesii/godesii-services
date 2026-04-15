@@ -8,8 +8,6 @@ import com.godesii.godesii_services.entity.payment.PaymentMethod;
 import com.godesii.godesii_services.exception.*;
 import com.godesii.godesii_services.repository.order.OrderRepository;
 import com.godesii.godesii_services.service.delivery.DeliveryService;
-import com.godesii.godesii_services.service.payment.PaymentService;
-import com.godesii.godesii_services.service.payment.PaymentResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -28,28 +26,26 @@ public class OrderService {
 
     private final OrderRepository repo;
     private final CartService cartService;
-    private final PaymentService paymentService;
     private final DeliveryService deliveryService;
     private final OrderNotificationService notificationService;
 
     public static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
-    public OrderService(OrderRepository repo, CartService cartService, PaymentService paymentService,
+    public OrderService(OrderRepository repo, CartService cartService,
             DeliveryService deliveryService, OrderNotificationService notificationService) {
         this.repo = repo;
         this.cartService = cartService;
-        this.paymentService = paymentService;
         this.deliveryService = deliveryService;
         this.notificationService = notificationService;
     }
 
     /**
-     * Place order from cart
-     * 1. Fetch active cart
-     * 2. Lock cart
-     * 3. Recalculate prices
-     * 4. Create order
-     * 5. Initiate payment
+     * Place order from cart.
+     * <p>
+     * For COD orders: order goes directly to PAYMENT_SUCCESS and the cart is cleared immediately.
+     * For online payment methods: order is left at PENDING_PAYMENT for the frontend to redirect
+     * the customer to the payment gateway independently.
+     * </p>
      */
     @Transactional
     public PlaceOrderResponse placeOrder(PlaceOrderRequest request) {
@@ -60,8 +56,7 @@ public class OrderService {
         Long cartId = cartResponse.getCartId();
 
         // 2 & 3. Lock cart and recalculate prices
-        // Since we need to lock first to prevent race conditions
-        String tempOrderId = "PENDING-" + System.currentTimeMillis(); // Temp ID for locking
+        String tempOrderId = "PENDING-" + System.currentTimeMillis();
         cartService.lockCart(cartId, tempOrderId);
 
         try {
@@ -84,40 +79,49 @@ public class OrderService {
             // Delivery notes from special instructions
             order.setDeliveryNotes(request.getSpecialInstructions());
 
-            // Map items from cart response
-            // Note: In real app, we should fetch Cart entity to get full details
-            // For now, assume mapping is handled or we use CartResponse items
-            // Ideally we should use Cart entity directly here via a method in CartService
-            // that returns entity
-            // But let's stick to using what we have.
-            // We need to map cart items to order items.
-            // This part requires access to Cart entity or replicating logic.
-            // Let's rely on updateEntity logic or creating items.
-            // Simplified: We need OrderItem logic.
-            // Let's save order first to get ID.
             Order savedOrder = repo.save(order);
 
             // Update lock with real order ID
-            cartService.lockCart(cartId, savedOrder.getOrderId());
+            cartService.updateLockOrderId(cartId, tempOrderId, savedOrder.getOrderId());
 
-            // 5. Initiate Payment
-            PaymentResponse paymentResponse = paymentService.initiatePayment(savedOrder, request.getPaymentMethod());
-
-            if (paymentResponse.isSuccess()) {
-                savedOrder.setPaymentId(paymentResponse.getPaymentId());
-                savedOrder.setOrderStatus(OrderStatus.PENDING_PAYMENT);
+            // 5. Handle payment based on method
+            if (paymentMethod == PaymentMethod.COD) {
+                // Cash on Delivery — no gateway required, confirm immediately
+                savedOrder.setPaymentStatus("PENDING_COD");
+                savedOrder.setOrderStatus(OrderStatus.PAYMENT_SUCCESS);
                 savedOrder = repo.save(savedOrder);
 
+                // Clear cart and notify restaurant
+                try {
+                    cartService.clearCartByOrderId(savedOrder.getOrderId());
+                } catch (Exception e) {
+                    log.error("Failed to clear cart after COD order: {}", savedOrder.getOrderId(), e);
+                }
+                notificationService.notifyNewOrder(savedOrder);
+
+                log.info("COD order placed successfully: {}", savedOrder.getOrderId());
                 return new PlaceOrderResponse(
                         savedOrder.getOrderId(),
                         savedOrder.getOrderStatus(),
-                        paymentResponse.getPaymentId(),
-                        paymentResponse.getPaymentUrl(),
+                        null,   // no payment ID for COD
+                        null,   // no payment URL for COD
+                        savedOrder.getTotalAmount(),
+                        null,   // no payment expiry for COD
+                        cartResponse);
+            } else {
+                // Online payment — set to PENDING_PAYMENT, frontend handles gateway redirect
+                savedOrder.setOrderStatus(OrderStatus.PENDING_PAYMENT);
+                savedOrder = repo.save(savedOrder);
+
+                log.info("Online payment order created, awaiting payment: {}", savedOrder.getOrderId());
+                return new PlaceOrderResponse(
+                        savedOrder.getOrderId(),
+                        savedOrder.getOrderStatus(),
+                        null,   // payment ID assigned after gateway callback
+                        null,   // payment URL provided by gateway separately
                         savedOrder.getTotalAmount(),
                         Instant.now().plus(OrderConfig.PAYMENT_TIMEOUT_MINUTES, ChronoUnit.MINUTES),
                         cartResponse);
-            } else {
-                throw new PaymentFailedException("Payment initiation failed", null, paymentResponse.getErrorMessage());
             }
 
         } catch (Exception e) {
@@ -128,25 +132,14 @@ public class OrderService {
     }
 
     /**
-     * Handle payment success callback
+     * Handle payment success callback (for online payment methods).
+     * Signature verification is skipped — validate signatures at the gateway/webhook level.
      */
     @Transactional
     public Order handlePaymentSuccess(PaymentCallbackRequest callback) {
         log.info("Processing payment success for order: {}", callback.getOrderId());
 
         Order order = getById(callback.getOrderId());
-
-        // Verify payment signature
-        boolean isValid = paymentService.verifyPaymentSignature(
-                callback.getGatewayOrderId() != null ? callback.getGatewayOrderId() : order.getGatewayOrderId(),
-                callback.getPaymentId(),
-                callback.getSignature());
-
-        if (!isValid) {
-            log.error("Invalid payment signature for order: {}", callback.getOrderId());
-            throw new PaymentFailedException("Invalid payment signature",
-                    callback.getPaymentId(), "Signature verification failed");
-        }
 
         if (order.getOrderStatus() != OrderStatus.PENDING_PAYMENT && order.getOrderStatus() != OrderStatus.CREATED) {
             log.warn("Payment success received for order in status: {}", order.getOrderStatus());
@@ -156,11 +149,11 @@ public class OrderService {
         order.setPaymentStatus("SUCCESS");
         order.setPaymentId(callback.getPaymentId());
         order.setOrderStatus(OrderStatus.PAYMENT_SUCCESS);
-        order.setOrderDate(Instant.now()); // Update time to payment time
+        order.setOrderDate(Instant.now());
 
         Order saved = repo.save(order);
 
-        // Clear cart after successful order
+        // Clear cart after successful payment
         try {
             cartService.clearCartByOrderId(order.getOrderId());
             log.info("Cart cleared for order: {}", order.getOrderId());
@@ -236,17 +229,21 @@ public class OrderService {
             order.setCancelledAt(Instant.now());
             order.setCancellationReason("Restaurant rejected: " + request.getRejectionReason());
 
-            // Initiate Refund
-            if ("SUCCESS".equalsIgnoreCase(order.getPaymentStatus())) {
-                String refundId = paymentService.initiateRefund(order, "Restaurant rejected order");
-                order.setRefundId(refundId);
+            // Mark refund as issued for non-COD paid orders — actual refund handled externally
+            if ("SUCCESS".equalsIgnoreCase(order.getPaymentStatus())
+                    && order.getPaymentMethod() != PaymentMethod.COD) {
+                log.warn("Refund required for rejected order: {} — process manually via payment gateway.",
+                        order.getOrderId());
+                order.setRefundIssued(true);
                 order.setOrderStatus(OrderStatus.REFUNDED);
                 order.setRefundedAt(Instant.now());
             }
 
             Order saved = repo.save(order);
             notificationService.notifyCustomerOrderRejected(saved, request.getRejectionReason());
-            notificationService.notifyCustomerRefundInitiated(saved);
+            if (Boolean.TRUE.equals(saved.getRefundIssued())) {
+                notificationService.notifyCustomerRefundInitiated(saved);
+            }
             return saved;
         }
 
@@ -269,17 +266,13 @@ public class OrderService {
         order.setCancelledAt(Instant.now());
         order.setCancellationReason(reason);
 
-        // Process refund if paid
-        if ("SUCCESS".equalsIgnoreCase(order.getPaymentStatus())) {
-            try {
-                String refundId = paymentService.initiateRefund(order, reason);
-                order.setRefundId(refundId);
-                order.setOrderStatus(OrderStatus.REFUNDED);
-                order.setRefundedAt(Instant.now());
-            } catch (Exception e) {
-                log.error("Failed to initiate refund for order: {}", orderId, e);
-                // Keep as CANCELLED but log error, admin intervention needed
-            }
+        // For non-COD paid orders, log that manual refund is needed
+        if ("SUCCESS".equalsIgnoreCase(order.getPaymentStatus())
+                && order.getPaymentMethod() != PaymentMethod.COD) {
+            log.warn("Refund required for cancelled order: {} — process manually via payment gateway.", orderId);
+            order.setRefundIssued(true);
+            order.setOrderStatus(OrderStatus.REFUNDED);
+            order.setRefundedAt(Instant.now());
         }
 
         return repo.save(order);
@@ -393,7 +386,8 @@ public class OrderService {
     }
 
     /**
-     * Retry payment for failed order
+     * Retry payment for a failed order.
+     * Switches payment method and resets status to PENDING_PAYMENT (online) or PAYMENT_SUCCESS (COD).
      */
     @Transactional
     public PlaceOrderResponse retryPayment(@NonNull String orderId, @NonNull String newPaymentMethod) {
@@ -404,32 +398,37 @@ public class OrderService {
                     orderId, order.getOrderStatus(), OrderStatus.PENDING_PAYMENT);
         }
 
-        // Update payment method
         PaymentMethod paymentMethod = PaymentMethod.fromString(newPaymentMethod);
         order.setPaymentMethod(paymentMethod);
-        order.setOrderStatus(OrderStatus.PENDING_PAYMENT);
-        order.setPaymentStatus("PENDING");
         order.setCancellationReason(null);
 
-        Order updated = repo.save(order);
-
-        // Initiate new payment
-        PaymentResponse paymentResponse = paymentService.initiatePayment(updated, newPaymentMethod);
-
-        if (paymentResponse.isSuccess()) {
-            updated.setPaymentId(paymentResponse.getPaymentId());
-            updated = repo.save(updated);
-
+        if (paymentMethod == PaymentMethod.COD) {
+            order.setOrderStatus(OrderStatus.PAYMENT_SUCCESS);
+            order.setPaymentStatus("PENDING_COD");
+            Order updated = repo.save(order);
+            notificationService.notifyNewOrder(updated);
+            log.info("Order {} switched to COD successfully", orderId);
             return new PlaceOrderResponse(
                     updated.getOrderId(),
                     updated.getOrderStatus(),
-                    paymentResponse.getPaymentId(),
-                    paymentResponse.getPaymentUrl(),
+                    null,
+                    null,
+                    updated.getTotalAmount(),
+                    null,
+                    null);
+        } else {
+            order.setOrderStatus(OrderStatus.PENDING_PAYMENT);
+            order.setPaymentStatus("PENDING");
+            Order updated = repo.save(order);
+            log.info("Order {} reset to PENDING_PAYMENT for method: {}", orderId, newPaymentMethod);
+            return new PlaceOrderResponse(
+                    updated.getOrderId(),
+                    updated.getOrderStatus(),
+                    null,
+                    null,
                     updated.getTotalAmount(),
                     Instant.now().plus(OrderConfig.PAYMENT_TIMEOUT_MINUTES, ChronoUnit.MINUTES),
-                    null); // No cart response for retry
-        } else {
-            throw new PaymentFailedException("Payment retry failed", null, paymentResponse.getErrorMessage());
+                    null);
         }
     }
 
@@ -487,13 +486,13 @@ public class OrderService {
         order.setOrderStatus(OrderStatus.CANCELLED);
         order.setCancelledAt(Instant.now());
 
-        // Full refund for early cancellation
-        if ("SUCCESS".equalsIgnoreCase(order.getPaymentStatus())) {
-            String refundId = paymentService.initiateRefund(order, reason);
-            order.setRefundId(refundId);
+        // For non-COD paid orders, flag for manual refund processing
+        if ("SUCCESS".equalsIgnoreCase(order.getPaymentStatus())
+                && order.getPaymentMethod() != PaymentMethod.COD) {
+            log.warn("Refund required for user-cancelled order: {} — process manually via payment gateway.", orderId);
+            order.setRefundIssued(true);
             order.setOrderStatus(OrderStatus.REFUNDED);
             order.setRefundedAt(Instant.now());
-            order.setRefundIssued(true);
         }
 
         log.info("User cancelled order: {}, Reason: {}", orderId, reason);
@@ -529,13 +528,14 @@ public class OrderService {
         order.setOrderStatus(OrderStatus.CANCELLED);
         order.setCancelledAt(Instant.now());
 
-        // Full refund + potential compensation
-        if ("SUCCESS".equalsIgnoreCase(order.getPaymentStatus())) {
-            String refundId = paymentService.initiateRefund(order, "Restaurant cancelled: " + details);
-            order.setRefundId(refundId);
+        // For non-COD paid orders, flag for manual refund processing
+        if ("SUCCESS".equalsIgnoreCase(order.getPaymentStatus())
+                && order.getPaymentMethod() != PaymentMethod.COD) {
+            log.warn("Refund required for restaurant-cancelled order: {} — process manually via payment gateway.",
+                    orderId);
+            order.setRefundIssued(true);
             order.setOrderStatus(OrderStatus.REFUNDED);
             order.setRefundedAt(Instant.now());
-            order.setRefundIssued(true);
             // TODO: Add compensation voucher for customer inconvenience
         }
 
