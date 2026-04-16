@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(OrderController.ENDPOINT)
 @Tag(name = "Order API", description = "Manage orders with full CRUD operations")
@@ -154,6 +156,32 @@ public class OrderController {
 
                 return ResponseEntity.ok(apiResponse);
         }
+
+    @GetMapping("/{username}")
+    @Operation(summary = "Get all orders", description = "Retrieves paginated list of orders")
+    public ResponseEntity<APIResponse<List<Order>>> getAllUserOrders(
+            @PathVariable(name = "username") String username,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "orderDate") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc")
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        Page<Order> orders = service.getAllOrderByUsername(username, pageable);
+
+        APIResponse<List<Order>> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                orders.getContent(),
+                GoDesiiConstant.SUCCESSFULLY_FETCHED,
+                orders.getNumber(),
+                (int) orders.getTotalElements());
+
+        return ResponseEntity.ok(apiResponse);
+    }
 
         /**
          * Get order by ID
