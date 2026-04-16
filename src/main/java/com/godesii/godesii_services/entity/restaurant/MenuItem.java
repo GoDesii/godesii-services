@@ -1,6 +1,7 @@
 package com.godesii.godesii_services.entity.restaurant;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.godesii.godesii_services.entity.BaseEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
@@ -11,7 +12,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "menu_items")
 @Indexed
-public class MenuItem {
+public class MenuItem extends BaseEntity {
     @Id
     @UuidGenerator
     @Column(name = "item_id")

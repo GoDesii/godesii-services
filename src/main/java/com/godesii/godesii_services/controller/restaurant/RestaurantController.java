@@ -3,6 +3,7 @@ package com.godesii.godesii_services.controller.restaurant;
 import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.common.DatabaseHelper;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
+import com.godesii.godesii_services.dto.DashboardStatsDto;
 import com.godesii.godesii_services.dto.RestaurantRequest;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.service.restaurant.RestaurantService;
@@ -97,10 +98,10 @@ public class RestaurantController {
      */
     @GetMapping(value = "/{username}/stats", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get dashboard statistics", description = "Retrieves total restaurants, menus, and item counts for a given user")
-    public ResponseEntity<APIResponse<com.godesii.godesii_services.dto.DashboardStatsDto>> getStats(@PathVariable(name = "username") @NonNull String username) {
-        com.godesii.godesii_services.dto.DashboardStatsDto stats = dashboardService.getDashboardStats(username);
+    public ResponseEntity<APIResponse<DashboardStatsDto>> getStats(@PathVariable(name = "username") @NonNull String username) {
+        DashboardStatsDto stats = dashboardService.getDashboardStats(username);
         
-        APIResponse<com.godesii.godesii_services.dto.DashboardStatsDto> apiResponse = new APIResponse<>(
+        APIResponse<DashboardStatsDto> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 stats,
                 "Stats fetched successfully");
