@@ -552,6 +552,10 @@ public class OrderService {
         return repo.findAll(pageable);
     }
 
+    public Page<Order> getAllOrderByUsername(String username, Pageable pageable){
+        return repo.findByUsername(username, pageable);
+    }
+
     @Transactional
     public void delete(@NonNull String id) {
         repo.deleteById(id);
