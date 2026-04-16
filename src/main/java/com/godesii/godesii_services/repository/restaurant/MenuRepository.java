@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
     long countByRestaurantCreatedBy(String createdBy);
+    long countByCreatedBy(String createdBy);
+
 }

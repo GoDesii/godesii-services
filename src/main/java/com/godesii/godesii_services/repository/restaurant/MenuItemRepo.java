@@ -14,7 +14,7 @@ public interface MenuItemRepo extends JpaRepository<MenuItem, String> {
      */
     List<MenuItem> findByCategoryId(Long categoryId);
 
-    long countByCategoryMenuRestaurantCreatedBy(String createdBy);
+    long countByCreatedBy(String createdBy);
 
-    long countByCategoryMenuRestaurantCreatedByAndIsAvailableTrue(String createdBy);
+    long countByCreatedByAndIsAvailableTrue(String createdBy);
 }
