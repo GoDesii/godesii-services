@@ -21,9 +21,9 @@ public class DashboardService {
 
     public DashboardStatsDto getDashboardStats(String username) {
         long totalRestaurants = restaurantRepo.countByCreatedBy(username);
-        long totalMenus = menuRepo.countByRestaurantCreatedBy(username);
-        long totalMenuItems = menuItemRepo.countByCategoryMenuRestaurantCreatedBy(username);
-        long availableItems = menuItemRepo.countByCategoryMenuRestaurantCreatedByAndIsAvailableTrue(username);
+        long totalMenus = menuRepo.countByCreatedBy(username);
+        long totalMenuItems = menuItemRepo.countByCreatedBy(username);
+        long availableItems = menuItemRepo.countByCreatedByAndIsAvailableTrue(username);
 
         return new DashboardStatsDto(totalRestaurants, totalMenus, totalMenuItems, availableItems);
     }
