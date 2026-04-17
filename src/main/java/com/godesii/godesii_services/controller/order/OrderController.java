@@ -136,7 +136,7 @@ public class OrderController {
          */
         @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Get all orders", description = "Retrieves paginated list of orders")
-        public ResponseEntity<APIResponse<Page<Order>>> getAll(
+        public ResponseEntity<APIResponse<List<Order>>> getAll(
                         @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "10") int size,
                         @RequestParam(defaultValue = "orderDate") String sortBy,
@@ -149,12 +149,14 @@ public class OrderController {
                 Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
                 Page<Order> orders = service.getAll(pageable);
 
-                APIResponse<Page<Order>> apiResponse = new APIResponse<>(
-                                HttpStatus.OK,
-                                orders,
-                                GoDesiiConstant.SUCCESSFULLY_FETCHED);
+                APIResponse<List<Order>> apiResponse = new APIResponse<>(
+                    HttpStatus.OK,
+                    orders.getContent(),
+                    GoDesiiConstant.SUCCESSFULLY_FETCHED,
+                    orders.getNumber(),
+                    (int) orders.getTotalElements());
 
-                return ResponseEntity.ok(apiResponse);
+            return ResponseEntity.ok(apiResponse);
         }
 
     @GetMapping("/{username}")
