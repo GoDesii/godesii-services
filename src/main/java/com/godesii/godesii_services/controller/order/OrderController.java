@@ -188,7 +188,7 @@ public class OrderController {
          */
         @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Get order by ID", description = "Retrieves a single order by its ID")
-        public ResponseEntity<APIResponse<Order>> getById(@PathVariable @NonNull String id) {
+        public ResponseEntity<APIResponse<Order>> getById(@PathVariable String id) {
                 Order order = service.getById(id);
 
                 APIResponse<Order> apiResponse = new APIResponse<>(

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class MenuItem extends BaseEntity {
     @Id
     @UuidGenerator
-    @Column(name = "item_id")
+    @Column(name = "item_id", length = 36)
     private String itemId;
 
     @Column(nullable = false)
