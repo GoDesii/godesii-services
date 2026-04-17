@@ -55,7 +55,7 @@ public class Order {
 
     @Id
     @UuidGenerator
-    @Column(name = "order_id")
+    @Column(name = "order_id", length = 36)
     public String getOrderId() {
         return orderId;
     }
@@ -308,8 +308,7 @@ public class Order {
         this.orderAddress = orderAddress;
     }
 
-    @JoinTable(name = "order_order_item", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "order_item_id"))
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<OrderItem> getOrderItems() {
         return orderItems;
     }

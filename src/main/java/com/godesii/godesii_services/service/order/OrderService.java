@@ -79,6 +79,19 @@ public class OrderService {
             // Delivery notes from special instructions
             order.setDeliveryNotes(request.getSpecialInstructions());
 
+            if (cartResponse.getItems() != null && !cartResponse.getItems().isEmpty()) {
+                List<com.godesii.godesii_services.entity.order.OrderItem> orderItems = new java.util.ArrayList<>();
+                for (CartItemResponse cartItem : cartResponse.getItems()) {
+                    com.godesii.godesii_services.entity.order.OrderItem orderItem = new com.godesii.godesii_services.entity.order.OrderItem();
+                    orderItem.setProductId(cartItem.getMenuItemId());
+                    orderItem.setQuantity(cartItem.getQuantity());
+                    orderItem.setPriceAtPurchase(cartItem.getUnitPrice());
+                    orderItem.setOrder(order);
+                    orderItems.add(orderItem);
+                }
+                order.setOrderItems(orderItems);
+            }
+
             Order savedOrder = repo.save(order);
 
             // Update lock with real order ID
@@ -90,7 +103,6 @@ public class OrderService {
                 savedOrder.setPaymentStatus("PENDING_COD");
                 savedOrder.setOrderStatus(OrderStatus.PAYMENT_SUCCESS);
                 savedOrder = repo.save(savedOrder);
-
                 // Clear cart and notify restaurant
                 try {
                     cartService.clearCartByOrderId(savedOrder.getOrderId());

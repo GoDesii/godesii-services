@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.util.List;
 
 @Entity
 @Table(name = "order_items")
@@ -14,11 +13,11 @@ public class OrderItem {
     private String productId;
     private Integer quantity;
     private Long priceAtPurchase;
-    private List<Order> orders;
+    private Order order;
 
     @Id
     @UuidGenerator
-    @Column(name = "order_item_id")
+    @Column(name = "order_item_id", length = 36)
     public String getOrderItemId() {
         return orderItemId;
     }
@@ -54,13 +53,14 @@ public class OrderItem {
         this.priceAtPurchase = priceAtPurchase;
     }
 
-    @ManyToMany(mappedBy = "orderItems")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
     @JsonIgnore
-    public List<Order> getOrders() {
-        return orders;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }
