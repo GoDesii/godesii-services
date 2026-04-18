@@ -2,20 +2,23 @@ package com.godesii.godesii_services.service.restaurant;
 
 import com.godesii.godesii_services.dto.MenuItemRequest;
 import com.godesii.godesii_services.dto.MenuItemResponse;
+import com.godesii.godesii_services.dto.RestaurantMenuItemResponse;
 import com.godesii.godesii_services.entity.restaurant.Category;
 import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.exception.ResourceNotFoundException;
 import com.godesii.godesii_services.repository.restaurant.CategoryRepository;
 import com.godesii.godesii_services.repository.restaurant.MenuItemRepo;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class MenuItemService {
+
+    private static final Logger log = LoggerFactory.getLogger(MenuItemService.class);
 
     private final MenuItemRepo menuItemRepository;
     private final CategoryRepository categoryRepository;
@@ -75,6 +78,25 @@ public class MenuItemService {
         return menuItemRepository.findByCategoryId(categoryId).stream()
                 .map(MenuItemResponse::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all menu items for restaurants owned by the given username (createdBy).
+     * Returns {@link RestaurantMenuItemResponse} which excludes the redundant restaurant
+     * object — the caller already knows the owner from the request path.
+     */
+    public List<RestaurantMenuItemResponse> getByUsername(String username) {
+        List<RestaurantMenuItemResponse> items = menuItemRepository
+                .findByCategoryMenuRestaurantCreatedBy(username)
+                .stream()
+                .map(RestaurantMenuItemResponse::fromEntity)
+                .collect(Collectors.toList());
+
+        if (items.isEmpty()) {
+            log.warn("No menu items found for username: {}", username);
+        }
+
+        return items;
     }
 
     /**
