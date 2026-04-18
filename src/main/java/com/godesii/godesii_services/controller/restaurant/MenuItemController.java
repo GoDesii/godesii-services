@@ -4,6 +4,7 @@ import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.dto.MenuItemRequest;
 import com.godesii.godesii_services.dto.MenuItemResponse;
+import com.godesii.godesii_services.dto.RestaurantMenuItemResponse;
 import com.godesii.godesii_services.service.restaurant.MenuItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -100,6 +101,29 @@ public class MenuItemController {
         List<MenuItemResponse> menuItems = service.getByCategoryId(categoryId);
 
         APIResponse<List<MenuItemResponse>> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                menuItems,
+                GoDesiiConstant.SUCCESSFULLY_FETCHED
+        );
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Get all menu items for restaurants owned by the given username (createdBy)
+     *
+     * @param username The owner's username (createdBy value on the Restaurant)
+     * @return List of all menu items belonging to that owner's restaurant(s)
+     */
+    @GetMapping(value = "/restaurant/owner/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get all menu items by restaurant owner username",
+            description = "Retrieves every menu item belonging to restaurants owned/created by the given username"
+    )
+    public ResponseEntity<APIResponse<List<RestaurantMenuItemResponse>>> getByUsername(@PathVariable @NonNull String username) {
+        List<RestaurantMenuItemResponse> menuItems = service.getByUsername(username);
+
+        APIResponse<List<RestaurantMenuItemResponse>> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 menuItems,
                 GoDesiiConstant.SUCCESSFULLY_FETCHED

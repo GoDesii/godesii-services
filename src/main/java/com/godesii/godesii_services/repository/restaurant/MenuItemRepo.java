@@ -8,11 +8,17 @@ import java.util.List;
 
 @Repository
 public interface MenuItemRepo extends JpaRepository<MenuItem, String> {
-    
+
     /**
      * Find all menu items for a specific category
      */
     List<MenuItem> findByCategoryId(Long categoryId);
+
+    /**
+     * Find all menu items whose restaurant was created by the given username (createdBy).
+     * Traverses: MenuItem → Category → Menu → Restaurant → createdBy (BaseEntity)
+     */
+    List<MenuItem> findByCategoryMenuRestaurantCreatedBy(String createdBy);
 
     long countByCreatedBy(String createdBy);
 
