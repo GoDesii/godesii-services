@@ -185,6 +185,12 @@
         <addColumn tableName="order_items">
             <column name="product_name" type="VARCHAR(255)"/>
             <column name="product_image_url" type="VARCHAR(1000)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="v2.0.0-ddl-009" author="admin">
+        <comment>Add special instructions to order_items</comment>
+        <addColumn tableName="order_items">
             <column name="special_instruction" type="VARCHAR(500)"/>
         </addColumn>
     </changeSet>
