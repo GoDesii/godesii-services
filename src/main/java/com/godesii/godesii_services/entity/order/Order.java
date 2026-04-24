@@ -20,6 +20,14 @@ public class Order {
     private Instant orderDate;
     private OrderAddress orderAddress;
     private List<OrderItem> orderItems;
+    private OrderGst orderGst;
+
+    // Pricing breakdown (Swiggy/Zomato style)
+    private Long itemTotal;
+    private Long deliveryFee;
+    private Long packagingCharges;
+    private Long platformFee;
+    private Long discountAmount;
 
     // Payment fields
     private String paymentId;
@@ -316,4 +324,59 @@ public class Order {
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    public OrderGst getOrderGst() {
+        return orderGst;
+    }
+
+    public void setOrderGst(OrderGst orderGst) {
+        this.orderGst = orderGst;
+    }
+
+    @Column(name = "item_total")
+    public Long getItemTotal() {
+        return itemTotal;
+    }
+
+    public void setItemTotal(Long itemTotal) {
+        this.itemTotal = itemTotal;
+    }
+
+    @Column(name = "delivery_fee")
+    public Long getDeliveryFee() {
+        return deliveryFee;
+    }
+
+    public void setDeliveryFee(Long deliveryFee) {
+        this.deliveryFee = deliveryFee;
+    }
+
+    @Column(name = "packaging_charges")
+    public Long getPackagingCharges() {
+        return packagingCharges;
+    }
+
+    public void setPackagingCharges(Long packagingCharges) {
+        this.packagingCharges = packagingCharges;
+    }
+
+    @Column(name = "platform_fee")
+    public Long getPlatformFee() {
+        return platformFee;
+    }
+
+    public void setPlatformFee(Long platformFee) {
+        this.platformFee = platformFee;
+    }
+
+    @Column(name = "discount_amount")
+    public Long getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(Long discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
 }

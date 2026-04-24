@@ -12,42 +12,188 @@
          CREATE TABLE (new entities), ADD/DROP INDEX, ADD/DROP FK
          changesets here for the v1.0.0 release cycle.                -->
 
-    <!--
-    <changeSet id="v1.0.0-ddl-001" author="admin">
-        <comment>Example: Add a new column to an existing table</comment>
-        <addColumn tableName="user">
-            <column name="profile_image_url" type="VARCHAR(500)"/>
+    <changeSet id="v2.0.0-ddl-001" author="admin">
+        <comment>Add audit columns to menus table by renaming and adding new fields</comment>
+        <renameColumn tableName="menus" oldColumnName="created_at" newColumnName="created_date" columnDataType="TIMESTAMP"/>
+        <renameColumn tableName="menus" oldColumnName="updated_at" newColumnName="last_modified_date" columnDataType="TIMESTAMP"/>
+        <addColumn tableName="menus">
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
         </addColumn>
     </changeSet>
 
-    <changeSet id="v1.0.0-ddl-002" author="admin">
-        <comment>Example: Create a new table for a new feature</comment>
-        <createTable tableName="user_preferences">
+    <changeSet id="v2.0.0-ddl-002" author="admin">
+        <comment>Add audit columns to menu_items table</comment>
+        <addColumn tableName="menu_items">
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_date" type="TIMESTAMP"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="v2.0.0-ddl-003" author="admin">
+        <comment>Refactor Order and OrderItem relationship to OneToMany</comment>
+        <dropForeignKeyConstraint baseTableName="order_order_item" constraintName="fk_order_order_item_order"/>
+        <dropForeignKeyConstraint baseTableName="order_order_item" constraintName="fk_order_order_item_item"/>
+        <dropTable tableName="order_order_item"/>
+        
+        <addColumn tableName="order_items">
+            <column name="order_id" type="VARCHAR(36)"/>
+        </addColumn>
+        
+        <addForeignKeyConstraint
+                baseTableName="order_items"
+                baseColumnNames="order_id"
+                constraintName="fk_order_items_order"
+                referencedTableName="orders"
+                referencedColumnNames="order_id"/>
+    </changeSet>
+
+    <changeSet id="v2.0.0-ddl-004" author="admin">
+        <comment>Refactor Cart and CartItem IDs to autoincrement BIGINT instead of VARCHAR(36)</comment>
+        
+        <!-- 1. Drop old foreign keys -->
+        <dropForeignKeyConstraint baseTableName="cart_selection" constraintName="CART_FK"/>
+        <dropForeignKeyConstraint baseTableName="cart_selection" constraintName="CART_ITEM_FK"/>
+        <dropForeignKeyConstraint baseTableName="cart_item" constraintName="fk_cart_item_cart"/>
+        
+        <!-- 2. Drop old tables -->
+        <dropTable tableName="cart_selection"/>
+        <dropTable tableName="cart_item"/>
+        <dropTable tableName="cart"/>
+        
+        <!-- 3. Recreate cart with BIGINT AUTO_INCREMENT -->
+        <createTable tableName="cart">
+            <column name="cart_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="VARCHAR(255)"/>
+            <column name="restaurant_id" type="BIGINT"/>
+            <column name="total_price" type="BIGINT"/>
+            <column name="is_locked" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="locked_at" type="TIMESTAMP"/>
+            <column name="locked_for_order_id" type="VARCHAR(255)"/>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="expires_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <!-- 4. Recreate cart_item with BIGINT AUTO_INCREMENT -->
+        <createTable tableName="cart_item">
+            <column name="cart_item_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="product_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_quantity" type="INT"/>
+            <column name="item_price" type="BIGINT"/>
+            <column name="cart_id" type="BIGINT"/>
+            <column name="special_instruction" type="VARCHAR(255)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="cart_item"
+                baseColumnNames="cart_id"
+                constraintName="fk_cart_item_cart"
+                referencedTableName="cart"
+                referencedColumnNames="cart_id"/>
+
+        <!-- 5. Recreate cart_selection with BIGINT foreign keys -->
+        <createTable tableName="cart_selection">
+            <column name="cart_id_fk" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cartitem_id_fk" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="cart_selection"
+                baseColumnNames="cart_id_fk"
+                constraintName="CART_FK"
+                referencedTableName="cart"
+                referencedColumnNames="cart_id"/>
+        <addForeignKeyConstraint
+                baseTableName="cart_selection"
+                baseColumnNames="cartitem_id_fk"
+                constraintName="CART_ITEM_FK"
+                referencedTableName="cart_item"
+                referencedColumnNames="cart_item_id"/>
+    </changeSet>
+
+    <changeSet id="v2.0.0-ddl-005" author="admin">
+        <comment>Add analytics pricing breakdown fields to orders table</comment>
+        <addColumn tableName="orders">
+            <column name="item_total" type="BIGINT"/>
+            <column name="delivery_fee" type="BIGINT"/>
+            <column name="packaging_charges" type="BIGINT"/>
+            <column name="platform_fee" type="BIGINT"/>
+            <column name="discount_amount" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="v2.0.0-ddl-006" author="admin">
+        <comment>Create order_gst table for tax regime analytics</comment>
+        <createTable tableName="order_gst">
+            <column name="id" type="VARCHAR(36)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="VARCHAR(36)"/>
+            <column name="gst_percentage" type="DECIMAL(5, 2)"/>
+            <column name="cgst_amount" type="DECIMAL(10, 2)"/>
+            <column name="sgst_amount" type="DECIMAL(10, 2)"/>
+            <column name="igst_amount" type="DECIMAL(10, 2)"/>
+            <column name="total_gst" type="DECIMAL(10, 2)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="order_gst"
+                baseColumnNames="order_id"
+                constraintName="fk_order_gst_order"
+                referencedTableName="orders"
+                referencedColumnNames="order_id"/>
+    </changeSet>
+
+    <changeSet id="v2.0.0-ddl-007" author="admin">
+        <comment>Create restaurant_commission table for per-restaurant commission configuration</comment>
+        <createTable tableName="restaurant_commission">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="user_id" type="BIGINT">
+            <column name="restaurant_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="preference_key" type="VARCHAR(100)">
+            <column name="commission_percentage" type="DECIMAL(5, 2)">
                 <constraints nullable="false"/>
             </column>
-            <column name="preference_value" type="VARCHAR(500)"/>
+            <column name="effective_from" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- BaseEntity Audit Fields -->
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_date" type="TIMESTAMP"/>
         </createTable>
-        <addForeignKeyConstraint
-                baseTableName="user_preferences"
-                baseColumnNames="user_id"
-                constraintName="fk_user_preferences_user"
-                referencedTableName="user"
-                referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="v1.0.0-ddl-003" author="admin">
-        <comment>Example: Add index for new column</comment>
-        <createIndex indexName="idx_user_profile_image" tableName="user">
-            <column name="profile_image_url"/>
-        </createIndex>
+    <changeSet id="v2.0.0-ddl-008" author="admin">
+        <comment>Add denormalized product details to order_items for historical snapshotting</comment>
+        <addColumn tableName="order_items">
+            <column name="product_name" type="VARCHAR(255)"/>
+            <column name="product_image_url" type="VARCHAR(1000)"/>
+        </addColumn>
     </changeSet>
-    -->
+
+    <changeSet id="v2.0.0-ddl-009" author="admin">
+        <comment>Add special instructions to order_items</comment>
+        <addColumn tableName="order_items">
+            <column name="special_instruction" type="VARCHAR(500)"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
+
