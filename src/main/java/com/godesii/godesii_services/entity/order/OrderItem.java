@@ -11,6 +11,9 @@ public class OrderItem {
 
     private String orderItemId;
     private String productId;
+    private String productName;
+    private String productImageUrl;
+    private String specialInstruction;
     private Integer quantity;
     private Long priceAtPurchase;
     private Order order;
@@ -62,5 +65,32 @@ public class OrderItem {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    @Column(name = "product_name")
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    @Column(name = "product_image_url", length = 1000)
+    public String getProductImageUrl() {
+        return productImageUrl;
+    }
+
+    public void setProductImageUrl(String productImageUrl) {
+        this.productImageUrl = productImageUrl;
+    }
+
+    @Column(name = "special_instruction", length = 500)
+    public String getSpecialInstruction() {
+        return specialInstruction;
+    }
+
+    public void setSpecialInstruction(String specialInstruction) {
+        this.specialInstruction = specialInstruction;
     }
 }

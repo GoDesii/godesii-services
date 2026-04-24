@@ -8,4 +8,21 @@ spring:
   application:
     name: godesii-services
 
-
+# ─────────────────────────────────────────────────────────────────────────────
+# GoDesii Platform Tax & Commission Configuration
+# Indian GST Regime (as per food aggregator model — Zomato/Swiggy style)
+# ─────────────────────────────────────────────────────────────────────────────
+godesii:
+  tax:
+    gst:
+      # 5% GST on food (restaurant's liability to remit to govt)
+      # Split equally: CGST 2.5% + SGST 2.5% (intra-state)
+      food-percentage: 5.0
+      # 18% GST on platform services (GoDesii's liability)
+      # Applied on: platform-fee + delivery-fee
+      # Split: CGST 9% + SGST 9% (intra-state)
+      platform-percentage: 18.0
+  commission:
+    # Default commission % GoDesii deducts from restaurant's item total
+    # This is the fallback if no RestaurantCommission record exists in DB
+    default-percentage: 20.0

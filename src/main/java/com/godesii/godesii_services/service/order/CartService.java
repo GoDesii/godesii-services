@@ -14,6 +14,7 @@ import com.godesii.godesii_services.repository.restaurant.MenuItemRepository;
 import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,9 @@ public class CartService {
     private final MenuItemRepository menuItemRepo;
     private final RestaurantRepo restaurantRepo;
     public static final Logger log = LoggerFactory.getLogger(CartService.class);
+
+    @Value("${godesii.tax.gst.food-percentage:5.0}")
+    private BigDecimal foodGstPercentage;
 
     public CartService(CartRepository cartRepo, MenuItemRepository menuItemRepo, RestaurantRepo restaurantRepo) {
         this.cartRepo = cartRepo;
@@ -371,8 +375,11 @@ public class CartService {
         long packagingCharges = cart.getCartItems().size() * CartConfig.PACKAGING_CHARGE_PER_ITEM;
         breakdown.setPackagingCharges(packagingCharges);
 
-        // Calculate GST (5% of item total)
-        long gst = Math.round(itemTotal * CartConfig.GST_RATE);
+        // Calculate GST dynamically from configured food percentage (e.g. 5.0)
+        BigDecimal gstPercentRate = foodGstPercentage.divide(BigDecimal.valueOf(100), 4, java.math.RoundingMode.HALF_UP);
+        long gst = BigDecimal.valueOf(itemTotal).multiply(gstPercentRate)
+                .setScale(0, java.math.RoundingMode.HALF_UP)
+                .longValue();
         breakdown.setGst(gst);
 
         // Platform fee

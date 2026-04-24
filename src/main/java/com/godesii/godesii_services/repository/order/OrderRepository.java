@@ -2,17 +2,17 @@ package com.godesii.godesii_services.repository.order;
 
 import com.godesii.godesii_services.entity.order.Order;
 import com.godesii.godesii_services.entity.order.OrderStatus;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, String> {
+public interface OrderRepository extends JpaRepository<Order, String>, JpaSpecificationExecutor<Order> {
 
     List<Order> findByUsername(String username);
 

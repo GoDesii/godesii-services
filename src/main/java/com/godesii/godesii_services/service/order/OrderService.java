@@ -3,6 +3,7 @@ package com.godesii.godesii_services.service.order;
 import com.godesii.godesii_services.config.OrderConfig;
 import com.godesii.godesii_services.dto.*;
 import com.godesii.godesii_services.entity.order.Order;
+import com.godesii.godesii_services.entity.order.OrderGst;
 import com.godesii.godesii_services.entity.order.OrderStatus;
 import com.godesii.godesii_services.entity.payment.PaymentMethod;
 import com.godesii.godesii_services.exception.*;
@@ -10,6 +11,7 @@ import com.godesii.godesii_services.repository.order.OrderRepository;
 import com.godesii.godesii_services.service.delivery.DeliveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
@@ -17,6 +19,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -28,6 +32,10 @@ public class OrderService {
     private final CartService cartService;
     private final DeliveryService deliveryService;
     private final OrderNotificationService notificationService;
+
+    /** GST % on food — injected from application.yaml (godesii.tax.gst.food-percentage) */
+    @Value("${godesii.tax.gst.food-percentage:5.0}")
+    private BigDecimal foodGstPercentage;
 
     public static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
@@ -71,6 +79,15 @@ public class OrderService {
             order.setOrderDate(Instant.now());
             order.setTotalAmount(pricing.getTotalAmount());
 
+            // ── Pricing breakdown (Swiggy/Zomato style) ───────────────────────────
+            // Persist each price component separately for accurate analytics
+            order.setItemTotal(pricing.getItemTotal());
+            order.setDeliveryFee(pricing.getDeliveryFee());
+            order.setPackagingCharges(pricing.getPackagingCharges());
+            order.setPlatformFee(pricing.getPlatformFee());
+            order.setDiscountAmount(pricing.getDiscount());
+            // ──────────────────────────────────────────────────────────────────────
+
             // Payment method - convert string to enum
             PaymentMethod paymentMethod = PaymentMethod.fromString(request.getPaymentMethod());
             order.setPaymentMethod(paymentMethod);
@@ -84,6 +101,9 @@ public class OrderService {
                 for (CartItemResponse cartItem : cartResponse.getItems()) {
                     com.godesii.godesii_services.entity.order.OrderItem orderItem = new com.godesii.godesii_services.entity.order.OrderItem();
                     orderItem.setProductId(cartItem.getMenuItemId());
+                    orderItem.setProductName(cartItem.getMenuItemName());
+                    orderItem.setProductImageUrl(cartItem.getImageUrl());
+                    orderItem.setSpecialInstruction(cartItem.getSpecialInstruction());
                     orderItem.setQuantity(cartItem.getQuantity());
                     orderItem.setPriceAtPurchase(cartItem.getUnitPrice());
                     orderItem.setOrder(order);
@@ -91,6 +111,27 @@ public class OrderService {
                 }
                 order.setOrderItems(orderItems);
             }
+
+            // ── GST Calculation & Persistence (Indian Tax Regime) ─────────────────
+            // Snapshot GST values at order time so they are audit-proof
+            // even if rates change later in application.yaml or OrderGst is queried independently.
+            BigDecimal itemTotalDecimal = pricing.getItemTotal() != null
+                    ? BigDecimal.valueOf(pricing.getItemTotal()) : BigDecimal.ZERO;
+            BigDecimal halfGstRate = foodGstPercentage.divide(BigDecimal.valueOf(2), 4, RoundingMode.HALF_UP);
+            BigDecimal cgst = itemTotalDecimal.multiply(halfGstRate)
+                    .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+            BigDecimal sgst = cgst; // Symmetric for intra-state supply
+            BigDecimal totalGst = cgst.add(sgst);
+
+            OrderGst orderGst = new OrderGst();
+            orderGst.setGstPercentage(foodGstPercentage);
+            orderGst.setCgstAmount(cgst);
+            orderGst.setSgstAmount(sgst);
+            orderGst.setIgstAmount(BigDecimal.ZERO); // intra-state default
+            orderGst.setTotalGst(totalGst);
+            orderGst.setOrder(order);
+            order.setOrderGst(orderGst);
+            // ──────────────────────────────────────────────────────────────────────
 
             Order savedOrder = repo.save(order);
 
