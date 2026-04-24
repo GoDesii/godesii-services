@@ -85,7 +85,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         request-> {
                             request.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
-                            request.requestMatchers("/api/**","/error","/auth/**","/swagger-ui/**").permitAll();
+                            request.requestMatchers("/ws/**","/api/**","/error","/auth/**","/swagger-ui/**").permitAll();
                         }
                 )
                 .httpBasic(Customizer.withDefaults())
