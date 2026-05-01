@@ -44,8 +44,7 @@ public class MenuItemController {
         APIResponse<MenuItemResponse> apiResponse = new APIResponse<>(
                 HttpStatus.CREATED,
                 created,
-                GoDesiiConstant.SUCCESSFULLY_CREATED
-        );
+                GoDesiiConstant.SUCCESSFULLY_CREATED);
 
         return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
     }
@@ -63,8 +62,7 @@ public class MenuItemController {
         APIResponse<List<MenuItemResponse>> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 menuItems,
-                GoDesiiConstant.SUCCESSFULLY_FETCHED
-        );
+                GoDesiiConstant.SUCCESSFULLY_FETCHED);
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -83,8 +81,7 @@ public class MenuItemController {
         APIResponse<MenuItemResponse> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 menuItem,
-                GoDesiiConstant.SUCCESSFULLY_FETCHED
-        );
+                GoDesiiConstant.SUCCESSFULLY_FETCHED);
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -103,8 +100,7 @@ public class MenuItemController {
         APIResponse<List<MenuItemResponse>> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 menuItems,
-                GoDesiiConstant.SUCCESSFULLY_FETCHED
-        );
+                GoDesiiConstant.SUCCESSFULLY_FETCHED);
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -116,18 +112,36 @@ public class MenuItemController {
      * @return List of all menu items belonging to that owner's restaurant(s)
      */
     @GetMapping(value = "/restaurant/owner/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "Get all menu items by restaurant owner username",
-            description = "Retrieves every menu item belonging to restaurants owned/created by the given username"
-    )
-    public ResponseEntity<APIResponse<List<RestaurantMenuItemResponse>>> getByUsername(@PathVariable @NonNull String username) {
+    @Operation(summary = "Get all menu items by restaurant owner username", description = "Retrieves every menu item belonging to restaurants owned/created by the given username")
+    public ResponseEntity<APIResponse<List<RestaurantMenuItemResponse>>> getByUsername(
+            @PathVariable @NonNull String username) {
         List<RestaurantMenuItemResponse> menuItems = service.getByUsername(username);
 
         APIResponse<List<RestaurantMenuItemResponse>> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 menuItems,
-                GoDesiiConstant.SUCCESSFULLY_FETCHED
-        );
+                GoDesiiConstant.SUCCESSFULLY_FETCHED);
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Get all menu items for a specific restaurant
+     *
+     * @param restaurantId Restaurant ID
+     * @return List of all menu items belonging to the restaurant (across all menus
+     *         & categories)
+     */
+    @GetMapping(value = "/restaurant/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get all menu items by restaurant ID", description = "Retrieves every menu item that belongs to the given restaurant, spanning all menus and categories")
+    public ResponseEntity<APIResponse<List<RestaurantMenuItemResponse>>> getByRestaurantId(
+            @PathVariable @NonNull Long restaurantId) {
+        List<RestaurantMenuItemResponse> menuItems = service.getByRestaurantId(restaurantId);
+
+        APIResponse<List<RestaurantMenuItemResponse>> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                menuItems,
+                GoDesiiConstant.SUCCESSFULLY_FETCHED);
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -150,8 +164,7 @@ public class MenuItemController {
         APIResponse<MenuItemResponse> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 updated,
-                GoDesiiConstant.SUCCESSFULLY_UPDATED
-        );
+                GoDesiiConstant.SUCCESSFULLY_UPDATED);
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -170,8 +183,7 @@ public class MenuItemController {
         APIResponse<Void> apiResponse = new APIResponse<>(
                 HttpStatus.NO_CONTENT,
                 null,
-                GoDesiiConstant.SUCCESSFULLY_DELETED
-        );
+                GoDesiiConstant.SUCCESSFULLY_DELETED);
 
         return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
     }
