@@ -65,7 +65,6 @@ public class RestaurantService {
         return FoodCategory.ALL.name().equals(foodType) ?
                 this.repo.findAll(pageable) :
                 this.repo.findAllByFoodCategory(FoodCategory.valueOf(foodType),pageable);
-
     }
 
     /**
@@ -114,5 +113,20 @@ public class RestaurantService {
         Restaurant existing = getById(id);
         repo.delete(existing);
         // log.info("Deleted Restaurant with ID: {}, Name: {}", id, existing.getName());
+    }
+
+    /**
+     * Mark restaurant verification status
+     * 
+     * @param id Restaurant ID
+     * @param isVerified boolean status
+     * @return Updated restaurant entity
+     * @throws ResourceNotFoundException if restaurant not found
+     */
+    @Transactional
+    public Restaurant markAsVerified(@NonNull Long id, boolean isVerified) {
+        Restaurant existing = getById(id);
+        existing.setVerified(isVerified);
+        return repo.save(existing);
     }
 }
