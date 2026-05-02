@@ -24,7 +24,7 @@ import java.util.UUID;
  * 4. Refunds are handled through the PSP gateway, not Google Pay directly
  */
 @Service
-    @Profile("!prod")
+    @Profile("xyz")
 public class GooglePayPaymentService implements PaymentService {
 
     private static final Logger log = LoggerFactory.getLogger(GooglePayPaymentService.class);
