@@ -15,7 +15,8 @@ public interface MenuItemRepo extends JpaRepository<MenuItem, String> {
     List<MenuItem> findByCategoryId(Long categoryId);
 
     /**
-     * Find all menu items whose restaurant was created by the given username (createdBy).
+     * Find all menu items whose restaurant was created by the given username
+     * (createdBy).
      * Traverses: MenuItem → Category → Menu → Restaurant → createdBy (BaseEntity)
      */
     List<MenuItem> findByCategoryMenuRestaurantCreatedBy(String createdBy);
@@ -23,4 +24,10 @@ public interface MenuItemRepo extends JpaRepository<MenuItem, String> {
     long countByCreatedBy(String createdBy);
 
     long countByCreatedByAndIsAvailableTrue(String createdBy);
+
+    /**
+     * Find all menu items for a specific restaurant by its ID.
+     * Traverses: MenuItem → Category → Menu → Restaurant → id
+     */
+    List<MenuItem> findByCategoryMenuRestaurantId(Long restaurantId);
 }

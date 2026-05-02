@@ -169,4 +169,27 @@ public class RestaurantController {
 
         return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
     }
+
+    /**
+     * Update restaurant verification status
+     * 
+     * @param id Restaurant ID
+     * @param isVerified verification status
+     * @return Updated restaurant
+     */
+    @PatchMapping(value = "/{id}/verify", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update restaurant verification status", description = "Updates a restaurant's verified status")
+    public ResponseEntity<APIResponse<Restaurant>> updateVerificationStatus(
+            @PathVariable @NonNull Long id,
+            @RequestParam(name = "isVerified") boolean isVerified) {
+
+        Restaurant updated = service.markAsVerified(id, isVerified);
+
+        APIResponse<Restaurant> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                updated,
+                GoDesiiConstant.SUCCESSFULLY_UPDATED);
+
+        return ResponseEntity.ok(apiResponse);
+    }
 }

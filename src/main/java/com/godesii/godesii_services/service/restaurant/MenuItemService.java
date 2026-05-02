@@ -8,6 +8,7 @@ import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.exception.ResourceNotFoundException;
 import com.godesii.godesii_services.repository.restaurant.CategoryRepository;
 import com.godesii.godesii_services.repository.restaurant.MenuItemRepo;
+import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,123 +19,138 @@ import java.util.stream.Collectors;
 @Service
 public class MenuItemService {
 
-    private static final Logger log = LoggerFactory.getLogger(MenuItemService.class);
+        private static final Logger log = LoggerFactory.getLogger(MenuItemService.class);
 
-    private final MenuItemRepo menuItemRepository;
-    private final CategoryRepository categoryRepository;
+        private final MenuItemRepo menuItemRepository;
+        private final CategoryRepository categoryRepository;
+        private final RestaurantRepo restaurantRepository;
 
-    public MenuItemService(MenuItemRepo menuItemRepository, CategoryRepository categoryRepository) {
-        this.menuItemRepository = menuItemRepository;
-        this.categoryRepository = categoryRepository;
-    }
-
-    /**
-     * Create a new menu item
-     */
-    public MenuItemResponse create(MenuItemRequest request) {
-        // Validate category exists
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Category not found with ID: " + request.getCategoryId()
-                ));
-
-        // Map and save
-        MenuItem menuItem = MenuItemRequest.mapToEntity(request, category);
-        MenuItem saved = menuItemRepository.save(menuItem);
-        log.info("Created menu item: {} for category ID: {}", saved.getName(), category.getId());
-        return MenuItemResponse.fromEntity(saved);
-    }
-
-    /**
-     * Get all menu items
-     */
-    public List<MenuItemResponse> getAll() {
-        return menuItemRepository.findAll().stream()
-                .map(MenuItemResponse::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get menu item by ID
-     */
-    public MenuItemResponse getById(String id) {
-        MenuItem menuItem = menuItemRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Menu item not found with ID: " + id
-                ));
-        return MenuItemResponse.fromEntity(menuItem);
-    }
-
-    /**
-     * Get menu items by category ID
-     */
-    public List<MenuItemResponse> getByCategoryId(Long categoryId) {
-        // Validate category exists
-        categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Category not found with ID: " + categoryId
-                ));
-        
-        return menuItemRepository.findByCategoryId(categoryId).stream()
-                .map(MenuItemResponse::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get all menu items for restaurants owned by the given username (createdBy).
-     * Returns {@link RestaurantMenuItemResponse} which excludes the redundant restaurant
-     * object — the caller already knows the owner from the request path.
-     */
-    public List<RestaurantMenuItemResponse> getByUsername(String username) {
-        List<RestaurantMenuItemResponse> items = menuItemRepository
-                .findByCategoryMenuRestaurantCreatedBy(username)
-                .stream()
-                .map(RestaurantMenuItemResponse::fromEntity)
-                .collect(Collectors.toList());
-
-        if (items.isEmpty()) {
-            log.warn("No menu items found for username: {}", username);
+        public MenuItemService(MenuItemRepo menuItemRepository, CategoryRepository categoryRepository,
+                        RestaurantRepo restaurantRepository) {
+                this.menuItemRepository = menuItemRepository;
+                this.categoryRepository = categoryRepository;
+                this.restaurantRepository = restaurantRepository;
         }
 
-        return items;
-    }
+        /**
+         * Create a new menu item
+         */
+        public MenuItemResponse create(MenuItemRequest request) {
+                // Validate category exists
+                Category category = categoryRepository.findById(request.getCategoryId())
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Category not found with ID: " + request.getCategoryId()));
 
-    /**
-     * Update an existing menu item
-     */
-    public MenuItemResponse update(String id, MenuItemRequest request) {
-        // Find existing menu item
-        MenuItem existing = menuItemRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Menu item not found with ID: " + id
-                ));
-
-        // Validate category exists if category ID is being changed
-        Category category = null;
-        if (request.getCategoryId() != null && 
-            !request.getCategoryId().equals(existing.getCategory().getId())) {
-            category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Category not found with ID: " + request.getCategoryId()
-                    ));
+                // Map and save
+                MenuItem menuItem = MenuItemRequest.mapToEntity(request, category);
+                MenuItem saved = menuItemRepository.save(menuItem);
+                log.info("Created menu item: {} for category ID: {}", saved.getName(), category.getId());
+                return MenuItemResponse.fromEntity(saved);
         }
 
-        // Update entity
-        MenuItemRequest.updateEntity(existing, request, category);
-        MenuItem updated = menuItemRepository.save(existing);
-        log.info("Updated menu item ID: {}", id);
-        return MenuItemResponse.fromEntity(updated);
-    }
+        /**
+         * Get all menu items
+         */
+        public List<MenuItemResponse> getAll() {
+                return menuItemRepository.findAll().stream()
+                                .map(MenuItemResponse::fromEntity)
+                                .collect(Collectors.toList());
+        }
 
-    /**
-     * Delete a menu item
-     */
-    public void delete(String id) {
-        MenuItem existing = menuItemRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Menu item not found with ID: " + id
-                ));
-        menuItemRepository.delete(existing);
-        log.info("Deleted menu item ID: {}", id);
-    }
+        /**
+         * Get menu item by ID
+         */
+        public MenuItemResponse getById(String id) {
+                MenuItem menuItem = menuItemRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Menu item not found with ID: " + id));
+                return MenuItemResponse.fromEntity(menuItem);
+        }
+
+        /**
+         * Get menu items by category ID
+         */
+        public List<MenuItemResponse> getByCategoryId(Long categoryId) {
+                // Validate category exists
+                categoryRepository.findById(categoryId)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Category not found with ID: " + categoryId));
+
+                return menuItemRepository.findByCategoryId(categoryId).stream()
+                                .map(MenuItemResponse::fromEntity)
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * Get all menu items for restaurants owned by the given username (createdBy).
+         * Returns {@link RestaurantMenuItemResponse} which excludes the redundant
+         * restaurant
+         * object — the caller already knows the owner from the request path.
+         */
+        public List<RestaurantMenuItemResponse> getByUsername(String username) {
+                List<RestaurantMenuItemResponse> items = menuItemRepository
+                                .findByCategoryMenuRestaurantCreatedBy(username)
+                                .stream()
+                                .map(RestaurantMenuItemResponse::fromEntity)
+                                .collect(Collectors.toList());
+
+                if (items.isEmpty()) {
+                        log.warn("No menu items found for username: {}", username);
+                }
+
+                return items;
+        }
+
+        /**
+         * Get all menu items for a specific restaurant by its ID.
+         * Returns {@link RestaurantMenuItemResponse} which excludes the redundant
+         * restaurant object.
+         */
+        public List<RestaurantMenuItemResponse> getByRestaurantId(Long restaurantId) {
+                // Validate restaurant exists
+                restaurantRepository.findById(restaurantId)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Restaurant not found with ID: " + restaurantId));
+
+                return menuItemRepository.findByCategoryMenuRestaurantId(restaurantId)
+                                .stream()
+                                .map(RestaurantMenuItemResponse::fromEntity)
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * Update an existing menu item
+         */
+        public MenuItemResponse update(String id, MenuItemRequest request) {
+                // Find existing menu item
+                MenuItem existing = menuItemRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Menu item not found with ID: " + id));
+
+                // Validate category exists if category ID is being changed
+                Category category = null;
+                if (request.getCategoryId() != null &&
+                                !request.getCategoryId().equals(existing.getCategory().getId())) {
+                        category = categoryRepository.findById(request.getCategoryId())
+                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                        "Category not found with ID: " + request.getCategoryId()));
+                }
+
+                // Update entity
+                MenuItemRequest.updateEntity(existing, request, category);
+                MenuItem updated = menuItemRepository.save(existing);
+                log.info("Updated menu item ID: {}", id);
+                return MenuItemResponse.fromEntity(updated);
+        }
+
+        /**
+         * Delete a menu item
+         */
+        public void delete(String id) {
+                MenuItem existing = menuItemRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Menu item not found with ID: " + id));
+                menuItemRepository.delete(existing);
+                log.info("Deleted menu item ID: {}", id);
+        }
 }
