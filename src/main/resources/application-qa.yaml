@@ -35,9 +35,15 @@ spring:
 #Swagger/OpenAPI config
 springdoc:
   swagger-ui:
+<<<<<<< villsyn-qa
     path: /swagger-ui.html
     api-docs:
       path: /v3/api-docs
+=======
+    enabled: false
+  api-docs:
+    enabled: false
+>>>>>>> master
 
 # App Config
 app:
