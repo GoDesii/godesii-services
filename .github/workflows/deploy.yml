@@ -57,9 +57,9 @@ jobs:
       - name: Restart Spring Boot service on EC2
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ vars.EC2_HOST }}
+          host: ${{ vars.PROD_EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_KEY }}
+          key: ${{ secrets.PROD_EC2_KEY }}
           script_stop: false
           script: |
             set -e
