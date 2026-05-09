@@ -3,7 +3,7 @@ name: 🚀 Deploy Spring Boot App to AWS EC2
 on:
   push:
     branches:
-      - villsyn-qa
+      - master
 
 jobs:
   build-deploy:
