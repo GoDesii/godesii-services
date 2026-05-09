@@ -14,7 +14,7 @@ import java.util.UUID;
  * Always returns successful mock responses without any real gateway calls.
  */
 @Service
-@Profile({"dev","prod"})
+@Profile("xyz")
 public class DevGooglePayPaymentService implements PaymentService {
 
     private static final Logger log = LoggerFactory.getLogger(DevGooglePayPaymentService.class);
