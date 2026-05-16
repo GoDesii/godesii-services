@@ -6,7 +6,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/villsyn?createDatabaseIfNotExist=true}
     username: ${DB_USERNAME:villsyn_user}
-    password: ${DB_PASSWORD:sjain}
+    password: ${DB_PASSWORD:AMRI9&Shashank?Vipin7}
     driver-class-name: com.mysql.cj.jdbc.Driver
     initialization-mode: always
     continue-on-error: false
@@ -46,14 +46,14 @@ springdoc:
 app:
 
   twilio:
-    sid: ${TWILIO_SID}
-    token: ${TWILIO_TOKEN}
+    sid: ${TWILIO_SID:AC283554d38ab9900e0c8281d88f3613af}
+    token: ${TWILIO_TOKEN:01b2a73671726d08a718804e1d521fca}
     phoneNo: ${TWILIO_PHONE_NUMBER:+17176708304}
 
   aws:
     s3:
       accessKey: AKIA3WMTVBRQTKYR6RGL
-      secretKey: ${AWS_SECRET_KEY}
+      secretKey: ${AWS_SECRET_KEY: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}
       region: ap-south-1
       bucketName: villsyn
 
