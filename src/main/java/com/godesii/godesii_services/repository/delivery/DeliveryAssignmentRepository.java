@@ -3,6 +3,8 @@ package com.godesii.godesii_services.repository.delivery;
 import com.godesii.godesii_services.entity.delivery.AssignmentStatus;
 import com.godesii.godesii_services.entity.delivery.DeliveryAssignment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -35,4 +37,13 @@ public interface DeliveryAssignmentRepository extends JpaRepository<DeliveryAssi
      * Find all assignments for an order (including rejected/reassigned)
      */
     List<DeliveryAssignment> findAllByOrderId(String orderId);
+
+    /**
+     * Find the currently active (ACCEPTED or PICKED_UP) assignment for a partner.
+     * Used by the WebSocket location handler to map location updates to an order.
+     */
+    @Query("SELECT a FROM DeliveryAssignment a WHERE a.partnerId = :partnerId " +
+           "AND a.status IN (com.godesii.godesii_services.entity.delivery.AssignmentStatus.ACCEPTED, " +
+           "                 com.godesii.godesii_services.entity.delivery.AssignmentStatus.PICKED_UP)")
+    Optional<DeliveryAssignment> findActiveAssignmentByPartnerId(@Param("partnerId") String partnerId);
 }

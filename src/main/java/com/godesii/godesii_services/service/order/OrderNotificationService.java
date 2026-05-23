@@ -3,10 +3,13 @@ package com.godesii.godesii_services.service.order;
 import com.godesii.godesii_services.dto.OrderNotification;
 import com.godesii.godesii_services.dto.OrderNotification.NotificationType;
 import com.godesii.godesii_services.entity.order.Order;
+import com.godesii.godesii_services.service.FcmService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * Service that pushes real-time order notifications to both restaurant websites
@@ -26,10 +29,16 @@ public class OrderNotificationService {
     private static final String RESTAURANT_TOPIC = "/topic/restaurant/%s/orders";
     private static final String CUSTOMER_QUEUE = "/queue/orders";
 
-    private final SimpMessagingTemplate messagingTemplate;
+    /** FCM topic prefix for restaurant devices subscribed at login. */
+    private static final String FCM_RESTAURANT_TOPIC_PREFIX = "restaurant-";
 
-    public OrderNotificationService(SimpMessagingTemplate messagingTemplate) {
+    private final SimpMessagingTemplate messagingTemplate;
+    private final FcmService fcmService;
+
+    public OrderNotificationService(SimpMessagingTemplate messagingTemplate,
+                                    FcmService fcmService) {
         this.messagingTemplate = messagingTemplate;
+        this.fcmService        = fcmService;
     }
 
     // ==================== Restaurant Notifications ====================
@@ -88,60 +97,71 @@ public class OrderNotificationService {
      * Notify the customer that their order has been confirmed by the restaurant.
      */
     public void notifyCustomerOrderConfirmed(Order order) {
+        String msg = "Your order #" + order.getOrderId() + " has been confirmed! 🎉";
         OrderNotification notification = OrderNotification.from(
-                order,
-                NotificationType.ORDER_CONFIRMED,
-                "Your order #" + order.getOrderId() + " has been confirmed!");
+                order, NotificationType.ORDER_CONFIRMED, msg);
 
         sendToCustomer(order.getUsername(), notification);
+
+        // FCM push — customer may have closed the app
+        fcmService.sendToUser(order.getUsername(), "✅ Order Confirmed", msg,
+                Map.of("orderId", order.getOrderId(), "type", "ORDER_CONFIRMED"));
     }
 
     /**
      * Notify the customer that their order has been rejected by the restaurant.
      */
     public void notifyCustomerOrderRejected(Order order, String reason) {
+        String msg = "Your order #" + order.getOrderId() + " was declined: " + reason;
         OrderNotification notification = OrderNotification.from(
-                order,
-                NotificationType.ORDER_REJECTED,
-                "Your order #" + order.getOrderId() + " was declined: " + reason);
+                order, NotificationType.ORDER_REJECTED, msg);
 
         sendToCustomer(order.getUsername(), notification);
+
+        fcmService.sendToUser(order.getUsername(), "❌ Order Declined", msg,
+                Map.of("orderId", order.getOrderId(), "type", "ORDER_REJECTED"));
     }
 
     /**
      * Notify the customer that their order is being prepared.
      */
     public void notifyCustomerOrderPreparing(Order order) {
+        String msg = "Your order #" + order.getOrderId() + " is being prepared! 👨‍🍳";
         OrderNotification notification = OrderNotification.from(
-                order,
-                NotificationType.ORDER_PREPARING,
-                "Your order #" + order.getOrderId() + " is being prepared!");
+                order, NotificationType.ORDER_PREPARING, msg);
 
         sendToCustomer(order.getUsername(), notification);
+
+        fcmService.sendToUser(order.getUsername(), "👨‍🍳 Preparing Your Order", msg,
+                Map.of("orderId", order.getOrderId(), "type", "ORDER_PREPARING"));
     }
 
     /**
      * Notify the customer that their order is out for delivery.
      */
     public void notifyCustomerOrderOutForDelivery(Order order) {
+        String msg = "Your order #" + order.getOrderId() + " is on the way! 🛵";
         OrderNotification notification = OrderNotification.from(
-                order,
-                NotificationType.ORDER_OUT_FOR_DELIVERY,
-                "Your order #" + order.getOrderId() + " is on the way!");
+                order, NotificationType.ORDER_OUT_FOR_DELIVERY, msg);
 
         sendToCustomer(order.getUsername(), notification);
+
+        fcmService.sendToUser(order.getUsername(), "🛵 Order Out for Delivery", msg,
+                Map.of("orderId", order.getOrderId(), "type", "ORDER_OUT_FOR_DELIVERY"));
     }
 
     /**
      * Notify the customer that their order has been delivered.
      */
     public void notifyCustomerOrderDelivered(Order order) {
+        String msg = "Your order #" + order.getOrderId() + " has been delivered. Enjoy your meal! 😋";
         OrderNotification notification = OrderNotification.from(
-                order,
-                NotificationType.ORDER_DELIVERED,
-                "Your order #" + order.getOrderId() + " has been delivered. Enjoy your meal!");
+                order, NotificationType.ORDER_DELIVERED, msg);
 
         sendToCustomer(order.getUsername(), notification);
+
+        fcmService.sendToUser(order.getUsername(), "✅ Order Delivered", msg,
+                Map.of("orderId", order.getOrderId(), "type", "ORDER_DELIVERED"));
     }
 
     /**
