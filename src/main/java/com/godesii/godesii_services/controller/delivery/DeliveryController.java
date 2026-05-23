@@ -3,6 +3,8 @@ package com.godesii.godesii_services.controller.delivery;
 import com.godesii.godesii_services.common.APIResponse;
 import com.godesii.godesii_services.entity.delivery.DeliveryAssignment;
 import com.godesii.godesii_services.entity.delivery.DeliveryPartner;
+import com.godesii.godesii_services.repository.delivery.DeliveryPartnerRepository;
+import com.godesii.godesii_services.service.delivery.DeliveryNotificationService;
 import com.godesii.godesii_services.service.delivery.DeliveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,9 +15,12 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 /**
- * REST Controller for Delivery Partner operations
+ * REST Controller for Delivery Partner operations.
+ * Each status-changing endpoint also fires a real-time WebSocket notification
+ * via {@link DeliveryNotificationService}.
  */
 @RestController
 @RequestMapping("/api/v1/delivery")
@@ -23,9 +28,15 @@ import java.math.BigDecimal;
 public class DeliveryController {
 
     private final DeliveryService deliveryService;
+    private final DeliveryNotificationService notificationService;
+    private final DeliveryPartnerRepository partnerRepo;
 
-    public DeliveryController(DeliveryService deliveryService) {
-        this.deliveryService = deliveryService;
+    public DeliveryController(DeliveryService deliveryService,
+                              DeliveryNotificationService notificationService,
+                              DeliveryPartnerRepository partnerRepo) {
+        this.deliveryService     = deliveryService;
+        this.notificationService = notificationService;
+        this.partnerRepo         = partnerRepo;
     }
 
     /**
@@ -37,6 +48,8 @@ public class DeliveryController {
             @PathVariable @NonNull String assignmentId) {
 
         DeliveryAssignment assignment = deliveryService.partnerAcceptsDelivery(assignmentId);
+        findPartner(assignment.getPartnerId()).ifPresent(p ->
+                notificationService.notifyDeliveryAccepted(assignment, p));
 
         APIResponse<DeliveryAssignment> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
@@ -74,11 +87,33 @@ public class DeliveryController {
             @PathVariable @NonNull String assignmentId) {
 
         DeliveryAssignment assignment = deliveryService.markAsPickedUp(assignmentId);
+        findPartner(assignment.getPartnerId()).ifPresent(p ->
+                notificationService.notifyOrderPickedUp(assignment, p));
 
         APIResponse<DeliveryAssignment> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 assignment,
                 "Order marked as picked up");
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Partner marks order as delivered to customer
+     */
+    @PostMapping(value = "/assignments/{assignmentId}/deliver", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Mark as delivered", description = "Delivery partner confirms order delivered to customer")
+    public ResponseEntity<APIResponse<DeliveryAssignment>> markAsDelivered(
+            @PathVariable @NonNull String assignmentId) {
+
+        DeliveryAssignment assignment = deliveryService.markAsDelivered(assignmentId);
+        findPartner(assignment.getPartnerId()).ifPresent(p ->
+                notificationService.notifyOrderDelivered(assignment, p));
+
+        APIResponse<DeliveryAssignment> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                assignment,
+                "Order marked as delivered");
 
         return ResponseEntity.ok(apiResponse);
     }
@@ -146,5 +181,11 @@ public class DeliveryController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
+    }
+
+    // ── Helper ────────────────────────────────────────────────────────────────
+
+    private Optional<DeliveryPartner> findPartner(String partnerId) {
+        return partnerRepo.findById(partnerId);
     }
 }
