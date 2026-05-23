@@ -215,4 +215,30 @@ public class DeliveryService {
 
         return assignmentRepo.save(assignment);
     }
+
+    /**
+     * Mark order as delivered by delivery partner.
+     * Frees the partner's availability so they can receive new assignments.
+     */
+    @Transactional
+    public DeliveryAssignment markAsDelivered(String assignmentId) {
+        DeliveryAssignment assignment = assignmentRepo.findById(assignmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Assignment not found: " + assignmentId));
+
+        assignment.setStatus(AssignmentStatus.DELIVERED);
+        assignment.setDeliveredAt(Instant.now());
+
+        // Free partner for next delivery
+        partnerRepo.findById(assignment.getPartnerId()).ifPresent(partner -> {
+            partner.setIsAvailable(true);
+            partner.setLastActive(Instant.now());
+            partnerRepo.save(partner);
+        });
+
+        log.info("Order {} delivered by partner {}",
+                assignment.getOrderId(), assignment.getPartnerId());
+
+        return assignmentRepo.save(assignment);
+    }
 }
+
