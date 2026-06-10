@@ -62,3 +62,8 @@ app:
     encryptor:
       password: 2*d0bCr6#:=5
       salt: 626F6F746966756C
+
+  location:
+    latitude: 25.815222
+    longitude: 83.003250
+    radius: 10.0
