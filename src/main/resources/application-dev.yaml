@@ -74,13 +74,7 @@ app:
       password: password
       salt: 626F6F746966756C
 
-# Google Pay Configuration (Dev/Test - mock mode)
-googlepay:
-  enabled: false
-  environment: TEST
-  merchant-id: TEST_MERCHANT_ID
-  merchant-name: GoDesii
-  callback-url: http://localhost:8081/api/v1/orders
-  supported-networks: VISA,MASTERCARD,AMEX
-  gateway-name: example
-  gateway-merchant-id: exampleGatewayMerchantId
+  location:
+    latitude: 28.6139
+    longitude: 77.2090
+    radius: 10.0
