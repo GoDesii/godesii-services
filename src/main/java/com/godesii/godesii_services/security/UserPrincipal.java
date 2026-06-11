@@ -2,7 +2,6 @@ package com.godesii.godesii_services.security;
 
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,10 +34,15 @@ public class UserPrincipal implements UserDetails {
     private String mfaBackupKey;
     private String mfaSecret;
     private String mfaKeyId;
-    private Collection< ? extends GrantedAuthority> authorities;
+    private Collection<? extends GrantedAuthority> authorities;
+    private Long restaurantId;
 
     public String getId() {
         return this.id;
+    }
+
+    public Long getRestaurantId() {
+        return this.restaurantId;
     }
 
     public String getEmailId() {
@@ -80,31 +84,31 @@ public class UserPrincipal implements UserDetails {
         return this.isEnabled;
     }
 
-    public boolean isMfaEnabled(){
+    public boolean isMfaEnabled() {
         return this.isMfaEnabled;
     }
 
-    public boolean isMfaRegistered(){
+    public boolean isMfaRegistered() {
         return this.mfaRegistered;
     }
 
-    public String getMfaBackupKey(){
+    public String getMfaBackupKey() {
         return this.mfaBackupKey;
     }
 
-    public String getMfaSecret(){
+    public String getMfaSecret() {
         return this.mfaSecret;
     }
 
-    public String getMfaKeyId(){
+    public String getMfaKeyId() {
         return this.mfaKeyId;
     }
 
-    public Set<String> getRoles(){
+    public Set<String> getRoles() {
         return this.roles;
     }
 
-    public String getRolesAsString(){
+    public String getRolesAsString() {
         return StringUtils.collectionToCommaDelimitedString(getRoles());
     }
 
@@ -136,13 +140,13 @@ public class UserPrincipal implements UserDetails {
         return this.countryCode;
     }
 
-    public static Builder buildWithId(String id){
-        if(id == null)
+    public static Builder buildWithId(String id) {
+        if (id == null)
             throw new IllegalArgumentException("Id can't be null!");
         return new Builder(id);
     }
 
-    public static class Builder implements Serializable{
+    public static class Builder implements Serializable {
 
         private String id;
         private String firstName;
@@ -166,121 +170,128 @@ public class UserPrincipal implements UserDetails {
         private String mfaSecret;
         private String mfaKeyId;
         private Collection<? extends GrantedAuthority> authorities;
+        private Long restaurantId;
 
-        public Builder(String id){
+        public Builder(String id) {
             this.id = id;
         }
 
-        public Builder id(String id){
+        public Builder id(String id) {
             this.id = id;
             return this;
         }
 
-        public Builder firstName(String firstName){
+        public Builder restaurantId(Long restaurantId) {
+            this.restaurantId = restaurantId;
+            return this;
+        }
+
+        public Builder firstName(String firstName) {
             this.firstName = firstName;
             return this;
         }
 
-        public Builder middleName(String middleName){
+        public Builder middleName(String middleName) {
             this.middleName = middleName;
             return this;
         }
 
-        public Builder lastName(String lastname){
+        public Builder lastName(String lastname) {
             this.lastname = lastname;
             return this;
         }
 
-        public Builder profilePic(String profilePic){
+        public Builder profilePic(String profilePic) {
             this.profilePic = profilePic;
             return this;
         }
 
-        public Builder gender(String gender){
+        public Builder gender(String gender) {
             this.gender = gender;
             return this;
         }
 
-        public Builder countryCode(String countryCode){
+        public Builder countryCode(String countryCode) {
             this.countryCode = countryCode;
             return this;
         }
 
-        public Builder isMobileVerified(boolean isMobileNoVerified){
+        public Builder isMobileVerified(boolean isMobileNoVerified) {
             this.isMobileNoVerified = isMobileNoVerified;
             return this;
         }
 
-        public Builder password(String password){
+        public Builder password(String password) {
             this.password = password;
             return this;
         }
-        public Builder username(String username){
-            this.username =  username;
+
+        public Builder username(String username) {
+            this.username = username;
             return this;
         }
 
-        public Builder emailId(String emailId){
+        public Builder emailId(String emailId) {
             this.emailId = emailId;
             return this;
         }
 
-        public Builder accountNonExpired(boolean accountExpired){
+        public Builder accountNonExpired(boolean accountExpired) {
             this.accountNonExpired = accountExpired;
             return this;
         }
 
-        public Builder accountNonLocked(boolean accountLocked){
+        public Builder accountNonLocked(boolean accountLocked) {
             this.accountNonLocked = accountLocked;
             return this;
         }
 
-        public Builder credentialsNonExpired(boolean credentialsExpired){
+        public Builder credentialsNonExpired(boolean credentialsExpired) {
             this.credentialsNonExpired = credentialsExpired;
             return this;
         }
 
-        public Builder enabled(boolean isEnabled){
+        public Builder enabled(boolean isEnabled) {
             this.isEnabled = isEnabled;
             return this;
         }
 
-        public Builder mfaEnabled(boolean isEnabled){
+        public Builder mfaEnabled(boolean isEnabled) {
             this.isMfaEnabled = isEnabled;
             return this;
         }
 
-        public Builder mfaRegistered(boolean mfaRegistered){
+        public Builder mfaRegistered(boolean mfaRegistered) {
             this.mfaRegistered = mfaRegistered;
             return this;
         }
 
-        public Builder mfaBackupKey(String mfaBackupKey){
+        public Builder mfaBackupKey(String mfaBackupKey) {
             this.mfaBackupKey = mfaBackupKey;
             return this;
         }
 
-        public Builder mfaSecret(String mfaSecret){
+        public Builder mfaSecret(String mfaSecret) {
             this.mfaSecret = mfaSecret;
             return this;
         }
 
-        public Builder mfaKeyId(String mfaKeyId){
+        public Builder mfaKeyId(String mfaKeyId) {
             this.mfaKeyId = mfaKeyId;
             return this;
         }
 
-        public Builder roles(Set<String> roles){
+        public Builder roles(Set<String> roles) {
             this.roles = roles;
             return this;
         }
 
-        public Builder authorities(Collection<? extends GrantedAuthority> authorities){
+        public Builder authorities(Collection<? extends GrantedAuthority> authorities) {
             this.authorities = authorities;
             return this;
         }
 
-        public UserPrincipal build(){
+        public UserPrincipal build() {
             UserPrincipal principal = new UserPrincipal();
             principal.id = this.id;
             principal.firstName = this.firstName;
@@ -304,22 +315,23 @@ public class UserPrincipal implements UserDetails {
             principal.mfaBackupKey = this.mfaBackupKey;
             principal.roles = roles;
             principal.authorities = this.authorities;
-//            check(principal);
+            principal.restaurantId = this.restaurantId;
+            // check(principal);
             return principal;
         }
 
-        private static void check(UserPrincipal principal){
+        private static void check(UserPrincipal principal) {
 
-//            if(!principal.isEnabled())
-//                throw new DisabledException("Users account is disabled");
+            // if(!principal.isEnabled())
+            // throw new DisabledException("Users account is disabled");
 
-            if(!principal.isAccountNonExpired())
+            if (!principal.isAccountNonExpired())
                 throw new AccountExpiredException("Users account is expired");
 
-            if(!principal.isAccountNonLocked())
+            if (!principal.isAccountNonLocked())
                 throw new LockedException("Users account is locked");
 
-            if(!principal.isCredentialsNonExpired())
+            if (!principal.isCredentialsNonExpired())
                 throw new CredentialsExpiredException("user account credential is expired");
         }
 
