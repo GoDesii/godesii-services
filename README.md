@@ -527,7 +527,6 @@ Set up environment variables in Postman:
 This project is proprietary. All rights reserved by **VillSyn**.
 
 ---
-
 <p align="center">
   Built with ❤️ by the <strong>VillSyn</strong> team
 </p>

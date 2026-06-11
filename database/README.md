@@ -61,5 +61,4 @@ src/main/resources/db/changelog/
 ./gradlew update -PrunList=initDdl
 ./gradlew update -PrunList=initDml
 ```
-
 See the [main README](../README.md#-database) for more details.
