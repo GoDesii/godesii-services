@@ -10,16 +10,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
- * REST Controller that exposes the configured service location.
+ * REST Controller that exposes the configured service locations.
  * <p>
- * The latitude, longitude, and radius are read from the active Spring profile's
- * YAML properties (e.g. {@code application-dev.yaml}) under the key
- * {@code app.location.*}.
+ * The locations are loaded from an external JSON file whose classpath
+ * is defined in the active Spring profile's YAML properties under
+ * {@code app.location.file}.
  * </p>
  *
  * <pre>
- * GET /api/location  →  { latitude, longitude, radius }
+ * GET /api/location  →  [ { latitude, longitude, radius }, ... ]
  * </pre>
  */
 @RestController
@@ -35,22 +37,18 @@ public class LocationController {
     }
 
     /**
-     * Returns the configured latitude, longitude, and radius.
+     * Returns all configured service-zone locations.
      *
-     * @return {@link APIResponse} wrapping a {@link LocationResponse}
+     * @return {@link APIResponse} wrapping a list of {@link LocationResponse}
      */
     @GetMapping
-    public ResponseEntity<APIResponse<LocationResponse>> getLocation() {
-        LocationResponse locationResponse = new LocationResponse(
-                locationConfig.getLatitude(),
-                locationConfig.getLongitude(),
-                locationConfig.getRadius()
-        );
+    public ResponseEntity<APIResponse<List<LocationResponse>>> getLocations() {
+        List<LocationResponse> locations = locationConfig.getLocations();
 
         return ResponseEntity.ok(
                 new APIResponse<>(
                         HttpStatus.OK,
-                        locationResponse,
+                        locations,
                         GoDesiiConstant.SUCCESSFULLY_FETCHED
                 )
         );

@@ -1,9 +1,12 @@
 package com.godesii.godesii_services.dto;
 
 /**
- * DTO representing the configured service location.
+ * DTO representing a configured service location (town / service zone).
  */
 public class LocationResponse {
+
+    /** Town or area name (e.g. "Lalganj"). */
+    private String locationName;
 
     private double latitude;
     private double longitude;
@@ -11,13 +14,22 @@ public class LocationResponse {
 
     public LocationResponse() {}
 
-    public LocationResponse(double latitude, double longitude, double radius) {
-        this.latitude  = latitude;
-        this.longitude = longitude;
-        this.radius    = radius;
+    public LocationResponse(String locationName, double latitude, double longitude, double radius) {
+        this.locationName = locationName;
+        this.latitude     = latitude;
+        this.longitude    = longitude;
+        this.radius       = radius;
     }
 
     // ── Getters & Setters ────────────────────────────────────────────────────
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
 
     public double getLatitude() {
         return latitude;
