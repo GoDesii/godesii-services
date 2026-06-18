@@ -8,6 +8,7 @@ import com.godesii.godesii_services.entity.restaurant.MenuItem;
 import com.godesii.godesii_services.exception.ResourceNotFoundException;
 import com.godesii.godesii_services.repository.restaurant.CategoryRepository;
 import com.godesii.godesii_services.repository.restaurant.MenuItemRepo;
+import com.godesii.godesii_services.repository.restaurant.MenuRepository;
 import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +25,14 @@ public class MenuItemService {
         private final MenuItemRepo menuItemRepository;
         private final CategoryRepository categoryRepository;
         private final RestaurantRepo restaurantRepository;
+        private final MenuRepository menuRepository;
 
         public MenuItemService(MenuItemRepo menuItemRepository, CategoryRepository categoryRepository,
-                        RestaurantRepo restaurantRepository) {
+                        RestaurantRepo restaurantRepository, MenuRepository menuRepository) {
                 this.menuItemRepository = menuItemRepository;
                 this.categoryRepository = categoryRepository;
                 this.restaurantRepository = restaurantRepository;
+                this.menuRepository = menuRepository;
         }
 
         /**
@@ -78,6 +81,20 @@ public class MenuItemService {
 
                 return menuItemRepository.findByCategoryId(categoryId).stream()
                                 .map(MenuItemResponse::fromEntity)
+                                .collect(Collectors.toList());
+        }
+
+        /**
+         * Get menu items by menu ID
+         */
+        public List<RestaurantMenuItemResponse> getByMenuId(Long menuId) {
+                // Validate menu exists
+                menuRepository.findById(menuId)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Menu not found with ID: " + menuId));
+
+                return menuItemRepository.findByCategoryMenuId(menuId).stream()
+                                .map(RestaurantMenuItemResponse::fromEntity)
                                 .collect(Collectors.toList());
         }
 

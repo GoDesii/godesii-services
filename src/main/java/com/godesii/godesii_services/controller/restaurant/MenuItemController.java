@@ -106,6 +106,25 @@ public class MenuItemController {
     }
 
     /**
+     * Get menu items by menu ID
+     * 
+     * @param menuId Menu ID
+     * @return List of menu items for the specified menu
+     */
+    @GetMapping(value = "/menu/{menuId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get menu items by menu ID", description = "Retrieves all menu items for a specific menu")
+    public ResponseEntity<APIResponse<List<RestaurantMenuItemResponse>>> getByMenuId(@PathVariable @NonNull Long menuId) {
+        List<RestaurantMenuItemResponse> menuItems = service.getByMenuId(menuId);
+
+        APIResponse<List<RestaurantMenuItemResponse>> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                menuItems,
+                GoDesiiConstant.SUCCESSFULLY_FETCHED);
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
      * Get all menu items for restaurants owned by the given username (createdBy)
      *
      * @param username The owner's username (createdBy value on the Restaurant)

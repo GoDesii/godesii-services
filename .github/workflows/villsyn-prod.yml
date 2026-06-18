@@ -1,0 +1,105 @@
+name: 🚀 Deploy Spring Boot App to AWS EC2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # -------------------------------
+      # 1️⃣ Checkout source code
+      # -------------------------------
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # -------------------------------
+      # 2️⃣ Set up Java environment
+      # -------------------------------
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      # -------------------------------
+      # 3️⃣ Grant permission to Gradle wrapper
+      # -------------------------------
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      # -------------------------------
+      # 4️⃣ Build project with Gradle
+      # -------------------------------
+      - name: Build JAR
+        run: ./gradlew clean build -x test
+
+      # -------------------------------
+      # 5️⃣ Upload built JAR to AWS EC2
+      # -------------------------------
+      - name: Upload JAR to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.PROD_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.PROD_EC2_KEY }}
+          source: "build/libs/*.jar"
+          target: "/home/ubuntu/app/"
+          strip_components: 2  # Removes 'build/libs' from path, so no nested folder created
+
+      # -------------------------------
+      # 6️⃣ Restart Spring Boot service via systemd
+      # -------------------------------
+      - name: Restart Spring Boot service on EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ vars.PROD_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.PROD_EC2_KEY }}
+          script_stop: false
+          script: |
+            set -e
+
+            echo "🔹 Deploying latest build to EC2..."
+            mkdir -p /home/ubuntu/app
+            cd /home/ubuntu/app || { echo "❌ Directory not found!"; exit 1; }
+
+            echo "📦 Listing existing JAR files..."
+            ls -lh *.jar 2>/dev/null || echo "⚠️ No JARs found yet (first deploy maybe)."
+
+            echo "🧾 Detecting latest runnable JAR (excluding -plain)..."
+            LATEST_JAR=$(ls -t *-SNAPSHOT.jar 2>/dev/null | grep -v "plain" | head -n 1 || true)
+
+            if [ -z "$LATEST_JAR" ]; then
+              echo "❌ No valid JAR found for deployment!"
+              exit 1
+            fi
+
+            echo "✅ Latest JAR detected: $LATEST_JAR"
+
+            echo "🧹 Cleaning old JARs (keeping latest)..."
+            COUNT=$(ls -1 *.jar 2>/dev/null | wc -l || true)
+            if [ "$COUNT" -gt 1 ]; then
+              find . -type f -name "*.jar" ! -name "$LATEST_JAR" -delete || true
+              echo "🗑️ Old JARs deleted."
+            else
+              echo "⚠️ Only one JAR found — skipping cleanup."
+            fi
+
+            echo "🆕 Copying $LATEST_JAR → /home/ubuntu/app/app.jar"
+            sudo cp "$LATEST_JAR" /home/ubuntu/app/app.jar
+
+            echo "💀 Restarting Spring Boot service..."
+            sudo systemctl daemon-reload
+            sudo systemctl stop springboot || true
+            sleep 2
+            sudo systemctl start springboot
+
+            echo "✅ Checking Spring Boot service status..."
+            sudo systemctl status springboot --no-pager || true
+
+            echo "🎯 Deployment complete successfully!"
