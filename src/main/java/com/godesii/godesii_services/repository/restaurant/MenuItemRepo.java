@@ -30,4 +30,10 @@ public interface MenuItemRepo extends JpaRepository<MenuItem, String> {
      * Traverses: MenuItem → Category → Menu → Restaurant → id
      */
     List<MenuItem> findByCategoryMenuRestaurantId(Long restaurantId);
+
+    /**
+     * Find all menu items for a specific menu by its ID.
+     * Traverses: MenuItem → Category → Menu → id
+     */
+    List<MenuItem> findByCategoryMenuId(Long menuId);
 }
