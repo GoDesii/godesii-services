@@ -36,9 +36,9 @@ public class UserFcmToken {
 
     /**
      * The FCM registration token sent by the mobile app.
-     * Tokens can be up to 4096 characters.
+     * Tokens are typically ~160 chars, 512 is a safe limit that allows unique indexing.
      */
-    @Column(name = "fcm_token", nullable = false, length = 4096)
+    @Column(name = "fcm_token", nullable = false, length = 512)
     private String fcmToken;
 
     /**
