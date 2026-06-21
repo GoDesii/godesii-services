@@ -31,7 +31,7 @@ public class FirebaseConfig {
     private static final Logger log = LoggerFactory.getLogger(FirebaseConfig.class);
 
     /** Path to the service-account JSON on the filesystem. */
-    private static final String SERVICE_ACCOUNT_PATH = "/app/firebase/firebase.json";
+    private static final String SERVICE_ACCOUNT_PATH = "/home/ubuntu/firebase/firebase.json";
 
     @PostConstruct
     public void initializeFirebase() {
