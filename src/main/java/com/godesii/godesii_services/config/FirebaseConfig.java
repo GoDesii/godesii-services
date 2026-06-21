@@ -6,15 +6,15 @@ import com.google.firebase.FirebaseOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
 import jakarta.annotation.PostConstruct;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * Initializes the Firebase Admin SDK using the service-account credentials
- * bundled in {@code src/main/resources/villsyn-ac142-firebase-adminsdk-fbsvc-43cc3d2ade.json}.
+ * located at {@code /opt/firebase/firebase.json}.
  *
  * <p>Firebase is used for:
  * <ul>
@@ -30,9 +30,8 @@ public class FirebaseConfig {
 
     private static final Logger log = LoggerFactory.getLogger(FirebaseConfig.class);
 
-    /** Path to the service-account JSON inside the classpath (src/main/resources). */
-    private static final String SERVICE_ACCOUNT_PATH =
-            "villsyn-ac142-firebase-adminsdk-fbsvc-43cc3d2ade.json";
+    /** Path to the service-account JSON on the filesystem. */
+    private static final String SERVICE_ACCOUNT_PATH = "/app/firebase/firebase.json";
 
     @PostConstruct
     public void initializeFirebase() {
@@ -42,8 +41,7 @@ public class FirebaseConfig {
             return;
         }
 
-        try (InputStream serviceAccount =
-                     new ClassPathResource(SERVICE_ACCOUNT_PATH).getInputStream()) {
+        try (InputStream serviceAccount = new FileInputStream(SERVICE_ACCOUNT_PATH)) {
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
@@ -55,7 +53,7 @@ public class FirebaseConfig {
         } catch (IOException e) {
             log.error("Failed to initialise Firebase Admin SDK: {}", e.getMessage(), e);
             throw new IllegalStateException(
-                    "Cannot start application — Firebase service-account JSON not found or invalid: "
+                    "Cannot start application — Firebase service-account JSON not found or invalid at: "
                             + SERVICE_ACCOUNT_PATH, e);
         }
     }
