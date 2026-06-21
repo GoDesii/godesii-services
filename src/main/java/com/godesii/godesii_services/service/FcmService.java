@@ -90,7 +90,7 @@ public class FcmService {
         List<String> tokenStrings = tokens.stream()
                 .map(UserFcmToken::getFcmToken)
                 .toList();
-
+        log.info("FCM token {}",tokenStrings);
         sendMulticast(tokenStrings, title, body, data);
     }
 
