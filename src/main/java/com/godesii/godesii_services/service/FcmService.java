@@ -90,7 +90,7 @@ public class FcmService {
         List<String> tokenStrings = tokens.stream()
                 .map(UserFcmToken::getFcmToken)
                 .toList();
-
+        log.info("FCM token {}",tokenStrings);
         sendMulticast(tokenStrings, title, body, data);
     }
 
@@ -192,6 +192,14 @@ public class FcmService {
                 List<String> failedTokens = new ArrayList<>();
                 for (int i = 0; i < responses.size(); i++) {
                     if (!responses.get(i).isSuccessful()) {
+                        FirebaseMessagingException ex =
+                                responses.get(i).getException();
+                        log.error(
+                                "FCM send failed for token: {}, ErrorCode: {}, Message: {}",
+                                tokens.get(i),
+                                ex.getMessagingErrorCode(),
+                                ex.getMessage(),
+                                ex);
                         failedTokens.add(tokens.get(i));
                         handleTokenError(tokens.get(i), responses.get(i).getException());
                     }
