@@ -109,8 +109,8 @@ public class RestaurantAnalyticsController {
      * @param page         Page number (default: 0)
      * @param size         Page size (default: 20, max: 100)
      */
-    @GetMapping("/admin/{restaurantId}/earnings")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/{restaurantId}/earnings")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('RESTAURANT_PARTNER')")
     public ResponseEntity<APIResponse<RestaurantEarningsResponse>> getEarningsForAdmin(
             @PathVariable String restaurantId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
