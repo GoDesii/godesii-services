@@ -127,9 +127,9 @@ public class UserService {
     }
 
     private Set<Role> addRoles(User user, String requestedRole) {
-        if (Role.ADMIN.name().equalsIgnoreCase(requestedRole) || Role.MANGER.name().equalsIgnoreCase(requestedRole)) {
+        /*if (Role.ADMIN.name().equalsIgnoreCase(requestedRole) || Role.MANGER.name().equalsIgnoreCase(requestedRole)) {
             throw new InsufficientAuthenticationException("Authentication Failed!");
-        }
+        }*/
         user.getRoles().add(Role.valueOf(requestedRole.toUpperCase()));
         return user.getRoles();
     }
