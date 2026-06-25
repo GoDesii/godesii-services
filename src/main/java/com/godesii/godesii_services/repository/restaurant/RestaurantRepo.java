@@ -1,11 +1,14 @@
 package com.godesii.godesii_services.repository.restaurant;
 
 import com.godesii.godesii_services.common.FoodCategory;
+import com.godesii.godesii_services.dto.RestaurantSummaryDto;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RestaurantRepo extends JpaRepository<Restaurant, Long>{
@@ -18,5 +21,7 @@ public interface RestaurantRepo extends JpaRepository<Restaurant, Long>{
 
     Optional<Restaurant> findByIdAndIsActiveTrue(Long id);
 
+    @Query("SELECT new com.godesii.godesii_services.dto.RestaurantSummaryDto(r.id, r.name) FROM Restaurant r ORDER BY r.name ASC")
+    List<RestaurantSummaryDto> findAllIdAndName();
 
 }

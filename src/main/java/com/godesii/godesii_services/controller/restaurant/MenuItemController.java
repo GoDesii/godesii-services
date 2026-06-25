@@ -189,6 +189,29 @@ public class MenuItemController {
     }
 
     /**
+     * Update only the availability of a menu item
+     *
+     * @param id          Menu item ID (UUID)
+     * @param isAvailable New availability flag
+     * @return Updated menu item
+     */
+    @PatchMapping(value = "/{id}/availability", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update menu item availability", description = "Updates only the isAvailable field of a menu item")
+    public ResponseEntity<APIResponse<MenuItemResponse>> updateAvailability(
+            @PathVariable @NonNull String id,
+            @RequestParam boolean isAvailable) {
+
+        MenuItemResponse updated = service.updateAvailability(id, isAvailable);
+
+        APIResponse<MenuItemResponse> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                updated,
+                GoDesiiConstant.SUCCESSFULLY_UPDATED);
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
      * Delete menu item by ID
      * 
      * @param id Menu item ID (UUID)
