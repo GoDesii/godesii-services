@@ -176,6 +176,32 @@ public class UserPrincipal implements UserDetails {
             this.id = id;
         }
 
+        public Builder(UserPrincipal principal) {
+            this.id = principal.getId();
+            this.firstName = principal.getFirstName();
+            this.middleName = principal.getMiddleName();
+            this.lastname = principal.getLastname();
+            this.profilePic = principal.getProfilePic();
+            this.isMobileNoVerified = principal.getIsMobileNoVerified();
+            this.gender = principal.getGender();
+            this.countryCode = principal.getCountryCode();
+            this.username = principal.getUsername();
+            this.password = principal.getPassword();
+            this.emailId = principal.getEmailId();
+            this.accountNonExpired = principal.isAccountNonExpired();
+            this.accountNonLocked = principal.isAccountNonLocked();
+            this.credentialsNonExpired = principal.isCredentialsNonExpired();
+            this.isEnabled = principal.isEnabled();
+            this.roles = principal.getRoles();
+            this.isMfaEnabled = principal.isMfaEnabled();
+            this.mfaRegistered = principal.isMfaRegistered();
+            this.mfaBackupKey = principal.getMfaBackupKey();
+            this.mfaSecret = principal.getMfaSecret();
+            this.mfaKeyId = principal.getMfaKeyId();
+            this.authorities = principal.getAuthorities();
+            this.restaurantId = principal.getRestaurantId();
+        }
+
         public Builder id(String id) {
             this.id = id;
             return this;
