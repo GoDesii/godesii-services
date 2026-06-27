@@ -78,4 +78,29 @@ public record UserDetailServiceImpl(UserRepository userRepository, RestaurantRep
                 .build();
     }
 
+    public static UserPrincipal buildRestrictedPrincipal(UserPrincipal principal, String requestedRole) {
+        java.util.Set<String> restrictedRoles = new java.util.HashSet<>();
+        restrictedRoles.add(requestedRole);
+
+        java.util.List<org.springframework.security.core.GrantedAuthority> restrictedAuthorities = new java.util.ArrayList<>();
+        restrictedAuthorities
+                .add(new org.springframework.security.core.authority.SimpleGrantedAuthority(requestedRole));
+
+        try {
+            com.godesii.godesii_services.entity.auth.Role roleEnum = com.godesii.godesii_services.entity.auth.Role
+                    .valueOf(requestedRole);
+            for (com.godesii.godesii_services.entity.auth.Permission perm : roleEnum.getPermissions()) {
+                restrictedAuthorities
+                        .add(new org.springframework.security.core.authority.SimpleGrantedAuthority(perm.name()));
+            }
+        } catch (IllegalArgumentException e) {
+            // Ignore if role is not found in enum
+        }
+
+        return new UserPrincipal.Builder(principal)
+                .roles(restrictedRoles)
+                .authorities(restrictedAuthorities)
+                .build();
+    }
+
 }
