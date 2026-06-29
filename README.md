@@ -15,7 +15,7 @@
 
 ## 📋 Overview
 
-**VillSyn Services** is a production-grade Spring Boot backend powering the **VillSync** food delivery platform. It provides a complete suite of REST APIs for managing restaurants, menus, orders, carts, deliveries, real-time notifications, and analytics — modeled after leading Indian food delivery platforms (Zomato/Swiggy) with full **Indian GST compliance**.
+**VillSyn Services** is a production-grade Spring Boot backend powering the **VillSync** food delivery platform. It provides a complete suite of REST APIs for managing restaurants, menus, orders, carts, deliveries, real-time notifications, and Analytics — modeled after leading Indian food delivery platforms (Zomato/Swiggy) with full **Indian GST compliance**.
 
 ### ✨ Key Highlights
 
