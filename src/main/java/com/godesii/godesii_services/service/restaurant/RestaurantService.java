@@ -3,11 +3,13 @@ package com.godesii.godesii_services.service.restaurant;
 import com.godesii.godesii_services.common.DatabaseHelper;
 import com.godesii.godesii_services.common.FoodCategory;
 import com.godesii.godesii_services.dto.RestaurantRequest;
+import com.godesii.godesii_services.dto.RestaurantSummaryDto;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.exception.ResourceNotFoundException;
 import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
 import io.jsonwebtoken.lang.Strings;
 import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 import org.hibernate.dialect.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +115,15 @@ public class RestaurantService {
         Restaurant existing = getById(id);
         repo.delete(existing);
         // log.info("Deleted Restaurant with ID: {}, Name: {}", id, existing.getName());
+    }
+
+    /**
+     * Get a lightweight list of all restaurants (id + name only)
+     *
+     * @return List of RestaurantSummaryDto containing id and name
+     */
+    public List<RestaurantSummaryDto> getAllSummaries() {
+        return repo.findAllIdAndName();
     }
 
     /**

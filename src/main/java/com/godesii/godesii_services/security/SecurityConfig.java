@@ -2,6 +2,7 @@ package com.godesii.godesii_services.security;
 
 import com.godesii.godesii_services.repository.auth.JpaRSAKeysRepository;
 import com.godesii.godesii_services.repository.auth.UserRepository;
+import com.godesii.godesii_services.repository.restaurant.RestaurantRepo;
 import com.godesii.godesii_services.security.management.rotation_key.RSAPrivateKeyConverter;
 import com.godesii.godesii_services.security.management.rotation_key.RSAPublicKeyConverter;
 import com.godesii.godesii_services.service.auth.UserDetailServiceImpl;
@@ -42,6 +43,7 @@ public class SecurityConfig {
 
     private final JpaRSAKeysRepository jpaRSAKeysRepository;
     private final UserRepository userRepository;
+    private final RestaurantRepo restaurantRepo;
     private final HandlerExceptionResolver exceptionResolver;
 
 
@@ -50,9 +52,10 @@ public class SecurityConfig {
     @Value("${app.jwt.encryptor.salt}")
     private String salt;
 
-    public SecurityConfig(JpaRSAKeysRepository jpaRSAKeysRepository, UserRepository userRepository, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
+    public SecurityConfig(JpaRSAKeysRepository jpaRSAKeysRepository, UserRepository userRepository, RestaurantRepo restaurantRepo, @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
         this.jpaRSAKeysRepository = jpaRSAKeysRepository;
         this.userRepository = userRepository;
+        this.restaurantRepo = restaurantRepo;
         this.exceptionResolver = exceptionResolver;
     }
 
@@ -123,7 +126,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(){
-        return new UserDetailServiceImpl(userRepository);
+        return new UserDetailServiceImpl(userRepository, restaurantRepo);
     }
 
     @Bean

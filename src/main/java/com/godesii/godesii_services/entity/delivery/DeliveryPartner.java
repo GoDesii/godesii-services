@@ -7,135 +7,118 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 /**
- * Delivery Partner (Rider) entity
+ * Delivery Partner (Rider) entity.
+ *
+ * <p>Registration fields:
+ * <ul>
+ *   <li>{@code name}             — full name of the partner</li>
+ *   <li>{@code aadhaarCardNo}    — 12-digit Aadhaar number (unique)</li>
+ *   <li>{@code drivingLicenseNo} — Indian DL number (unique)</li>
+ *   <li>{@code imageUrl}         — profile / selfie URL</li>
+ * </ul>
  */
 @Entity
-@Table(name = "delivery_partners")
+@Table(
+    name = "delivery_partners",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uq_partner_phone",   columnNames = "phone"),
+        @UniqueConstraint(name = "uq_partner_email",   columnNames = "email"),
+        @UniqueConstraint(name = "uq_partner_aadhaar", columnNames = "aadhaar_card_no"),
+        @UniqueConstraint(name = "uq_partner_dl",      columnNames = "driving_license_no")
+    }
+)
 public class DeliveryPartner {
 
     private String partnerId;
     private String name;
     private String phone;
     private String email;
+
+    // ── Documents ─────────────────────────────────────────────────────────────
+    private String aadhaarCardNo;
+    private String drivingLicenseNo;
+    private String imageUrl;
+
+    // ── Operational fields ────────────────────────────────────────────────────
     private VehicleType vehicleType;
-    private BigDecimal currentLat;
-    private BigDecimal currentLng;
-    private Boolean isAvailable;
-    private BigDecimal rating;
-    private Integer totalDeliveries;
-    private Instant createdAt;
-    private Instant lastActive;
+    private BigDecimal  currentLat;
+    private BigDecimal  currentLng;
+    private Boolean     isAvailable;
+    private BigDecimal  rating;
+    private Integer     totalDeliveries;
+    private Instant     createdAt;
+    private Instant     lastActive;
+
+    // ── Id ────────────────────────────────────────────────────────────────────
 
     @Id
     @UuidGenerator
     @Column(name = "partner_id")
-    public String getPartnerId() {
-        return partnerId;
-    }
+    public String getPartnerId() { return partnerId; }
+    public void setPartnerId(String partnerId) { this.partnerId = partnerId; }
 
-    public void setPartnerId(String partnerId) {
-        this.partnerId = partnerId;
-    }
+    // ── Name & Contact ────────────────────────────────────────────────────────
 
     @Column(name = "name", nullable = false, length = 100)
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
     @Column(name = "phone", nullable = false, length = 15)
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
     @Column(name = "email", length = 100)
-    public String getEmail() {
-        return email;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    // ── Documents ─────────────────────────────────────────────────────────────
+
+    @Column(name = "aadhaar_card_no", length = 12)
+    public String getAadhaarCardNo() { return aadhaarCardNo; }
+    public void setAadhaarCardNo(String aadhaarCardNo) { this.aadhaarCardNo = aadhaarCardNo; }
+
+    @Column(name = "driving_license_no", length = 20)
+    public String getDrivingLicenseNo() { return drivingLicenseNo; }
+    public void setDrivingLicenseNo(String drivingLicenseNo) { this.drivingLicenseNo = drivingLicenseNo; }
+
+    @Column(name = "image_url", length = 500)
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    // ── Operational ───────────────────────────────────────────────────────────
 
     @Column(name = "vehicle_type")
     @Enumerated(EnumType.STRING)
-    public VehicleType getVehicleType() {
-        return vehicleType;
-    }
-
-    public void setVehicleType(VehicleType vehicleType) {
-        this.vehicleType = vehicleType;
-    }
+    public VehicleType getVehicleType() { return vehicleType; }
+    public void setVehicleType(VehicleType vehicleType) { this.vehicleType = vehicleType; }
 
     @Column(name = "current_lat", precision = 10, scale = 8)
-    public BigDecimal getCurrentLat() {
-        return currentLat;
-    }
-
-    public void setCurrentLat(BigDecimal currentLat) {
-        this.currentLat = currentLat;
-    }
+    public BigDecimal getCurrentLat() { return currentLat; }
+    public void setCurrentLat(BigDecimal currentLat) { this.currentLat = currentLat; }
 
     @Column(name = "current_lng", precision = 11, scale = 8)
-    public BigDecimal getCurrentLng() {
-        return currentLng;
-    }
-
-    public void setCurrentLng(BigDecimal currentLng) {
-        this.currentLng = currentLng;
-    }
+    public BigDecimal getCurrentLng() { return currentLng; }
+    public void setCurrentLng(BigDecimal currentLng) { this.currentLng = currentLng; }
 
     @Column(name = "is_available")
-    public Boolean getIsAvailable() {
-        return isAvailable;
-    }
-
-    public void setIsAvailable(Boolean isAvailable) {
-        this.isAvailable = isAvailable;
-    }
+    public Boolean getIsAvailable() { return isAvailable; }
+    public void setIsAvailable(Boolean isAvailable) { this.isAvailable = isAvailable; }
 
     @Column(name = "rating", precision = 3, scale = 2)
-    public BigDecimal getRating() {
-        return rating;
-    }
-
-    public void setRating(BigDecimal rating) {
-        this.rating = rating;
-    }
+    public BigDecimal getRating() { return rating; }
+    public void setRating(BigDecimal rating) { this.rating = rating; }
 
     @Column(name = "total_deliveries")
-    public Integer getTotalDeliveries() {
-        return totalDeliveries;
-    }
-
-    public void setTotalDeliveries(Integer totalDeliveries) {
-        this.totalDeliveries = totalDeliveries;
-    }
+    public Integer getTotalDeliveries() { return totalDeliveries; }
+    public void setTotalDeliveries(Integer totalDeliveries) { this.totalDeliveries = totalDeliveries; }
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
     @Column(name = "last_active")
     @Temporal(TemporalType.TIMESTAMP)
-    public Instant getLastActive() {
-        return lastActive;
-    }
-
-    public void setLastActive(Instant lastActive) {
-        this.lastActive = lastActive;
-    }
+    public Instant getLastActive() { return lastActive; }
+    public void setLastActive(Instant lastActive) { this.lastActive = lastActive; }
 }

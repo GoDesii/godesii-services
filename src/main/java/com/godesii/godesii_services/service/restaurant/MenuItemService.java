@@ -161,6 +161,20 @@ public class MenuItemService {
         }
 
         /**
+         * Update only the isAvailable field of a menu item
+         */
+        public MenuItemResponse updateAvailability(String id, boolean isAvailable) {
+                MenuItem existing = menuItemRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Menu item not found with ID: " + id));
+
+                existing.setAvailable(isAvailable);
+                MenuItem updated = menuItemRepository.save(existing);
+                log.info("Updated availability for menu item ID: {} -> isAvailable={}", id, isAvailable);
+                return MenuItemResponse.fromEntity(updated);
+        }
+
+        /**
          * Delete a menu item
          */
         public void delete(String id) {

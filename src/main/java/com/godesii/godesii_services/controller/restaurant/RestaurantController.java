@@ -5,6 +5,7 @@ import com.godesii.godesii_services.common.DatabaseHelper;
 import com.godesii.godesii_services.constant.GoDesiiConstant;
 import com.godesii.godesii_services.dto.DashboardStatsDto;
 import com.godesii.godesii_services.dto.RestaurantRequest;
+import com.godesii.godesii_services.dto.RestaurantSummaryDto;
 import com.godesii.godesii_services.entity.restaurant.Restaurant;
 import com.godesii.godesii_services.service.restaurant.RestaurantService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -123,6 +124,24 @@ public class RestaurantController {
         APIResponse<Restaurant> apiResponse = new APIResponse<>(
                 HttpStatus.OK,
                 restaurant,
+                GoDesiiConstant.SUCCESSFULLY_FETCHED);
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * Get all restaurant IDs and names
+     *
+     * @return List of restaurant id and name pairs
+     */
+    @GetMapping(value = "/names", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Get all restaurant names", description = "Returns a lightweight list of all restaurant IDs and names")
+    public ResponseEntity<APIResponse<List<RestaurantSummaryDto>>> getAllNames() {
+        List<RestaurantSummaryDto> summaries = service.getAllSummaries();
+
+        APIResponse<List<RestaurantSummaryDto>> apiResponse = new APIResponse<>(
+                HttpStatus.OK,
+                summaries,
                 GoDesiiConstant.SUCCESSFULLY_FETCHED);
 
         return ResponseEntity.ok(apiResponse);
