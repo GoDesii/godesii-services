@@ -1,5 +1,7 @@
 package com.godesii.godesii_services.service.delivery;
 
+import com.godesii.godesii_services.dto.DeliveryPartnerProfileResponse;
+import com.godesii.godesii_services.dto.DeliveryPartnerRegistrationRequest;
 import com.godesii.godesii_services.entity.delivery.AssignmentStatus;
 import com.godesii.godesii_services.entity.delivery.DeliveryAssignment;
 import com.godesii.godesii_services.entity.delivery.DeliveryPartner;
@@ -36,6 +38,46 @@ public class DeliveryService {
             DeliveryAssignmentRepository assignmentRepo) {
         this.partnerRepo = partnerRepo;
         this.assignmentRepo = assignmentRepo;
+    }
+
+    // ── Partner Registration ──────────────────────────────────────────────────
+
+    /**
+     * Register a new delivery partner from the given request.
+     * Sets default operational values (unavailable, 0 deliveries, timestamps).
+     */
+    @Transactional
+    public DeliveryPartner registerPartner(DeliveryPartnerRegistrationRequest request) {
+        DeliveryPartner partner = new DeliveryPartner();
+        partner.setName(request.getName());
+        partner.setEmail(request.getEmailId());
+        partner.setPhone(request.getPhoneNo());
+        partner.setAadhaarCardNo(request.getAadhaarCardNo());
+        partner.setDrivingLicenseNo(request.getDrivingLicenseNo());
+        partner.setImageUrl(request.getImageUrl());
+        partner.setVehicleType(request.getVehicleType());
+        partner.setIsAvailable(false);       // not available until they go online
+        partner.setTotalDeliveries(0);
+        partner.setCreatedAt(Instant.now());
+        partner.setLastActive(Instant.now());
+
+        log.info("Registering new delivery partner: {}", request.getName());
+        return partnerRepo.save(partner);
+    }
+
+    /**
+     * Fetch the public profile of a delivery partner (name, phone, imageUrl only).
+     */
+    public DeliveryPartnerProfileResponse getPartnerProfile(String partnerId) {
+        DeliveryPartner partner = partnerRepo.findById(partnerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Delivery partner not found: " + partnerId));
+
+        return new DeliveryPartnerProfileResponse(
+                partner.getPartnerId(),
+                partner.getName(),
+                partner.getPhone(),
+                partner.getImageUrl()
+        );
     }
 
     /**

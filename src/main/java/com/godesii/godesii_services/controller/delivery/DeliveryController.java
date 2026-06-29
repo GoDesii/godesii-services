@@ -1,6 +1,8 @@
 package com.godesii.godesii_services.controller.delivery;
 
 import com.godesii.godesii_services.common.APIResponse;
+import com.godesii.godesii_services.dto.DeliveryPartnerProfileResponse;
+import com.godesii.godesii_services.dto.DeliveryPartnerRegistrationRequest;
 import com.godesii.godesii_services.entity.delivery.DeliveryAssignment;
 import com.godesii.godesii_services.entity.delivery.DeliveryPartner;
 import com.godesii.godesii_services.repository.delivery.DeliveryPartnerRepository;
@@ -8,6 +10,7 @@ import com.godesii.godesii_services.service.delivery.DeliveryNotificationService
 import com.godesii.godesii_services.service.delivery.DeliveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +40,63 @@ public class DeliveryController {
         this.deliveryService     = deliveryService;
         this.notificationService = notificationService;
         this.partnerRepo         = partnerRepo;
+    }
+
+    // ── Partner Registration ───────────────────────────────────────────────────
+
+    /**
+     * Register a new delivery partner.
+     *
+     * <p>Validates:
+     * <ul>
+     *   <li>Phone     — 10-digit Indian mobile (starts with 6–9)</li>
+     *   <li>Aadhaar   — exactly 12 digits</li>
+     *   <li>DL number — 15-char Indian format (e.g. DL0119900000001)</li>
+     *   <li>Email     — standard email format</li>
+     * </ul>
+     */
+    @PostMapping(value = "/partners/register",
+                 consumes = MediaType.APPLICATION_JSON_VALUE,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Register delivery partner",
+            description = "Onboard a new delivery partner. Validates Aadhaar (12 digits), " +
+                          "driving licence (Indian DL format), and mobile number (10-digit, starts with 6-9)."
+    )
+    public ResponseEntity<APIResponse<DeliveryPartner>> registerPartner(
+            @Valid @RequestBody DeliveryPartnerRegistrationRequest request) {
+
+        DeliveryPartner saved = deliveryService.registerPartner(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new APIResponse<>(
+                        HttpStatus.CREATED,
+                        saved,
+                        "Delivery partner registered successfully"));
+    }
+
+    // ── Partner Profile ────────────────────────────────────────────────────
+
+    /**
+     * Fetch the public profile of a delivery partner.
+     * Returns only: name, phoneNo, imageUrl.
+     *
+     * <p>GET /api/v1/delivery/partners/{partnerId}/profile
+     */
+    @GetMapping(value = "/partners/{partnerId}/profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            summary = "Get partner profile",
+            description = "Returns the partner's public details: name, phone number and profile image URL."
+    )
+    public ResponseEntity<APIResponse<DeliveryPartnerProfileResponse>> getPartnerProfile(
+            @PathVariable @NonNull String partnerId) {
+
+        DeliveryPartnerProfileResponse profile = deliveryService.getPartnerProfile(partnerId);
+
+        return ResponseEntity.ok(new APIResponse<>(
+                HttpStatus.OK,
+                profile,
+                "Partner profile fetched successfully"));
     }
 
     /**
