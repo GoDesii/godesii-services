@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center">🍛 VillSyn Services</h1>
   <p align="center">
-    <strong>Full-stack food delivery platform backend — built for the Indian market</strong>
+    <strong>Full-stack food delivery platform backend— built for the Indian market</strong>
   </p>
   <p align="center">
     <a href="#getting-started">Getting Started</a> · 
