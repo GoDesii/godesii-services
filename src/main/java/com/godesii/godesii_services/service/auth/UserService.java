@@ -80,11 +80,11 @@ public class UserService {
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
         this.userRepository.save(user);
-        if ("prod".equals(profile)) {
+        // if ("prod".equals(profile)) {
             LOGGER.info("OTP is generated for mobile no {}", request.getMobile());
             this.twilioSmsSenderService.sendSms(new SmsRequest(request.getMobile(), "OTP Send! " + generatedOTP));
-            return null;
-        }
+            // return null;
+        // }
         return generatedOTP;
     }
 
